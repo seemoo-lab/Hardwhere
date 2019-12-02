@@ -14,6 +14,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.lifecycle.ViewModelProvider
 
 import com.heinecke.aron.seesm.R
 
@@ -28,11 +29,11 @@ class LoginActivity : AppCompatActivity() {
 
         val apiToken = findViewById<EditText>(R.id.apiToken)
         val apiEndpoint = findViewById<EditText>(R.id.apiEndpoint)
+        val userID = findViewById<EditText>(R.id.userID)
         val login = findViewById<Button>(R.id.login)
         val loading = findViewById<ProgressBar>(R.id.loading)
 
-        loginViewModel = ViewModelProviders.of(this, LoginViewModelFactory())
-                .get(LoginViewModel::class.java)
+        loginViewModel = ViewModelProviders.of(this).get(LoginViewModel::class.java)
 
         loginViewModel.loginFormState.observe(this@LoginActivity, Observer {
             val loginState = it ?: return@Observer
@@ -42,6 +43,10 @@ class LoginActivity : AppCompatActivity() {
 
             if (loginState.endpointError != null) {
                 apiToken.error = getString(loginState.endpointError)
+            }
+
+            if (loginState.userIDError != null) {
+                userID.error = getString(loginState.userIDError)
             }
 
         })
@@ -64,13 +69,24 @@ class LoginActivity : AppCompatActivity() {
 
         login.setOnClickListener {
             loading.visibility = View.VISIBLE
-            loginViewModel.login(apiEndpoint.text.toString(),apiToken.text.toString())
+            loginViewModel.login(apiEndpoint.text.toString(),apiToken.text.toString(),Integer.parseInt(userID.text.toString()))
         }
         apiToken.apply {
             afterTextChanged {
                 loginViewModel.loginDataChanged(
                         apiEndpoint.text.toString(),
-                        apiToken.text.toString()
+                        apiToken.text.toString(),
+                        userID.text.toString()
+                )
+            }
+        }
+
+        userID.apply {
+            afterTextChanged {
+                loginViewModel.loginDataChanged(
+                    apiEndpoint.text.toString(),
+                    apiToken.text.toString(),
+                    userID.text.toString()
                 )
             }
 
@@ -78,14 +94,13 @@ class LoginActivity : AppCompatActivity() {
                 when (actionId) {
                     EditorInfo.IME_ACTION_DONE ->
                         loginViewModel.login(
-                                apiEndpoint.text.toString(),
-                                apiToken.text.toString()
+                            apiEndpoint.text.toString(),
+                            apiToken.text.toString(),
+                            Integer.parseInt(userID.text.toString())
                         )
                 }
                 false
             }
-
-
         }
     }
 

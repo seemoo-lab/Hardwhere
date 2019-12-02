@@ -2,6 +2,9 @@ package com.heinecke.aron.seesm
 
 import okhttp3.Request
 
+const val API_KEY_STATUS = "status"
+const val API_KEY_MSG = "message"
+
 class Utils {
     companion object {
         fun stripEndpint(endpoint: String): String {
@@ -22,6 +25,5 @@ class Utils {
 
         @JvmField val KEY_ENDPOINT = "endpoint_api"
         @JvmField val KEY_TOKEN = "token_api"
-
     }
 }
