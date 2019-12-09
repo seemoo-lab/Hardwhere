@@ -1,11 +1,9 @@
 package com.heinecke.aron.seesm.ui.login
 
+import android.R.attr
 import android.app.Activity
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.os.Bundle
-import androidx.annotation.StringRes
-import androidx.appcompat.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -14,9 +12,13 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Toast
-import androidx.lifecycle.ViewModelProvider
-
+import androidx.annotation.StringRes
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+import com.google.zxing.integration.android.IntentIntegrator
 import com.heinecke.aron.seesm.R
+
 
 class LoginActivity : AppCompatActivity() {
 
@@ -32,6 +34,7 @@ class LoginActivity : AppCompatActivity() {
         val userID = findViewById<EditText>(R.id.userID)
         val login = findViewById<Button>(R.id.login)
         val loading = findViewById<ProgressBar>(R.id.loading)
+        val scanLogin = findViewById<Button>(R.id.scanLogin)
 
         loginViewModel = ViewModelProviders.of(this).get(LoginViewModel::class.java)
 
@@ -66,6 +69,30 @@ class LoginActivity : AppCompatActivity() {
             //Complete and destroy login activity once successful
             finish()
         })
+
+//        @Override
+//        protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//            IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+//            if(result != null) {
+//                if(result.getContents() == null) {
+//                    Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
+//                } else {
+//                    Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
+//                }
+//            } else {
+//                super.onActivityResult(requestCode, resultCode, data);
+//            }
+//        }
+
+        scanLogin.setOnClickListener {
+            val integrator = IntentIntegrator(this)
+            integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE)
+            integrator.setPrompt("Scan a QR-Login Code")
+
+            integrator.setBeepEnabled(true)
+            integrator.setBarcodeImageEnabled(false)
+            integrator.initiateScan()
+        }
 
         login.setOnClickListener {
             loading.visibility = View.VISIBLE
@@ -103,6 +130,27 @@ class LoginActivity : AppCompatActivity() {
             }
         }
     }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+
+        val result =
+            IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
+        if (result != null) {
+            if (result.contents == null) {
+                Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show()
+            } else {
+                Toast.makeText(this, "Scanned: " + result.contents, Toast.LENGTH_LONG).show()
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data)
+        }
+    }
+
+    //    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+//    }
 
     private fun updateUiWithUser(model: LoggedInUserView) {
         val welcome = getString(R.string.welcome)

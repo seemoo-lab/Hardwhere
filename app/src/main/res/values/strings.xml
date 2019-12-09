@@ -6,6 +6,7 @@
     <string name="prompt_user_id">User ID</string>
     <string name="action_sign_in">Sign in</string>
     <string name="action_sign_in_short">Sign in</string>
+    <string name="action_scan_login">Scan Login</string>
     <string name="welcome">"Welcome !"</string>
     <string name="invalid_api_endpoint">No a valid API endpoint</string>
     <string name="invalid_token">API Token has to be >30 characters</string>
