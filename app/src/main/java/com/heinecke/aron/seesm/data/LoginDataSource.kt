@@ -21,7 +21,7 @@ class LoginDataSource {
         val request = Utils.buildAPI(endpoint,"users/$userID",apiToken).build()
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                Log.w(this@LoginDataSource::class.java.name,"onFailure",e)
+                Log.w(this@LoginDataSource::class.java.name,"onFailure $e")
                 liveData.postValue(Result.Error(e))
             }
 

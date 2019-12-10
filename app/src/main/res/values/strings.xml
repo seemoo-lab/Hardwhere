@@ -8,9 +8,12 @@
     <string name="action_sign_in_short">Sign in</string>
     <string name="action_scan_login">Scan Login</string>
     <string name="welcome">"Welcome !"</string>
-    <string name="invalid_api_endpoint">No a valid API endpoint</string>
+    <string name="invalid_api_endpoint">Not a valid API endpoint</string>
+    <string name="error_unknown_host">Unknown api host!</string>
     <string name="invalid_token">API Token has to be >30 characters</string>
     <string name="invalid_connection">No connection! Internet disabled?</string>
     <string name="invalid_user_id">Invalid user ID provided</string>
     <string name="login_failed">"Login failed, invalid token."</string>
+    <string name="invalid_login_json">Invalid login json!</string>
+    <string name="empty_login_json">No login data found!</string>
 </resources>

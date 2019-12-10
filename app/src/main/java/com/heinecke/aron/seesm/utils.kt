@@ -1,5 +1,6 @@
 package com.heinecke.aron.seesm
 
+import android.util.Log
 import okhttp3.Request
 
 const val API_KEY_STATUS = "status"
@@ -16,8 +17,10 @@ class Utils {
         }
 
         fun buildAPI(endpoint: String, path: String, apiToken: String): Request.Builder {
+            val url = makeApiURL(stripEndpint(endpoint), path)
+            Log.d(this::class.java.name,"URL: $url")
             return Request.Builder()
-                .url(makeApiURL(Utils.stripEndpint(endpoint), path))
+                .url(url)
                 .addHeader("Authorization",apiToken)
                 .addHeader("Accept","application/json")
                 .addHeader("Content-Type","application/json")

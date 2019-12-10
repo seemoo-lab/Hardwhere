@@ -10,6 +10,7 @@ import com.heinecke.aron.seesm.R
 import com.heinecke.aron.seesm.UnauthorizedException
 import com.heinecke.aron.seesm.data.LoginDataSource
 import com.heinecke.aron.seesm.data.Result
+import java.net.UnknownHostException
 
 class LoginViewModel : ViewModel() {
 
@@ -26,8 +27,9 @@ class LoginViewModel : ViewModel() {
                 when (res.exception) {
                     is UnauthorizedException -> LoginResult(error = R.string.login_failed)
                     is InvalidResponseException -> LoginResult(error = R.string.invalid_api_endpoint)
+                    is UnknownHostException -> LoginResult(error = R.string.error_unknown_host)
                     else -> { // TODO: when throw invalid_connection ?
-                        LoginResult(error = R.string.invalid_api_endpoint)
+                        LoginResult(error = R.string.invalid_api_endpoint, errorDetail = res.exception)
                     }
                 }
             }
@@ -41,18 +43,9 @@ class LoginViewModel : ViewModel() {
 
     }
 
-    init {
-//        loginResult.observeForever(Observer { res ->
-//            backgroundResult.observe(this, Observer { res ->
-//
-//            })
-//        })
-
-    }
-
     fun loginDataChanged(endpoint: String, apiToken: String, userID: String) {
         if (!isTokenValid(apiToken)) {
-            _loginForm.value = LoginFormState(endpointError = R.string.invalid_token)
+            _loginForm.value = LoginFormState(tokenError = R.string.invalid_token)
         } else if (!isEndpointValid(endpoint)) {
             _loginForm.value = LoginFormState(endpointError = R.string.invalid_api_endpoint)
         } else {
