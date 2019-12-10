@@ -170,13 +170,13 @@ class LoginActivity : AppCompatActivity() {
         Toast.makeText(
                 applicationContext,
                 "$welcome $displayName",
-                Toast.LENGTH_LONG
+                Toast.LENGTH_SHORT
         ).show()
     }
 
     private fun showLoginFailed(@StringRes errorString: Int, details: Exception?) {
         val msg = details ?: "No details."
-        Toast.makeText(applicationContext, "${getString(errorString)} $msg", Toast.LENGTH_SHORT).show()
+        Toast.makeText(applicationContext, "${getString(errorString)} $msg", Toast.LENGTH_LONG).show()
     }
 }
 
