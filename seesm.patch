@@ -1,0 +1,94 @@
+diff --git a/app/Http/Controllers/SEESMController.php b/app/Http/Controllers/SEESMController.php
+new file mode 100644
+index 000000000..a23e210ed
+--- /dev/null
++++ b/app/Http/Controllers/SEESMController.php
+@@ -0,0 +1,59 @@
++<?php
++
++namespace App\Http\Controllers;
++
++use Illuminate\Support\Facades\Auth;
++
++use App\Models\Setting;
++use App\Helpers\Helper;
++
++/**
++ * This class controls all actions related to qr codes for assets
++ * the Snipe-IT Asset Management application.
++ *
++ * @version v0.1
++ * @author Aron Heinecke
++ */
++class SEESMController extends Controller
++{
++    protected $qrCodeDimensions = array('height' => 3.5, 'width' => 3.5);
++    protected $barCodeDimensions = array('height' => 2, 'width' => 22);
++
++    public function __construct()
++    {
++        parent::__construct();
++    }
++
++
++    /**
++     * Return login json data as string
++     *
++     * @author Aron Heinecke
++     * @return Response
++     */
++    private function getLoginJson()
++    {
++        $id = Auth::id();
++        $user = Auth::user();
++        $token = $user->createToken('SEESM')->accessToken;
++        $url = \App::make('url')->to('/');
++        
++        //return response()->json(["uid" => $id, "url" => $url, "token" => $token ]);
++        return json_encode(["uid" => $id, "url" => $url, "token" => $token ]);
++    }
++    
++    /**
++     * Return a QR code for the asset
++     *
++     * @author Aron Heinecke
++     * @return Response
++     */
++    public function getQRCode()
++    {
++        $data = $this->getLoginJson();
++        
++        $barcode = new \Com\Tecnick\Barcode\Barcode();
++        $barcode_obj = $barcode->getBarcodeObj('QRCODE', $data, 921,921, 'black', array(-5, -5, 0, -5));
++        return response($barcode_obj->getSvgCode())->header('Content-type', 'image/svg+xml');
++    }
++}
+diff --git a/resources/views/layouts/default.blade.php b/resources/views/layouts/default.blade.php
+index 196b085bb..75fb95266 100644
+--- a/resources/views/layouts/default.blade.php
++++ b/resources/views/layouts/default.blade.php
+@@ -343,6 +343,11 @@
+                          </a>
+                      </li>
+                      @endcan
++                     <li>
++                         <a href="{{ route('user.seesm') }}">
++                             <i class="fa fa-user-secret fa-fw"></i> SEESM App Login
++                         </a>
++                     </li>
+                      <li class="divider"></li>
+                      <li>
+                          <a href="{{ url('/logout') }}">
+diff --git a/routes/web.php b/routes/web.php
+index aa9631475..a238ae6aa 100644
+--- a/routes/web.php
++++ b/routes/web.php
+@@ -245,6 +245,8 @@ Route::group([ 'prefix' => 'account', 'middleware' => ['auth']], function () {
+     Route::post('password', [ 'uses' => 'ProfileController@passwordSave' ]);
+ 
+     Route::get('api', [ 'as' => 'user.api', 'uses' => 'ProfileController@api' ]);
++    
++    Route::get('seesm', ['as' => 'user.seesm', 'uses' => 'SEESMController@getQRCode']);
+ 
+     # View Assets
+     Route::get('view-assets', [ 'as' => 'view-assets', 'uses' => 'ViewAssetsController@getIndex' ]);
