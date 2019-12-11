@@ -7,12 +7,15 @@ apply plugin: 'kotlin-android-extensions'
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "com.heinecke.aron.seesm"
+        applicationId "com.heinecke.aron.lars"
         minSdkVersion 25
         targetSdkVersion 28
         versionCode 1
         versionName "0.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
     }
     buildTypes {
         release {
@@ -36,10 +39,10 @@ dependencies {
     implementation 'com.journeyapps:zxing-android-embedded:4.0.2'
     implementation 'org.conscrypt:conscrypt-android:2.2.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.navigation:navigation-fragment:2.0.0'
-    implementation 'androidx.navigation:navigation-ui:2.0.0'
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.0.0'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.0.0'
+    implementation 'androidx.navigation:navigation-fragment:2.1.0'
+    implementation 'androidx.navigation:navigation-ui:2.1.0'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.1.0'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.1.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
