@@ -28,5 +28,10 @@ class Utils {
 
         @JvmField val KEY_ENDPOINT = "endpoint_api"
         @JvmField val KEY_TOKEN = "token_api"
+        @JvmField val PREFS_APP = "com.heinecke.aron.LARS.prefs"
+        @JvmField val PREFS_KEY_FIRST_RUN = "first_run"
+        @JvmField val PREFS_KEY_UID = "uid"
+        @JvmField val PREFS_KEY_BACKEND = "backend"
+        @JvmField val PREFS_KEY_TOKEN = "token"
     }
 }

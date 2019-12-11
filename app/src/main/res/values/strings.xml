@@ -14,7 +14,7 @@
     <string name="invalid_connection">No connection! Internet disabled?</string>
     <string name="invalid_user_id">Invalid user ID provided.</string>
     <string name="login_failed">"Login failed, invalid token."</string>
-    <string name="invalid_login_json">Invalid login json!</string>+
+    <string name="invalid_login_json">Invalid login json!</string>
     <string name="empty_login_json">No login data found!</string>
     <string name="title_activity_main">LARS</string>
     <string name="title_activity_login">LARS Login</string>
@@ -29,6 +29,8 @@
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
     <string name="menu_tools">Tools</string>
-    <string name="menu_share">Share</string>
-    <string name="menu_send">Send</string>
+    <string name="menu_logout">Logout</string>
+
+
+    <string name="PLACEHOLDER">PLACEHOLDER</string>
 </resources>

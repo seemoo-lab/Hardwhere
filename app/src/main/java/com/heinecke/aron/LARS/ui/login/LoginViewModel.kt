@@ -11,6 +11,7 @@ import com.heinecke.aron.LARS.R
 import com.heinecke.aron.LARS.UnauthorizedException
 import com.heinecke.aron.LARS.data.LoginDataSource
 import com.heinecke.aron.LARS.data.Result
+import com.heinecke.aron.LARS.data.model.LoginData
 import java.net.UnknownHostException
 
 class LoginViewModel : ViewModel() {
@@ -38,11 +39,9 @@ class LoginViewModel : ViewModel() {
         }
     }
 
-
     fun login(apiToken: String, endpoint: String, userID: Int) {
         // can be launched in a separate asynchronous job
-        LoginDataSource().login(apiToken, endpoint, userID, backgroundResult)
-
+        LoginDataSource().login(LoginData(userID,apiToken, endpoint), backgroundResult)
     }
 
     fun loginDataChanged(endpoint: String, apiToken: String, userID: String) {

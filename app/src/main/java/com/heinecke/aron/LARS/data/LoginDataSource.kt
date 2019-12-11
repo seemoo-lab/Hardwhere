@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.JsonParser
 import com.heinecke.aron.LARS.*
+import com.heinecke.aron.LARS.data.model.LoginData
 import com.heinecke.aron.LARS.ui.login.LoggedInUserView
 import okhttp3.*
 import java.io.IOException
@@ -17,8 +18,8 @@ private const val API_KEY_USERNAME = "name"
 class LoginDataSource {
     private val client = OkHttpClient();
 
-    fun login(apiToken: String, endpoint: String, userID: Int, liveData: MutableLiveData<Result<LoggedInUserView>>) {
-        val request = Utils.buildAPI(endpoint,"users/$userID",apiToken).build()
+    fun login(data: LoginData, liveData: MutableLiveData<Result<LoggedInUserView>>) {
+        val request = Utils.buildAPI(data.apiBackend,"users/${data.userID}",data.apiToken).build()
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 Log.w(this@LoginDataSource::class.java.name,"onFailure $e")
@@ -36,7 +37,7 @@ class LoginDataSource {
                         if (answer.isJsonObject) {
                             val jsonObj = answer.asJsonObject
                             if (jsonObj.has(API_KEY_USERNAME)) {
-                                Result.Success(LoggedInUserView(jsonObj.get(API_KEY_USERNAME).asString))
+                                Result.Success(LoggedInUserView(jsonObj.get(API_KEY_USERNAME).asString,data))
                             } else {
                                 Log.w(this@LoginDataSource::class.java.name, "Response: $bodyString")
                                 Result.Error(InvalidUserIDException())

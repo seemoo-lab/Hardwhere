@@ -1,7 +1,6 @@
 package com.heinecke.aron.LARS.ui.login
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -20,7 +19,9 @@ import androidx.lifecycle.ViewModelProviders
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.zxing.integration.android.IntentIntegrator
+import com.heinecke.aron.LARS.MainActivity
 import com.heinecke.aron.LARS.R
+import com.heinecke.aron.LARS.Utils
 import com.heinecke.aron.LARS.data.model.LoginData
 
 
@@ -30,6 +31,7 @@ class LoginActivity : AppCompatActivity() {
 
 
 
+    @SuppressLint("ApplySharedPref")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -72,11 +74,22 @@ class LoginActivity : AppCompatActivity() {
             }
             if (loginResult.success != null) {
                 updateUiWithUser(loginResult.success)
-            }
-            setResult(Activity.RESULT_OK)
 
-            //Complete and destroy login activity once successful
-//            finish()
+                val prefs = getSharedPreferences(Utils.PREFS_APP, 0).edit()
+                prefs.putBoolean(Utils.PREFS_KEY_FIRST_RUN,false)
+                val data = loginResult.success.data
+                prefs.putInt(Utils.PREFS_KEY_UID, data.userID)
+                prefs.putString(Utils.PREFS_KEY_BACKEND, data.apiBackend)
+                prefs.putString(Utils.PREFS_KEY_TOKEN, data.apiToken)
+                prefs.apply()
+
+                //Complete and destroy login activity once successful
+                val intent = Intent(this, MainActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(intent)
+                finish()
+            }
+
         })
 
         scanLogin.setOnClickListener {
@@ -149,7 +162,7 @@ class LoginActivity : AppCompatActivity() {
                     val apiEndpoint = findViewById<EditText>(R.id.apiEndpoint)
                     val userID = findViewById<EditText>(R.id.userID)
                     apiToken.setText(loginData.apiToken)
-                    apiEndpoint.setText(loginData.apiSource)
+                    apiEndpoint.setText(loginData.apiBackend)
                     userID.setText(Integer.toString(loginData.userID))
                 } catch (e: JsonSyntaxException) {
                     Toast.makeText(this,R.string.invalid_login_json, Toast.LENGTH_LONG).show()

@@ -8,4 +8,4 @@ data class LoginData(
     @SerializedName("token")
     val apiToken: String,
     @SerializedName("url")
-    val apiSource: String )
+    val apiBackend: String )
