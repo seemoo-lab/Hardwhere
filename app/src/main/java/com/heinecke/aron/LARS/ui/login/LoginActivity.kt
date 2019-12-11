@@ -1,13 +1,11 @@
-package com.heinecke.aron.seesm.ui.login
+package com.heinecke.aron.LARS.ui.login
 
-import android.R.attr
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.JsonReader
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -22,14 +20,15 @@ import androidx.lifecycle.ViewModelProviders
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.zxing.integration.android.IntentIntegrator
-import com.heinecke.aron.seesm.R
-import com.heinecke.aron.seesm.data.model.LoginData
-import java.time.Duration
+import com.heinecke.aron.LARS.R
+import com.heinecke.aron.LARS.data.model.LoginData
 
 
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var loginViewModel: LoginViewModel
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

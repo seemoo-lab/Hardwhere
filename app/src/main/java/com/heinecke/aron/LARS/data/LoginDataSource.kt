@@ -1,11 +1,11 @@
-package com.heinecke.aron.seesm.data
+package com.heinecke.aron.LARS.data
 
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.JsonParser
-import com.heinecke.aron.seesm.*
-import com.heinecke.aron.seesm.ui.login.LoggedInUserView
+import com.heinecke.aron.LARS.*
+import com.heinecke.aron.LARS.ui.login.LoggedInUserView
 import okhttp3.*
 import java.io.IOException
 
@@ -28,6 +28,7 @@ class LoginDataSource {
             override fun onResponse(call: Call, response: Response) {
                 response.body.use {
                     val code = response.code
+                    Log.d(this::class.java.name,"response: $response")
                     val res: Result<LoggedInUserView> = if (code == 200) {
                         // TODO: evaluate streaming
                         val bodyString = it!!.string()

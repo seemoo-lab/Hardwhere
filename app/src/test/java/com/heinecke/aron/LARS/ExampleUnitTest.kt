@@ -1,4 +1,4 @@
-package com.heinecke.aron.seesm
+package com.heinecke.aron.LARS
 
 import org.junit.Test
 

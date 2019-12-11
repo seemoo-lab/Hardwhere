@@ -1,15 +1,16 @@
-package com.heinecke.aron.seesm.ui.login
+package com.heinecke.aron.LARS.ui.login
 
 import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
-import com.heinecke.aron.seesm.InvalidResponseException
-import com.heinecke.aron.seesm.R
-import com.heinecke.aron.seesm.UnauthorizedException
-import com.heinecke.aron.seesm.data.LoginDataSource
-import com.heinecke.aron.seesm.data.Result
+import com.heinecke.aron.LARS.InvalidResponseException
+import com.heinecke.aron.LARS.InvalidUserIDException
+import com.heinecke.aron.LARS.R
+import com.heinecke.aron.LARS.UnauthorizedException
+import com.heinecke.aron.LARS.data.LoginDataSource
+import com.heinecke.aron.LARS.data.Result
 import java.net.UnknownHostException
 
 class LoginViewModel : ViewModel() {
@@ -28,6 +29,7 @@ class LoginViewModel : ViewModel() {
                     is UnauthorizedException -> LoginResult(error = R.string.login_failed)
                     is InvalidResponseException -> LoginResult(error = R.string.invalid_api_endpoint)
                     is UnknownHostException -> LoginResult(error = R.string.error_unknown_host)
+                    is InvalidUserIDException -> LoginResult(error = R.string.invalid_user_id)
                     else -> { // TODO: when throw invalid_connection ?
                         LoginResult(error = R.string.invalid_api_endpoint, errorDetail = res.exception)
                     }

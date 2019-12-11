@@ -1,4 +1,4 @@
-package com.heinecke.aron.seesm.ui.login
+package com.heinecke.aron.LARS.ui.login
 
 import java.lang.Exception
 

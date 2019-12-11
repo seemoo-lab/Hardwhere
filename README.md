@@ -1,3 +1,3 @@
-# SEESM
+# LARS
 
-Software Engineering Engaging Sinking Markets
+Large Acessories Retrieval System

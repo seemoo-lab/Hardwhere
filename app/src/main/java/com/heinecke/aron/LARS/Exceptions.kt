@@ -1,4 +1,4 @@
-package com.heinecke.aron.seesm
+package com.heinecke.aron.LARS
 
 data class InvalidResponseException(val status: Int, val body: String) : Exception()
 

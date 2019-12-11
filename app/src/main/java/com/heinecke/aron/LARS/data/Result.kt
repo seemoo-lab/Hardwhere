@@ -1,4 +1,4 @@
-package com.heinecke.aron.seesm.data
+package com.heinecke.aron.LARS.data
 
 /**
  * A generic class that holds a value with its loading status.

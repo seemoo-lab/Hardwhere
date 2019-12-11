@@ -1,4 +1,4 @@
-package com.heinecke.aron.seesm.data.model
+package com.heinecke.aron.LARS.data.model
 
 import com.google.gson.annotations.SerializedName
 

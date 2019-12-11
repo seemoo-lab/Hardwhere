@@ -1,4 +1,4 @@
-package com.heinecke.aron.seesm
+package com.heinecke.aron.LARS
 
 import android.util.Log
 import okhttp3.Request
@@ -21,7 +21,7 @@ class Utils {
             Log.d(this::class.java.name,"URL: $url")
             return Request.Builder()
                 .url(url)
-                .addHeader("Authorization",apiToken)
+                .addHeader("Authorization","Bearer $apiToken")
                 .addHeader("Accept","application/json")
                 .addHeader("Content-Type","application/json")
         }
