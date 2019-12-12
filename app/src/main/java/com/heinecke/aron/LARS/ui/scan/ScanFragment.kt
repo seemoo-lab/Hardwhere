@@ -1,0 +1,91 @@
+package com.heinecke.aron.LARS.ui.scan
+
+import android.os.Bundle
+import android.speech.RecognitionListener
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.TextView
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.heinecke.aron.LARS.MainViewModel
+import com.heinecke.aron.LARS.R
+import com.heinecke.aron.LARS.data.APIClient
+import com.heinecke.aron.LARS.data.APIInterface
+import com.heinecke.aron.LARS.data.model.Asset
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+
+class ScanFragment : Fragment() {
+
+    private lateinit var scanViewModel: ScanViewModel
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var viewAdapter: ScanViewAdapter
+    private lateinit var viewManager: RecyclerView.LayoutManager
+    private lateinit var mainViewModel: MainViewModel
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        scanViewModel =
+            ViewModelProviders.of(this).get(ScanViewModel::class.java)
+        val root = inflater.inflate(R.layout.fragment_scan, container, false)
+        val textView: TextView = root.findViewById(R.id.text_gallery)
+        scanViewModel.text.observe(this, Observer {
+            textView.text = it
+        })
+        mainViewModel = activity?.run {
+            ViewModelProviders.of(this)[MainViewModel::class.java]
+        } ?: throw Exception("Invalid Activity")
+
+        val loginData = mainViewModel.getLoginData(requireContext())
+        val client = APIClient.getClient(loginData.apiBackend,loginData.apiToken)
+        val api = client.create(APIInterface::class.java)
+
+        mainViewModel.scanData.observe(this, Observer {
+            it?.run {
+                textView.setText("ID: $this")
+
+                api.getAsset(this).enqueue(object: Callback<Asset> {
+                    override fun onFailure(call: Call<Asset>?, t: Throwable?) {
+                        Toast.makeText(requireContext(), "Can't request: $t",Toast.LENGTH_LONG).show()
+                    }
+
+                    override fun onResponse(call: Call<Asset>?, response: Response<Asset>?) {
+                        response?.run {
+                            Log.d(this@ScanFragment::class.java.name,"Code: ${this.code()}")
+                            Log.d(this@ScanFragment::class.java.name,"Error: ${this.errorBody()}")
+                            Log.d(this@ScanFragment::class.java.name,"Response: ${this.body()}")
+                            if(this.isSuccessful) {
+                                viewAdapter.append(this.body())
+                            }
+                        }
+                    }
+
+                })
+
+            } ?: textView.setText("No code")
+        })
+
+
+
+        viewManager = LinearLayoutManager(context)
+        viewAdapter = ScanViewAdapter(ArrayList())
+
+        recyclerView = root.findViewById<RecyclerView>(R.id.frag_scan_recycler).apply {
+            layoutManager = viewManager
+            adapter = viewAdapter
+        }
+
+        return root
+    }
+}

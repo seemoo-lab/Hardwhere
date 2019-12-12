@@ -12,20 +12,14 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/nav_gallery"
-        android:name="com.heinecke.aron.LARS.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
+        android:id="@+id/nav_scan"
+        android:name="com.heinecke.aron.LARS.ui.scan.ScanFragment"
+        android:label="@string/menu_scan" />
 
     <fragment
         android:id="@+id/nav_tools"
         android:name="com.heinecke.aron.LARS.ui.tools.ToolsFragment"
         android:label="@string/menu_tools"
         tools:layout="@layout/fragment_tools" />
-    <activity
-        android:id="@+id/loginActivity"
-        android:name="com.heinecke.aron.LARS.ui.login.LoginActivity"
-        android:label="activity_login"
-        tools:layout="@layout/activity_login" />
 
 </navigation>

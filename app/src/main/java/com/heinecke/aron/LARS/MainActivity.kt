@@ -1,17 +1,23 @@
 package com.heinecke.aron.LARS
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
-import androidx.navigation.ui.*
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.NavigationUI
+import androidx.navigation.ui.navigateUp
+import androidx.navigation.ui.setupActionBarWithNavController
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
-import com.google.android.material.snackbar.Snackbar
+import com.google.zxing.integration.android.IntentIntegrator
 import com.heinecke.aron.LARS.Utils.Companion.PREFS_APP
 import com.heinecke.aron.LARS.Utils.Companion.PREFS_KEY_FIRST_RUN
 import com.heinecke.aron.LARS.ui.login.LoginActivity
@@ -20,6 +26,8 @@ import com.heinecke.aron.LARS.ui.login.LoginActivity
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
+    private lateinit var mainViewModel: MainViewModel
+    private val assetPattern: Regex = Regex("^http.*/([0-9]+)$")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,10 +38,16 @@ class MainActivity : AppCompatActivity() {
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
+        mainViewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
+
         val fab: FloatingActionButton = findViewById(R.id.fab)
         fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
+            val integrator = IntentIntegrator(this)
+            integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE)
+            integrator.setPrompt("Scan Asset QR Code")
+            integrator.setBeepEnabled(true)
+            integrator.setBarcodeImageEnabled(false)
+            integrator.initiateScan()
         }
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
@@ -42,7 +56,7 @@ class MainActivity : AppCompatActivity() {
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow,
+                R.id.nav_home, R.id.nav_scan, R.id.nav_slideshow,
                 R.id.nav_tools, R.id.nav_share, R.id.nav_send, R.id.nav_logout
             ), drawerLayout
         )
@@ -65,6 +79,26 @@ class MainActivity : AppCompatActivity() {
                 // return the result of NavigationUI call
                 handled
             }
+        }
+        navController.addOnDestinationChangedListener { controller, destination, arguments ->
+            mainViewModel.scanData.value = null
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        val result =
+            IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
+        if (result != null) {
+            if (result.contents != null) {
+                Log.d(this::class.java.name,"Scanned: ${result.contents}")
+                assetPattern.find(result.contents,0)?.groupValues?.run {
+                    this.forEach {item -> Log.d(this::class.java.name,"Item: $item")}
+                    mainViewModel.scanData.value = Integer.valueOf(this[1])
+                } ?: Toast.makeText(this,R.string.invalid_asset_code,Toast.LENGTH_LONG).show()
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data)
         }
     }
 
