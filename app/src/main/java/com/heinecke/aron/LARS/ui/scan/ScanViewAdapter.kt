@@ -1,5 +1,6 @@
 package com.heinecke.aron.LARS.ui.scan
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,13 +8,16 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.heinecke.aron.LARS.R
 import com.heinecke.aron.LARS.data.model.Asset
+import org.w3c.dom.Text
 
 class ScanViewAdapter(private val assetList: ArrayList<Asset>) : RecyclerView.Adapter<ScanViewAdapter.ViewHolder>() {
 
     // holder class to hold reference
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         //get view reference
-        var modelName: TextView = view.findViewById(R.id.modelName) as TextView
+        var modelName: TextView = view.findViewById(R.id.modelName)
+        var locationName: TextView = view.findViewById(R.id.locationName)
+        var assetID: TextView = view.findViewById(R.id.assetID)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -21,9 +25,13 @@ class ScanViewAdapter(private val assetList: ArrayList<Asset>) : RecyclerView.Ad
         return ViewHolder( LayoutInflater.from(parent.context).inflate(R.layout.recycler_layout_assets, parent, false))
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         //set values
-        holder.modelName.text =  assetList[position].model.name
+        val asset = assetList[position]
+        holder.modelName.text =  asset.model?.name ?: "<no model>"
+        holder.assetID.text = Integer.toString(asset.id)
+        holder.locationName.text = asset.location?.name ?: "<no location>"
     }
 
     override fun getItemCount(): Int {
@@ -36,8 +44,8 @@ class ScanViewAdapter(private val assetList: ArrayList<Asset>) : RecyclerView.Ad
         assetList.addAll(scanResult)
         notifyDataSetChanged()
     }
-
-    fun append(item: Asset) {
+    // prepend data to start
+    fun prepend(item: Asset) {
         this.assetList.add(0,item)
         this.notifyItemInserted(0)
     }

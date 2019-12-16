@@ -5,10 +5,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
+import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -20,8 +23,17 @@ import com.google.android.material.navigation.NavigationView
 import com.google.zxing.integration.android.IntentIntegrator
 import com.heinecke.aron.LARS.Utils.Companion.PREFS_APP
 import com.heinecke.aron.LARS.Utils.Companion.PREFS_KEY_FIRST_RUN
+import com.heinecke.aron.LARS.Utils.Companion.logResponseVerbose
+import com.heinecke.aron.LARS.data.APIClient
+import com.heinecke.aron.LARS.data.APIInterface
+import com.heinecke.aron.LARS.data.model.Asset
+import com.heinecke.aron.LARS.data.model.User
+import com.heinecke.aron.LARS.data.model.UserData
 import com.heinecke.aron.LARS.ui.login.LoginActivity
-
+import kotlinx.android.synthetic.main.recycler_layout_assets.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
 
@@ -82,7 +94,40 @@ class MainActivity : AppCompatActivity() {
         }
         navController.addOnDestinationChangedListener { controller, destination, arguments ->
             mainViewModel.scanData.value = null
+            Log.d(this::class.java.name,"Dest: $destination")
+            //TODO: don't show scan icon always
         }
+
+        val navHeader = findViewById<TextView>(R.id.nav_header)
+        val navSubheader = findViewById<TextView>(R.id.nav_subheader)
+        Log.d(this::class.java.name, "Initialized")
+
+        mainViewModel.userData.observe(this, Observer {
+            if (it != null){
+                Log.d(this::class.java.name, "Has userdata: ${it.email}")
+                navHeader.text = it.name
+                navSubheader.text = it.email
+            } else {
+                Log.d(this::class.java.name, "No userdata")
+                val data = mainViewModel.getLoginData(this)
+                val client = APIClient.getClient(data.apiBackend,data.apiToken)
+                val api = client.create(APIInterface::class.java)
+                api.getUserInfo(data.userID).enqueue(object: Callback<User> {
+                    override fun onFailure(call: Call<User>?, t: Throwable?) {
+                        Log.w(this@MainActivity::class.java.name,"Unable to fetch user $t")
+                        Toast.makeText(this@MainActivity,R.string.failure_userinfo,Toast.LENGTH_SHORT).show()
+                    }
+
+                    override fun onResponse(call: Call<User>?, response: Response<User>?) {
+                        response?.body()?.run {
+                            mainViewModel.userData.value = UserData(this.name,this.email)
+                        } ?: logResponseVerbose(this@MainActivity::class.java,response).also {
+                            Toast.makeText(this@MainActivity,R.string.failure_userinfo,Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                })
+            }
+        })
     }
 
     @SuppressLint("SetTextI18n")
@@ -121,6 +166,14 @@ class MainActivity : AppCompatActivity() {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.main, menu)
         return true
+    }
+
+    override fun onBackPressed() {
+        if (supportFragmentManager.backStackEntryCount > 0 ){
+            supportFragmentManager.popBackStack();
+        } else {
+            super.onBackPressed();
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {

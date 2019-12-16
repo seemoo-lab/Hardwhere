@@ -3,22 +3,23 @@ package com.heinecke.aron.LARS.ui.scan
 import android.os.Bundle
 import android.speech.RecognitionListener
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.heinecke.aron.LARS.MainViewModel
 import com.heinecke.aron.LARS.R
+import com.heinecke.aron.LARS.Utils
 import com.heinecke.aron.LARS.data.APIClient
 import com.heinecke.aron.LARS.data.APIInterface
 import com.heinecke.aron.LARS.data.model.Asset
+import com.heinecke.aron.LARS.ui.editor.EditorFragment
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -36,10 +37,32 @@ class ScanFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        setHasOptionsMenu(true)
+        return inflater.inflate(R.layout.fragment_scan, container, false)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.scan,menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        Log.d(this::class.java.name,"onOptionsItemSelected")
+        return when (item.itemId) {
+            R.id.edit -> {
+                Log.d(this::class.java.name,"starting editor")
+                findNavController().navigate(R.id.editorFragment)
+                true
+            }
+            else -> false
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+//        super.onViewCreated(view, savedInstanceState)
         scanViewModel =
             ViewModelProviders.of(this).get(ScanViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_scan, container, false)
-        val textView: TextView = root.findViewById(R.id.text_gallery)
+
+        val textView: TextView = view.findViewById(R.id.text_gallery)
         scanViewModel.text.observe(this, Observer {
             textView.text = it
         })
@@ -54,7 +77,7 @@ class ScanFragment : Fragment() {
         mainViewModel.scanData.observe(this, Observer {
             it?.run {
                 textView.setText("ID: $this")
-
+                val id = this
                 api.getAsset(this).enqueue(object: Callback<Asset> {
                     override fun onFailure(call: Call<Asset>?, t: Throwable?) {
                         Toast.makeText(requireContext(), "Can't request: $t",Toast.LENGTH_LONG).show()
@@ -62,13 +85,12 @@ class ScanFragment : Fragment() {
 
                     override fun onResponse(call: Call<Asset>?, response: Response<Asset>?) {
                         response?.run {
-                            Log.d(this@ScanFragment::class.java.name,"Code: ${this.code()}")
-                            Log.d(this@ScanFragment::class.java.name,"Error: ${this.errorBody()}")
-                            Log.d(this@ScanFragment::class.java.name,"Response: ${this.body()}")
-                            if(this.isSuccessful) {
-                                viewAdapter.append(this.body())
+                            if(this.isSuccessful && this.body().id == id) {
+                                viewAdapter.prepend(this.body())
+                            } else {
+                                Toast.makeText(requireContext(),R.string.invalid_scan_id,Toast.LENGTH_SHORT).show()
                             }
-                        }
+                        } ?: Utils.logResponseVerbose(this@ScanFragment::class.java,response)
                     }
 
                 })
@@ -76,16 +98,12 @@ class ScanFragment : Fragment() {
             } ?: textView.setText("No code")
         })
 
-
-
         viewManager = LinearLayoutManager(context)
         viewAdapter = ScanViewAdapter(ArrayList())
 
-        recyclerView = root.findViewById<RecyclerView>(R.id.frag_scan_recycler).apply {
+        recyclerView = view.findViewById<RecyclerView>(R.id.frag_scan_recycler).apply {
             layoutManager = viewManager
             adapter = viewAdapter
         }
-
-        return root
     }
 }

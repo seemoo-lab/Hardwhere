@@ -25,6 +25,8 @@
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
     <string name="invalid_asset_code">Invalid QR Code</string>
+    <string name="title_multiedit">Multi-Edit</string>
+    <string name="invalid_scan_id">Invalid ID ? Unable to fetch asset.</string>
 
     <string name="menu_home">Home</string>
     <string name="menu_scan">Multi-Scan</string>
@@ -34,4 +36,8 @@
 
 
     <string name="PLACEHOLDER">PLACEHOLDER</string>
+    <string name="failure_userinfo">Unable to retrieve user data!</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

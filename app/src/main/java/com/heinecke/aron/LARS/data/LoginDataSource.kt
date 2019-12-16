@@ -18,6 +18,8 @@ private const val API_KEY_USERNAME = "name"
 class LoginDataSource {
     private val client = OkHttpClient();
 
+    //TODO: make async
+
     fun login(data: LoginData, liveData: MutableLiveData<Result<LoggedInUserView>>) {
         val request = Utils.buildAPI(data.apiBackend,"users/${data.userID}",data.apiToken).build()
         client.newCall(request).enqueue(object : Callback {
@@ -31,7 +33,6 @@ class LoginDataSource {
                     val code = response.code
                     Log.d(this::class.java.name,"response: $response")
                     val res: Result<LoggedInUserView> = if (code == 200) {
-                        // TODO: evaluate streaming
                         val bodyString = it!!.string()
                         val answer = JsonParser.parseString(bodyString)
                         if (answer.isJsonObject) {

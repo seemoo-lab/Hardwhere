@@ -14,12 +14,20 @@
     <fragment
         android:id="@+id/nav_scan"
         android:name="com.heinecke.aron.LARS.ui.scan.ScanFragment"
-        android:label="@string/menu_scan" />
+        android:label="@string/menu_scan" >
+        <action
+            android:id="@+id/action_nav_scan_to_editorFragment"
+            app:destination="@id/editorFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_tools"
         android:name="com.heinecke.aron.LARS.ui.tools.ToolsFragment"
         android:label="@string/menu_tools"
         tools:layout="@layout/fragment_tools" />
+    <fragment
+        android:id="@+id/editorFragment"
+        android:name="com.heinecke.aron.LARS.ui.editor.EditorFragment"
+        android:label="EditorFragment" />
 
 </navigation>
