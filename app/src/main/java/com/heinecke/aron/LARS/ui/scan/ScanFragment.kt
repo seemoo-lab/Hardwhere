@@ -58,7 +58,6 @@ class ScanFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-//        super.onViewCreated(view, savedInstanceState)
         scanViewModel =
             ViewModelProviders.of(this).get(ScanViewModel::class.java)
 
@@ -76,10 +75,11 @@ class ScanFragment : Fragment() {
 
         mainViewModel.scanData.observe(this, Observer {
             it?.run {
-                textView.setText("ID: $this")
+                textView.setText("Last ID: $this")
                 val id = this
                 api.getAsset(this).enqueue(object: Callback<Asset> {
                     override fun onFailure(call: Call<Asset>?, t: Throwable?) {
+                        Log.e(this::class.java.name,"Error resolving $id: $t")
                         Toast.makeText(requireContext(), "Can't request: $t",Toast.LENGTH_LONG).show()
                     }
 
@@ -95,7 +95,7 @@ class ScanFragment : Fragment() {
 
                 })
 
-            } ?: textView.setText("No code")
+            } ?: textView.setText("No ID")
         })
 
         viewManager = LinearLayoutManager(context)

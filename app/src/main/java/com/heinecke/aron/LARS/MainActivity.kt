@@ -30,7 +30,7 @@ import com.heinecke.aron.LARS.data.model.Asset
 import com.heinecke.aron.LARS.data.model.User
 import com.heinecke.aron.LARS.data.model.UserData
 import com.heinecke.aron.LARS.ui.login.LoginActivity
-import kotlinx.android.synthetic.main.recycler_layout_assets.*
+import kotlinx.android.synthetic.main.fragment_scan_list.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

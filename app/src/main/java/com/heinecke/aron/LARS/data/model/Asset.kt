@@ -1,8 +1,8 @@
 package com.heinecke.aron.LARS.data.model
 
 data class Asset(var model: Model?, var category: Category?, var manufacturer: Manufacturer?,
-                 var location: Location?, var default_location: Location?, var updated_at: String?, var created_at: String?,
-                 var available_actions: Actions,
-
-                 val id: Int = -1,
-                 val name: String)
+                 var rtd_location: Location?, var updated_at: Date?,
+                 var date_at: Date?, var available_actions: Actions?,
+                 /** note that an invalid deserialization results in id = 0 **/
+                 val id: Int = 0,
+                 val name: String, val notes: String)

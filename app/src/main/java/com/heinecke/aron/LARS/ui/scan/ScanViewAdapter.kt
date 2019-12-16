@@ -8,7 +8,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.heinecke.aron.LARS.R
 import com.heinecke.aron.LARS.data.model.Asset
-import org.w3c.dom.Text
 
 class ScanViewAdapter(private val assetList: ArrayList<Asset>) : RecyclerView.Adapter<ScanViewAdapter.ViewHolder>() {
 
@@ -22,7 +21,7 @@ class ScanViewAdapter(private val assetList: ArrayList<Asset>) : RecyclerView.Ad
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         // create view holder to hold reference
-        return ViewHolder( LayoutInflater.from(parent.context).inflate(R.layout.recycler_layout_assets, parent, false))
+        return ViewHolder( LayoutInflater.from(parent.context).inflate(R.layout.fragment_scan_list, parent, false))
     }
 
     @SuppressLint("SetTextI18n")
@@ -30,8 +29,8 @@ class ScanViewAdapter(private val assetList: ArrayList<Asset>) : RecyclerView.Ad
         //set values
         val asset = assetList[position]
         holder.modelName.text =  asset.model?.name ?: "<no model>"
-        holder.assetID.text = Integer.toString(asset.id)
-        holder.locationName.text = asset.location?.name ?: "<no location>"
+        holder.assetID.text = asset.id.toString()
+        holder.locationName.text = asset.rtd_location?.name ?: "<no location>"
     }
 
     override fun getItemCount(): Int {
