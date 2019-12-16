@@ -24,6 +24,10 @@ class ScanViewAdapter(private val assetList: ArrayList<Asset>) : RecyclerView.Ad
         return ViewHolder( LayoutInflater.from(parent.context).inflate(R.layout.fragment_scan_list, parent, false))
     }
 
+    fun getItemAt(id: Int) : Asset {
+        return assetList[id]
+    }
+
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         //set values

@@ -1,3 +1,6 @@
 package com.heinecke.aron.LARS.data.model
 
-data class Model (val name: String, val id: Int)
+import kotlinx.android.parcel.Parcelize
+
+@Parcelize
+data class Model (override val name: String, override val id: Int) : Selectable

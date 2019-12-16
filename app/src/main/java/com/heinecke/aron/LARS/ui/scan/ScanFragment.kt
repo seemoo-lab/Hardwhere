@@ -20,6 +20,7 @@ import com.heinecke.aron.LARS.data.APIClient
 import com.heinecke.aron.LARS.data.APIInterface
 import com.heinecke.aron.LARS.data.model.Asset
 import com.heinecke.aron.LARS.ui.editor.EditorFragment
+import com.heinecke.aron.LARS.ui.editor.EditorViewModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -31,6 +32,7 @@ class ScanFragment : Fragment() {
     private lateinit var viewAdapter: ScanViewAdapter
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var mainViewModel: MainViewModel
+    private lateinit var editorViewModel: EditorViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,7 +52,14 @@ class ScanFragment : Fragment() {
         return when (item.itemId) {
             R.id.edit -> {
                 Log.d(this::class.java.name,"starting editor")
-                findNavController().navigate(R.id.editorFragment)
+                // use empty item otherwise
+                val asset = if (viewAdapter.itemCount == 1) {
+                    viewAdapter.getItemAt(0)
+                } else {
+                    Asset.getEmptyAsset(true)
+                }
+                val (id,args) = EditorFragment.newInstancePair(asset)
+                findNavController().navigate(id,args)
                 true
             }
             else -> false
@@ -58,8 +67,11 @@ class ScanFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         scanViewModel =
-            ViewModelProviders.of(this).get(ScanViewModel::class.java)
+            ViewModelProviders.of(this)[ScanViewModel::class.java]
+        editorViewModel =
+            ViewModelProviders.of(requireActivity())[EditorViewModel::class.java]
 
         val textView: TextView = view.findViewById(R.id.text_gallery)
         scanViewModel.text.observe(this, Observer {
@@ -105,5 +117,7 @@ class ScanFragment : Fragment() {
             layoutManager = viewManager
             adapter = viewAdapter
         }
+
+        viewAdapter.notifyDataSetChanged()
     }
 }

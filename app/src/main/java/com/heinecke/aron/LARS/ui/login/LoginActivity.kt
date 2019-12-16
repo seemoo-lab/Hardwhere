@@ -26,10 +26,7 @@ import com.heinecke.aron.LARS.data.model.LoginData
 
 
 class LoginActivity : AppCompatActivity() {
-
     private lateinit var loginViewModel: LoginViewModel
-
-
 
     @SuppressLint("ApplySharedPref")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,7 +41,7 @@ class LoginActivity : AppCompatActivity() {
         val loading = findViewById<ProgressBar>(R.id.loading)
         val scanLogin = findViewById<Button>(R.id.scanLogin)
 
-        loginViewModel = ViewModelProviders.of(this).get(LoginViewModel::class.java)
+        loginViewModel = ViewModelProviders.of(this)[LoginViewModel::class.java]
 
         loginViewModel.loginFormState.observe(this@LoginActivity, Observer {
             val loginState = it ?: return@Observer

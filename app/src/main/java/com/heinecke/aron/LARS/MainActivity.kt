@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity() {
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-        mainViewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
+        mainViewModel = ViewModelProviders.of(this)[MainViewModel::class.java]
 
         val fab: FloatingActionButton = findViewById(R.id.fab)
         fab.setOnClickListener { view ->
@@ -169,11 +169,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (supportFragmentManager.backStackEntryCount > 0 ){
-            supportFragmentManager.popBackStack();
-        } else {
-            super.onBackPressed();
-        }
+        val navController = findNavController(R.id.nav_host_fragment)
+        navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
     override fun onSupportNavigateUp(): Boolean {

@@ -28,6 +28,23 @@
     <fragment
         android:id="@+id/editorFragment"
         android:name="com.heinecke.aron.LARS.ui.editor.EditorFragment"
-        android:label="EditorFragment" />
+        android:label="EditorFragment" >
+        <action
+            android:id="@+id/action_editorFragment_to_selectorFragment"
+            app:destination="@id/selector_fragment"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_editorFragment_to_nav_scan"
+            app:destination="@id/nav_scan" />
+    </fragment>
+    <fragment
+        android:id="@+id/selector_fragment"
+        android:name="com.heinecke.aron.LARS.ui.editor.SelectorFragment"
+        android:label="fragment_selector_list"
+        tools:layout="@layout/fragment_selector_list" >
+        <action
+            android:id="@+id/action_selectorFragment_to_editorFragment"
+            app:destination="@id/editorFragment" />
+    </fragment>
 
 </navigation>
