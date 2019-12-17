@@ -51,9 +51,10 @@ public class EditorFragment : Fragment() {
             findNavController().navigate(id, args)
         }
 
-        selectorViewModel = ViewModelProviders.of(this)[SelectorViewModel::class.java]
+        selectorViewModel = ViewModelProviders.of(requireActivity())[SelectorViewModel::class.java]
 
-        selectorViewModel.selected.observe(this, Observer {
+        selectorViewModel.selected.observe(viewLifecycleOwner, Observer {
+            Log.d(this@EditorFragment::class.java.name,"Selected: $it")
             it?.run {
                 val currentVal = editorViewModel.asset.value!!
                 when (it.inputID) {
@@ -66,7 +67,7 @@ public class EditorFragment : Fragment() {
             }
         })
 
-        editorViewModel.asset.observe(this, Observer { it ->
+        editorViewModel.asset.observe(viewLifecycleOwner, Observer { it ->
             it?.run {
                 location.setText(this.rtd_location?.name ?: "")
             }

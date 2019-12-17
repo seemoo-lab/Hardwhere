@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.heinecke.aron.LARS.MainViewModel
@@ -43,12 +44,32 @@ class SelectorFragment : Fragment(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProviders.of(requireParentFragment())[SelectorViewModel::class.java]
         arguments?.let {
             selectable = it.getParcelable(ARG_SELECTABLE)
             returnCode = it.getInt(ARG_RETURN_CODE)
             selectType = it.getParcelable(ARG_TYPE)!!
         }
+        mainModel = ViewModelProviders.of(requireActivity())[MainViewModel::class.java]
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        adapter = SelectorRecyclerViewAdapter(this@SelectorFragment)
+        if (view is RecyclerView) {
+            with(view) {
+                layoutManager = LinearLayoutManager(context)
+                adapter = this@SelectorFragment.adapter
+            }
+        }
+        viewModel = ViewModelProviders.of(requireActivity())[SelectorViewModel::class.java]
+        viewModel.searchString.observe(viewLifecycleOwner, Observer {
+            val api = getAPI()
+            if (it != null && it.isNotBlank()) {
+                api.searchSelectable(selectType.getTypeName(),it).enqueue(SearchResultCallback(requireContext(),selectType,adapter))
+            } else {
+                api.getSelectablePage(selectType.getTypeName(),50,0).enqueue(SearchResultCallback(requireContext(),selectType,adapter))
+            }
+        })
     }
 
     override fun onCreateView(
@@ -58,13 +79,6 @@ class SelectorFragment : Fragment(),
         val view = inflater.inflate(R.layout.fragment_selector_list, container, false)
         setHasOptionsMenu(true)
         // Set the adapter
-        adapter = SelectorRecyclerViewAdapter(this@SelectorFragment)
-        if (view is RecyclerView) {
-            with(view) {
-                layoutManager = LinearLayoutManager(context)
-                adapter = this@SelectorFragment.adapter
-            }
-        }
         return view
     }
 
@@ -75,20 +89,6 @@ class SelectorFragment : Fragment(),
             api = client.create(APIInterface::class.java)
         }
         return api!!
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        mainModel = ViewModelProviders.of(requireActivity())[MainViewModel::class.java]
-
-        viewModel.searchString.observe(this, Observer {
-            val api = getAPI()
-            if (it != null && it.isNotBlank()) {
-                api.searchSelectable(selectType.getTypeName(),it).enqueue(SearchResultCallback(requireContext(),selectType,adapter))
-            } else {
-                api.getSelectablePage(selectType.getTypeName(),50,0).enqueue(SearchResultCallback(requireContext(),selectType,adapter))
-            }
-        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -132,7 +132,9 @@ class SelectorFragment : Fragment(),
     }
 
     override fun onListFragmentInteraction(item: Selectable) {
+        Log.d(this@SelectorFragment::class.java.name,"Selected: $item")
         viewModel.setSelected(SelectorData(item, returnCode))
+        findNavController().popBackStack()
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
