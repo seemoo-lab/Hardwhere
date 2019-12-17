@@ -17,92 +17,55 @@ interface Selectable : Parcelable {
     @Parcelize
     enum class SelectableType : Parcelable {
         Model {
-            override fun getSelectable(id: Int, client: APIInterface): Call<JsonElement> {
-                return client.getSelectable("models", id)
-            }
-
-            override fun searchSelectable(
-                query: String,
-                client: APIInterface
-            ): Call<SearchResults> {
-                return client.searchSelectable("models", query)
-            }
-
             override fun parseElement(input: JsonElement): Selectable {
                 return Gson().fromJson<Selectable.Model>(input, Selectable.Model::class.java)
             }
+
+            override fun getTypeName(): String {
+                return "models"
+            }
         },
         User {
-            override fun getSelectable(id: Int, client: APIInterface): Call<JsonElement> {
-                return client.getSelectable("user", id)
-            }
-
-            override fun searchSelectable(
-                query: String,
-                client: APIInterface
-            ): Call<SearchResults> {
-                return client.searchSelectable("user", query)
-            }
-
             override fun parseElement(input: JsonElement): Selectable {
                 return Gson().fromJson<Selectable.User>(input, Selectable.User::class.java)
             }
+
+            override fun getTypeName(): String {
+                return "users"
+            }
         },
-        //        Date,
         Manufacturer {
-            override fun getSelectable(id: Int, client: APIInterface): Call<JsonElement> {
-                return client.getSelectable("manufacturers", id)
-            }
-
-            override fun searchSelectable(
-                query: String,
-                client: APIInterface
-            ): Call<SearchResults> {
-                return client.searchSelectable("manufacturers", query)
-            }
-
             override fun parseElement(input: JsonElement): Selectable {
                 return Gson().fromJson<Selectable.Manufacturer>(
                     input,
                     Selectable.Manufacturer::class.java
                 )
             }
+
+            override fun getTypeName(): String {
+                return "manufacturers"
+            }
         },
         Location {
-            override fun getSelectable(id: Int, client: APIInterface): Call<JsonElement> {
-                return client.getSelectable("locations", id)
-            }
-
-            override fun searchSelectable(
-                query: String,
-                client: APIInterface
-            ): Call<SearchResults> {
-                return client.searchSelectable("locations", query)
-            }
-
             override fun parseElement(input: JsonElement): Selectable {
                 return Gson().fromJson<Selectable.Location>(input, Selectable.Location::class.java)
             }
+
+            override fun getTypeName(): String {
+                return "locations"
+            }
         },
         Category {
-            override fun getSelectable(id: Int, client: APIInterface): Call<JsonElement> {
-                return client.getSelectable("categories", id)
-            }
-
-            override fun searchSelectable(
-                query: String,
-                client: APIInterface
-            ): Call<SearchResults> {
-                return client.searchSelectable("categories", query)
-            }
-
             override fun parseElement(input: JsonElement): Selectable {
                 return Gson().fromJson<Selectable.Category>(input, Selectable.Category::class.java)
             }
+
+            override fun getTypeName(): String {
+                return "categories"
+            }
         };
 
-        abstract fun getSelectable(id: Int, client: APIInterface): Call<JsonElement>
-        abstract fun searchSelectable(query: String, client: APIInterface): Call<SearchResults>
+        abstract fun getTypeName() : String
         abstract fun parseElement(input: JsonElement): Selectable
     }
 
@@ -111,9 +74,6 @@ interface Selectable : Parcelable {
 
     @Parcelize
     data class User(override var name: String, var email: String, override var id: Int) : Selectable
-
-    @Parcelize
-    data class Date(val datetime: String, val formatted: String) : Parcelable
 
     @Parcelize
     data class Manufacturer(override val id: Int, override val name: String) : Selectable

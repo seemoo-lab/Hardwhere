@@ -90,7 +90,7 @@ class SelectorFragment : Fragment(),
         (menu.findItem(R.id.app_bar_search).actionView as SearchView).apply {
             // Assumes current activity is the searchable activity
             setOnQueryTextListener(this@SelectorFragment)
-            setIconifiedByDefault(false) // Do not iconify the widget; expand it by default
+//            setIconifiedByDefault(false) // Do not iconify the widget; expand it by default
         }
 
     }
@@ -137,7 +137,7 @@ class SelectorFragment : Fragment(),
     override fun onQueryTextChange(newText: String?): Boolean {
         val api = getAPI()
         if (newText != null && newText.isNotEmpty()) {
-            selectType.searchSelectable(newText, api).enqueue(object : Callback<SearchResults> {
+            api.searchSelectable(selectType.getTypeName(),newText).enqueue(object : Callback<SearchResults> {
                 override fun onFailure(call: Call<SearchResults>?, t: Throwable?) {
                     Log.w(this@SelectorFragment::class.java.name, "$t")
                 }
