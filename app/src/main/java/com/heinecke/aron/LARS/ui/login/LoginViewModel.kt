@@ -32,7 +32,10 @@ class LoginViewModel : ViewModel() {
                     is UnknownHostException -> LoginResult(error = R.string.error_unknown_host)
                     is InvalidUserIDException -> LoginResult(error = R.string.invalid_user_id)
                     else -> { // TODO: when throw invalid_connection ?
-                        LoginResult(error = R.string.invalid_api_endpoint, errorDetail = res.exception)
+                        LoginResult(
+                            error = R.string.invalid_api_endpoint,
+                            errorDetail = res.exception
+                        )
                     }
                 }
             }
@@ -41,7 +44,7 @@ class LoginViewModel : ViewModel() {
 
     fun login(apiToken: String, endpoint: String, userID: Int) {
         // can be launched in a separate asynchronous job
-        LoginDataSource().login(LoginData(userID,apiToken, endpoint), backgroundResult)
+        LoginDataSource().login(LoginData(userID, apiToken, endpoint), backgroundResult)
     }
 
     fun loginDataChanged(endpoint: String, apiToken: String, userID: String) {

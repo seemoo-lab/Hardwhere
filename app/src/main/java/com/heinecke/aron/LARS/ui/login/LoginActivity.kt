@@ -67,13 +67,13 @@ class LoginActivity : AppCompatActivity() {
 
             loading.visibility = View.GONE
             if (loginResult.error != null) {
-                showLoginFailed(loginResult.error,loginResult.errorDetail)
+                showLoginFailed(loginResult.error, loginResult.errorDetail)
             }
             if (loginResult.success != null) {
                 updateUiWithUser(loginResult.success)
 
                 val prefs = getSharedPreferences(Utils.PREFS_APP, 0).edit()
-                prefs.putBoolean(Utils.PREFS_KEY_FIRST_RUN,false)
+                prefs.putBoolean(Utils.PREFS_KEY_FIRST_RUN, false)
                 val data = loginResult.success.data
                 prefs.putInt(Utils.PREFS_KEY_UID, data.userID)
                 prefs.putString(Utils.PREFS_KEY_BACKEND, data.apiBackend)
@@ -101,7 +101,11 @@ class LoginActivity : AppCompatActivity() {
 
         login.setOnClickListener {
             loading.visibility = View.VISIBLE
-            loginViewModel.login(apiToken.text.toString(),apiEndpoint.text.toString(),Integer.parseInt(userID.text.toString()))
+            loginViewModel.login(
+                apiToken.text.toString(),
+                apiEndpoint.text.toString(),
+                Integer.parseInt(userID.text.toString())
+            )
         }
 
         apiEndpoint.apply {
@@ -117,9 +121,9 @@ class LoginActivity : AppCompatActivity() {
         apiToken.apply {
             afterTextChanged {
                 loginViewModel.loginDataChanged(
-                        apiEndpoint.text.toString(),
-                        apiToken.text.toString(),
-                        userID.text.toString()
+                    apiEndpoint.text.toString(),
+                    apiToken.text.toString(),
+                    userID.text.toString()
                 )
             }
         }
@@ -136,7 +140,11 @@ class LoginActivity : AppCompatActivity() {
             setOnEditorActionListener { _, actionId, _ ->
                 when (actionId) {
                     EditorInfo.IME_ACTION_DONE ->
-                        loginViewModel.login(apiToken.text.toString(),apiEndpoint.text.toString(),Integer.parseInt(userID.text.toString()))
+                        loginViewModel.login(
+                            apiToken.text.toString(),
+                            apiEndpoint.text.toString(),
+                            Integer.parseInt(userID.text.toString())
+                        )
                 }
 
                 false
@@ -154,7 +162,7 @@ class LoginActivity : AppCompatActivity() {
                 val gson = Gson()
                 try {
                     val loginData: LoginData = gson.fromJson(result.contents, LoginData::class.java)
-                    Log.d(this::class.java.name,"Data: ${loginData.apiToken}")
+                    Log.d(this::class.java.name, "Data: ${loginData.apiToken}")
                     val apiToken = findViewById<EditText>(R.id.apiToken)
                     val apiEndpoint = findViewById<EditText>(R.id.apiEndpoint)
                     val userID = findViewById<EditText>(R.id.userID)
@@ -162,8 +170,8 @@ class LoginActivity : AppCompatActivity() {
                     apiEndpoint.setText(loginData.apiBackend)
                     userID.setText(Integer.toString(loginData.userID))
                 } catch (e: JsonSyntaxException) {
-                    Toast.makeText(this,R.string.invalid_login_json, Toast.LENGTH_LONG).show()
-                    Log.d(this::class.java.name,"Can't parse login json",e)
+                    Toast.makeText(this, R.string.invalid_login_json, Toast.LENGTH_LONG).show()
+                    Log.d(this::class.java.name, "Can't parse login json", e)
                 }
 
             }
@@ -177,15 +185,16 @@ class LoginActivity : AppCompatActivity() {
         val displayName = model.displayName
         // TODO : initiate successful logged in experience
         Toast.makeText(
-                applicationContext,
-                "$welcome $displayName",
-                Toast.LENGTH_SHORT
+            applicationContext,
+            "$welcome $displayName",
+            Toast.LENGTH_SHORT
         ).show()
     }
 
     private fun showLoginFailed(@StringRes errorString: Int, details: Exception?) {
         val msg = details ?: "No details."
-        Toast.makeText(applicationContext, "${getString(errorString)} $msg", Toast.LENGTH_LONG).show()
+        Toast.makeText(applicationContext, "${getString(errorString)} $msg", Toast.LENGTH_LONG)
+            .show()
     }
 }
 

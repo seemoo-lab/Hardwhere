@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -24,7 +23,7 @@ public class EditorFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         editorViewModel = ViewModelProviders.of(requireActivity())[EditorViewModel::class.java]
-        if(savedInstanceState == null) {
+        if (savedInstanceState == null) {
             arguments!!.run {
                 editorViewModel.setEditorAsset(this.getParcelable(PARAM_ASSET)!!)
             }
@@ -43,9 +42,13 @@ public class EditorFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         location = view.findViewById(R.id.locationPicker)
         location.setOnClickListener {
-            Log.d(this::class.java.name,"Location clicked")
-            val (id,args) = SelectorFragment.newInstancePair(editorViewModel.asset.value!!.rtd_location,R.id.locationName, Selectable.SelectableType.Location)
-            findNavController().navigate(id,args)
+            Log.d(this::class.java.name, "Location clicked")
+            val (id, args) = SelectorFragment.newInstancePair(
+                editorViewModel.asset.value!!.rtd_location,
+                R.id.locationName,
+                Selectable.SelectableType.Location
+            )
+            findNavController().navigate(id, args)
         }
 
         selectorViewModel = ViewModelProviders.of(this)[SelectorViewModel::class.java]
@@ -55,7 +58,10 @@ public class EditorFragment : Fragment() {
                 val currentVal = editorViewModel.asset.value!!
                 when (it.inputID) {
                     R.id.locationName -> currentVal.rtd_location = it.item as Selectable.Location
-                    else -> Log.w(this@EditorFragment::class.java.name,"Unknown inputID for selector update")
+                    else -> Log.w(
+                        this@EditorFragment::class.java.name,
+                        "Unknown inputID for selector update"
+                    )
                 }
             }
         })
@@ -71,10 +77,11 @@ public class EditorFragment : Fragment() {
         /**
          * Returns a new instance pair to use on a NavController
          */
-        @JvmStatic fun newInstancePair(asset: Asset): Pair<Int,Bundle>{
+        @JvmStatic
+        fun newInstancePair(asset: Asset): Pair<Int, Bundle> {
             val args = Bundle()
             args.putParcelable(PARAM_ASSET, asset)
-            return Pair(R.id.editorFragment,args)
+            return Pair(R.id.editorFragment, args)
         }
 
         private const val PARAM_ASSET = "asset"

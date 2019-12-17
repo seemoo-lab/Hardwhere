@@ -17,8 +17,8 @@ interface APIInterface {
     fun getUserInfo(@Path("id") id: Int): Call<Selectable.User>
 
     @GET("api/v1/{type}")
-    fun searchSelectable(@Path("type") type: String, @Query("search") searchQuery: String) : Call<SearchResults>
+    fun searchSelectable(@Path("type") type: String, @Query("search") searchQuery: String): Call<SearchResults>
 
     @GET("api/v1/{type}/{id}")
-    fun getSelectable(@Path("type") type: String, @Path("id") id: Int) : Call<JsonElement>
+    fun getSelectable(@Path("type") type: String, @Path("id") id: Int): Call<JsonElement>
 }

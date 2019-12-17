@@ -67,7 +67,7 @@ class SelectorFragment : Fragment(),
         return view
     }
 
-    private fun getAPI() : APIInterface {
+    private fun getAPI(): APIInterface {
         if (api == null) {
             val loginData = mainModel.getLoginData(requireContext())
             val client = APIClient.getClient(loginData.apiBackend, loginData.apiToken)
@@ -86,7 +86,7 @@ class SelectorFragment : Fragment(),
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.select,menu)
+        inflater.inflate(R.menu.select, menu)
         (menu.findItem(R.id.app_bar_search).actionView as SearchView).apply {
             // Assumes current activity is the searchable activity
             setOnQueryTextListener(this@SelectorFragment)
@@ -99,7 +99,8 @@ class SelectorFragment : Fragment(),
         /** Item that is selected **/
         val item: Selectable,
         /** InputID that got passed, can be used by caller for input identification **/
-        val inputID: Int)
+        val inputID: Int
+    )
 
     companion object {
         const val ARG_SELECTABLE = "selectable"
@@ -110,18 +111,22 @@ class SelectorFragment : Fragment(),
          * Get new pair of fragment id,args for spawn on NavController
          */
         @JvmStatic
-        fun newInstancePair(selectable: Selectable?, returnCode: Int, type: Selectable.SelectableType) : Pair<Int,Bundle> {
+        fun newInstancePair(
+            selectable: Selectable?,
+            returnCode: Int,
+            type: Selectable.SelectableType
+        ): Pair<Int, Bundle> {
             val args = Bundle().apply {
-                putParcelable(ARG_SELECTABLE,selectable)
-                putInt(ARG_RETURN_CODE,returnCode)
+                putParcelable(ARG_SELECTABLE, selectable)
+                putInt(ARG_RETURN_CODE, returnCode)
                 putParcelable(ARG_TYPE, type)
             }
-            return Pair(R.id.selector_fragment,args)
+            return Pair(R.id.selector_fragment, args)
         }
     }
 
     override fun onListFragmentInteraction(item: Selectable) {
-        viewModel.setSelected(SelectorData(item,returnCode))
+        viewModel.setSelected(SelectorData(item, returnCode))
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
@@ -131,26 +136,34 @@ class SelectorFragment : Fragment(),
 
     override fun onQueryTextChange(newText: String?): Boolean {
         val api = getAPI()
-        if(newText != null && newText.isNotEmpty()) {
-            selectType.searchSelectable(newText,api).enqueue(object: Callback<SearchResults> {
+        if (newText != null && newText.isNotEmpty()) {
+            selectType.searchSelectable(newText, api).enqueue(object : Callback<SearchResults> {
                 override fun onFailure(call: Call<SearchResults>?, t: Throwable?) {
-                    Log.w(this@SelectorFragment::class.java.name,"$t")
+                    Log.w(this@SelectorFragment::class.java.name, "$t")
                 }
 
-                override fun onResponse(call: Call<SearchResults>?, response: Response<SearchResults>?) {
+                override fun onResponse(
+                    call: Call<SearchResults>?,
+                    response: Response<SearchResults>?
+                ) {
                     response?.run {
-                        val elements = this.body().rows.map { elem -> selectType.parseElement(elem) }
-                        if(this.isSuccessful) {
-                            Log.d(this@SelectorFragment::class.java.name,"Body: $elements")
+                        val elements =
+                            this.body().rows.map { elem -> selectType.parseElement(elem) }
+                        if (this.isSuccessful) {
+                            Log.d(this@SelectorFragment::class.java.name, "Body: $elements")
                             adapter.replaceElements(elements)
                         } else {
-                            Toast.makeText(requireContext(),"Unable to fetch results", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                requireContext(),
+                                "Unable to fetch results",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
-                    } ?: Utils.logResponseVerbose(this@SelectorFragment::class.java,response)
+                    } ?: Utils.logResponseVerbose(this@SelectorFragment::class.java, response)
                 }
             })
         } else {
-            Log.d(this@SelectorFragment::class.java.name,"Null search text or empty")
+            Log.d(this@SelectorFragment::class.java.name, "Null search text or empty")
             //TODO
         }
         return true

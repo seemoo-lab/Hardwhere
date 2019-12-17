@@ -1,10 +1,8 @@
 package com.heinecke.aron.LARS.ui.scan
 
 import android.os.Bundle
-import android.speech.RecognitionListener
 import android.util.Log
 import android.view.*
-import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -44,22 +42,22 @@ class ScanFragment : Fragment() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.scan,menu)
+        inflater.inflate(R.menu.scan, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        Log.d(this::class.java.name,"onOptionsItemSelected")
+        Log.d(this::class.java.name, "onOptionsItemSelected")
         return when (item.itemId) {
             R.id.edit -> {
-                Log.d(this::class.java.name,"starting editor")
+                Log.d(this::class.java.name, "starting editor")
                 // use empty item otherwise
                 val asset = if (viewAdapter.itemCount == 1) {
                     viewAdapter.getItemAt(0)
                 } else {
                     Asset.getEmptyAsset(true)
                 }
-                val (id,args) = EditorFragment.newInstancePair(asset)
-                findNavController().navigate(id,args)
+                val (id, args) = EditorFragment.newInstancePair(asset)
+                findNavController().navigate(id, args)
                 true
             }
             else -> false
@@ -82,27 +80,32 @@ class ScanFragment : Fragment() {
         } ?: throw Exception("Invalid Activity")
 
         val loginData = mainViewModel.getLoginData(requireContext())
-        val client = APIClient.getClient(loginData.apiBackend,loginData.apiToken)
+        val client = APIClient.getClient(loginData.apiBackend, loginData.apiToken)
         val api = client.create(APIInterface::class.java)
 
         mainViewModel.scanData.observe(this, Observer {
             it?.run {
                 textView.setText("Last ID: $this")
                 val id = this
-                api.getAsset(this).enqueue(object: Callback<Asset> {
+                api.getAsset(this).enqueue(object : Callback<Asset> {
                     override fun onFailure(call: Call<Asset>?, t: Throwable?) {
-                        Log.e(this::class.java.name,"Error resolving $id: $t")
-                        Toast.makeText(requireContext(), "Can't request: $t",Toast.LENGTH_LONG).show()
+                        Log.e(this::class.java.name, "Error resolving $id: $t")
+                        Toast.makeText(requireContext(), "Can't request: $t", Toast.LENGTH_LONG)
+                            .show()
                     }
 
                     override fun onResponse(call: Call<Asset>?, response: Response<Asset>?) {
                         response?.run {
-                            if(this.isSuccessful && this.body().id == id) {
+                            if (this.isSuccessful && this.body().id == id) {
                                 viewAdapter.prepend(this.body())
                             } else {
-                                Toast.makeText(requireContext(),R.string.invalid_scan_id,Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    requireContext(),
+                                    R.string.invalid_scan_id,
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
-                        } ?: Utils.logResponseVerbose(this@ScanFragment::class.java,response)
+                        } ?: Utils.logResponseVerbose(this@ScanFragment::class.java, response)
                     }
 
                 })

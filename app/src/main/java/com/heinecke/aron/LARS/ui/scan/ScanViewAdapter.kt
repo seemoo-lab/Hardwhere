@@ -9,7 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.heinecke.aron.LARS.R
 import com.heinecke.aron.LARS.data.model.Asset
 
-class ScanViewAdapter(private val assetList: ArrayList<Asset>) : RecyclerView.Adapter<ScanViewAdapter.ViewHolder>() {
+class ScanViewAdapter(private val assetList: ArrayList<Asset>) :
+    RecyclerView.Adapter<ScanViewAdapter.ViewHolder>() {
 
     // holder class to hold reference
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -21,10 +22,16 @@ class ScanViewAdapter(private val assetList: ArrayList<Asset>) : RecyclerView.Ad
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         // create view holder to hold reference
-        return ViewHolder( LayoutInflater.from(parent.context).inflate(R.layout.fragment_scan_list, parent, false))
+        return ViewHolder(
+            LayoutInflater.from(parent.context).inflate(
+                R.layout.fragment_scan_list,
+                parent,
+                false
+            )
+        )
     }
 
-    fun getItemAt(id: Int) : Asset {
+    fun getItemAt(id: Int): Asset {
         return assetList[id]
     }
 
@@ -32,7 +39,7 @@ class ScanViewAdapter(private val assetList: ArrayList<Asset>) : RecyclerView.Ad
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         //set values
         val asset = assetList[position]
-        holder.modelName.text =  asset.model?.name ?: "<no model>"
+        holder.modelName.text = asset.model?.name ?: "<no model>"
         holder.assetID.text = asset.id.toString()
         holder.locationName.text = asset.rtd_location?.name ?: "<no location>"
     }
@@ -40,6 +47,7 @@ class ScanViewAdapter(private val assetList: ArrayList<Asset>) : RecyclerView.Ad
     override fun getItemCount(): Int {
         return assetList.size
     }
+
     // update your data
     fun updateData(scanResult: ArrayList<Asset>) {
         assetList.clear()
@@ -47,9 +55,10 @@ class ScanViewAdapter(private val assetList: ArrayList<Asset>) : RecyclerView.Ad
         assetList.addAll(scanResult)
         notifyDataSetChanged()
     }
+
     // prepend data to start
     fun prepend(item: Asset) {
-        this.assetList.add(0,item)
+        this.assetList.add(0, item)
         this.notifyItemInserted(0)
     }
 }

@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
-import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -26,7 +25,7 @@ import com.heinecke.aron.LARS.Utils.Companion.PREFS_KEY_FIRST_RUN
 import com.heinecke.aron.LARS.Utils.Companion.logResponseVerbose
 import com.heinecke.aron.LARS.data.APIClient
 import com.heinecke.aron.LARS.data.APIInterface
-import com.heinecke.aron.LARS.data.model.Selectable.*
+import com.heinecke.aron.LARS.data.model.Selectable.User
 import com.heinecke.aron.LARS.data.model.UserData
 import com.heinecke.aron.LARS.ui.login.LoginActivity
 import retrofit2.Call
@@ -75,7 +74,7 @@ class MainActivity : AppCompatActivity() {
             if (it.itemId == R.id.nav_logout) {
                 Log.d(this@MainActivity::class.java.name, "logout")
                 val prefs = getSharedPreferences(PREFS_APP, 0).edit()
-                prefs.putBoolean(PREFS_KEY_FIRST_RUN,true)
+                prefs.putBoolean(PREFS_KEY_FIRST_RUN, true)
                 prefs.apply()
                 showLogin()
                 true
@@ -100,26 +99,34 @@ class MainActivity : AppCompatActivity() {
         Log.d(this::class.java.name, "Initialized")
 
         mainViewModel.userData.observe(this, Observer {
-            if (it != null){
+            if (it != null) {
                 Log.d(this::class.java.name, "Has userdata: ${it.email}")
                 navHeader.text = it.name
                 navSubheader.text = it.email
             } else {
                 Log.d(this::class.java.name, "No userdata")
                 val data = mainViewModel.getLoginData(this)
-                val client = APIClient.getClient(data.apiBackend,data.apiToken)
+                val client = APIClient.getClient(data.apiBackend, data.apiToken)
                 val api = client.create(APIInterface::class.java)
-                api.getUserInfo(data.userID).enqueue(object: Callback<User> {
+                api.getUserInfo(data.userID).enqueue(object : Callback<User> {
                     override fun onFailure(call: Call<User>?, t: Throwable?) {
-                        Log.w(this@MainActivity::class.java.name,"Unable to fetch user $t")
-                        Toast.makeText(this@MainActivity,R.string.failure_userinfo,Toast.LENGTH_SHORT).show()
+                        Log.w(this@MainActivity::class.java.name, "Unable to fetch user $t")
+                        Toast.makeText(
+                            this@MainActivity,
+                            R.string.failure_userinfo,
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
 
                     override fun onResponse(call: Call<User>?, response: Response<User>?) {
                         response?.body()?.run {
-                            mainViewModel.userData.value = UserData(this.name,this.email)
-                        } ?: logResponseVerbose(this@MainActivity::class.java,response).also {
-                            Toast.makeText(this@MainActivity,R.string.failure_userinfo,Toast.LENGTH_SHORT).show()
+                            mainViewModel.userData.value = UserData(this.name, this.email)
+                        } ?: logResponseVerbose(this@MainActivity::class.java, response).also {
+                            Toast.makeText(
+                                this@MainActivity,
+                                R.string.failure_userinfo,
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
                 })
@@ -133,11 +140,11 @@ class MainActivity : AppCompatActivity() {
             IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
         if (result != null) {
             if (result.contents != null) {
-                Log.d(this::class.java.name,"Scanned: ${result.contents}")
-                assetPattern.find(result.contents,0)?.groupValues?.run {
-                    this.forEach {item -> Log.d(this::class.java.name,"Item: $item")}
+                Log.d(this::class.java.name, "Scanned: ${result.contents}")
+                assetPattern.find(result.contents, 0)?.groupValues?.run {
+                    this.forEach { item -> Log.d(this::class.java.name, "Item: $item") }
                     mainViewModel.scanData.value = Integer.valueOf(this[1])
-                } ?: Toast.makeText(this,R.string.invalid_asset_code,Toast.LENGTH_LONG).show()
+                } ?: Toast.makeText(this, R.string.invalid_asset_code, Toast.LENGTH_LONG).show()
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data)
@@ -147,7 +154,7 @@ class MainActivity : AppCompatActivity() {
     private fun checkLogin() {
         val prefs = getSharedPreferences(PREFS_APP, 0)
         val firstRun = prefs.getBoolean(PREFS_KEY_FIRST_RUN, true)
-        if(firstRun){
+        if (firstRun) {
             showLogin()
         }
     }
