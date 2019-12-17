@@ -13,7 +13,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import com.heinecke.aron.LARS.R
 import com.heinecke.aron.LARS.data.model.Asset
-import com.heinecke.aron.LARS.data.model.Location
+import com.heinecke.aron.LARS.data.model.Selectable
 
 
 public class EditorFragment : Fragment() {
@@ -44,7 +44,7 @@ public class EditorFragment : Fragment() {
         location = view.findViewById(R.id.locationPicker)
         location.setOnClickListener {
             Log.d(this::class.java.name,"Location clicked")
-            val (id,args) = SelectorFragment.newInstancePair(editorViewModel.asset.value!!.rtd_location,R.id.locationName)
+            val (id,args) = SelectorFragment.newInstancePair(editorViewModel.asset.value!!.rtd_location,R.id.locationName, Selectable.SelectableType.Location)
             findNavController().navigate(id,args)
         }
 
@@ -54,7 +54,7 @@ public class EditorFragment : Fragment() {
             it?.run {
                 val currentVal = editorViewModel.asset.value!!
                 when (it.inputID) {
-                    R.id.locationName -> currentVal.rtd_location = it.item as Location
+                    R.id.locationName -> currentVal.rtd_location = it.item as Selectable.Location
                     else -> Log.w(this@EditorFragment::class.java.name,"Unknown inputID for selector update")
                 }
             }

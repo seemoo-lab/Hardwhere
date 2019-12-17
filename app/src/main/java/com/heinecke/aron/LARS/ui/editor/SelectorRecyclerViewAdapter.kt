@@ -17,10 +17,10 @@ import kotlinx.android.synthetic.main.fragment_selector.view.*
  * specified [OnListFragmentInteractionListener].
  * TODO: Replace the implementation with code for your data type.
  */
-class MySelectorRecyclerViewAdapter(
+class SelectorRecyclerViewAdapter(
     private val mListener: OnListFragmentInteractionListener?,
     private val mValues: MutableList<Selectable> = mutableListOf()
-) : RecyclerView.Adapter<MySelectorRecyclerViewAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<SelectorRecyclerViewAdapter.ViewHolder>() {
 
     private val mOnClickListener: View.OnClickListener
 
@@ -31,6 +31,12 @@ class MySelectorRecyclerViewAdapter(
             // one) that an item has been selected.
             mListener?.onListFragmentInteraction(item)
         }
+    }
+
+    fun replaceElements(newData: List<Selectable>) {
+        this.mValues.clear()
+        this.mValues.addAll(newData)
+        this.notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

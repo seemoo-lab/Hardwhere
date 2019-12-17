@@ -2,6 +2,7 @@ package com.heinecke.aron.LARS.data.model
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
+import com.heinecke.aron.LARS.data.model.Selectable.*
 
 @Parcelize
 data class Asset(var model: Model?, var category: Category?, var manufacturer: Manufacturer?,

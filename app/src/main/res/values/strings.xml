@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">LARS</string>
+    <string name="app_name">L.A.R.S</string>
     <!-- Strings related to login -->
     <string name="prompt_api_endpoint">API Endpoint</string>
     <string name="prompt_api_token">API Token</string>

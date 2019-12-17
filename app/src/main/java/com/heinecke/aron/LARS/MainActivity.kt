@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
-import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -26,11 +25,9 @@ import com.heinecke.aron.LARS.Utils.Companion.PREFS_KEY_FIRST_RUN
 import com.heinecke.aron.LARS.Utils.Companion.logResponseVerbose
 import com.heinecke.aron.LARS.data.APIClient
 import com.heinecke.aron.LARS.data.APIInterface
-import com.heinecke.aron.LARS.data.model.Asset
-import com.heinecke.aron.LARS.data.model.User
+import com.heinecke.aron.LARS.data.model.Selectable.*
 import com.heinecke.aron.LARS.data.model.UserData
 import com.heinecke.aron.LARS.ui.login.LoginActivity
-import kotlinx.android.synthetic.main.fragment_scan_list.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
