@@ -28,6 +28,7 @@
     <string name="title_multiedit">Multi-Edit</string>
     <string name="invalid_scan_id">Invalid ID ? Unable to fetch asset.</string>
     <string name="hint_location">Location</string>
+    <string name="error_fetch_selectable">Can\'t fetch data!</string>
 
     <string name="menu_home">Home</string>
     <string name="menu_scan">Multi-Scan</string>

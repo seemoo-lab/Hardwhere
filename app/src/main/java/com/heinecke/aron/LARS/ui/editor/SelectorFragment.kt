@@ -1,5 +1,6 @@
 package com.heinecke.aron.LARS.ui.editor
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -81,7 +82,12 @@ class SelectorFragment : Fragment(),
         mainModel = ViewModelProviders.of(requireActivity())[MainViewModel::class.java]
 
         viewModel.searchString.observe(this, Observer {
-
+            val api = getAPI()
+            if (it != null && it.isNotBlank()) {
+                api.searchSelectable(selectType.getTypeName(),it).enqueue(SearchResultCallback(requireContext(),selectType,adapter))
+            } else {
+                api.getSelectablePage(selectType.getTypeName(),50,0).enqueue(SearchResultCallback(requireContext(),selectType,adapter))
+            }
         })
     }
 
@@ -130,42 +136,39 @@ class SelectorFragment : Fragment(),
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
-        //TODO
+        viewModel.searchString.value = query
         return false
     }
 
     override fun onQueryTextChange(newText: String?): Boolean {
-        val api = getAPI()
-        if (newText != null && newText.isNotEmpty()) {
-            api.searchSelectable(selectType.getTypeName(),newText).enqueue(object : Callback<SearchResults> {
-                override fun onFailure(call: Call<SearchResults>?, t: Throwable?) {
-                    Log.w(this@SelectorFragment::class.java.name, "$t")
-                }
-
-                override fun onResponse(
-                    call: Call<SearchResults>?,
-                    response: Response<SearchResults>?
-                ) {
-                    response?.run {
-                        val elements =
-                            this.body().rows.map { elem -> selectType.parseElement(elem) }
-                        if (this.isSuccessful) {
-                            Log.d(this@SelectorFragment::class.java.name, "Body: $elements")
-                            adapter.replaceElements(elements)
-                        } else {
-                            Toast.makeText(
-                                requireContext(),
-                                "Unable to fetch results",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    } ?: Utils.logResponseVerbose(this@SelectorFragment::class.java, response)
-                }
-            })
-        } else {
-            Log.d(this@SelectorFragment::class.java.name, "Null search text or empty")
-            //TODO
-        }
+        viewModel.searchString.value = newText
         return true
+    }
+
+    class SearchResultCallback(val context: Context, val selectType: Selectable.SelectableType, val adapter: SelectorRecyclerViewAdapter) : Callback<SearchResults> {
+        override fun onFailure(call: Call<SearchResults>?, t: Throwable?) {
+            Log.w(this::class.java.name, "$t")
+            Toast.makeText(context,R.string.error_fetch_selectable,Toast.LENGTH_SHORT).show()
+        }
+
+        override fun onResponse(
+            call: Call<SearchResults>?,
+            response: Response<SearchResults>?
+        ) {
+            response?.run {
+                val elements =
+                    this.body().rows.map { elem -> selectType.parseElement(elem) }
+                if (this.isSuccessful) {
+                    Log.d(this::class.java.name, "Body: $elements")
+                    adapter.replaceElements(elements)
+                } else {
+                    Toast.makeText(
+                        context,
+                        "Unable to fetch results",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            } ?: Utils.logResponseVerbose(this::class.java, response)
+        }
     }
 }

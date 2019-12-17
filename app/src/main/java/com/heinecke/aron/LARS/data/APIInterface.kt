@@ -23,5 +23,5 @@ interface APIInterface {
     fun getSelectable(@Path("type") type: String, @Path("id") id: Int): Call<JsonElement>
 
     @GET("api/v1/{type}")
-    fun getSelectablePage(@Path("type") type: String, @Query("limit") limit: Int, @Query("offset") offset: Int): Call<JsonElement>
+    fun getSelectablePage(@Path("type") type: String, @Query("limit") limit: Int, @Query("offset") offset: Int): Call<SearchResults>
 }
