@@ -92,7 +92,7 @@ class MainActivity : AppCompatActivity() {
         }
         navController.addOnDestinationChangedListener { controller, destination, arguments ->
             mainViewModel.scanData.value = null
-            fab.visibility = if (destination.id == R.id.nav_scan) View.VISIBLE else View.INVISIBLE
+            if (destination.id == R.id.nav_scan) fab.show() else fab.hide()
         }
 
         val navHeader = findViewById<TextView>(R.id.nav_header)
