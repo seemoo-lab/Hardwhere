@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
+import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -91,8 +92,7 @@ class MainActivity : AppCompatActivity() {
         }
         navController.addOnDestinationChangedListener { controller, destination, arguments ->
             mainViewModel.scanData.value = null
-            Log.d(this::class.java.name,"Dest: $destination")
-            //TODO: don't show scan icon always
+            fab.visibility = if (destination.id == R.id.nav_scan) View.VISIBLE else View.INVISIBLE
         }
 
         val navHeader = findViewById<TextView>(R.id.nav_header)
