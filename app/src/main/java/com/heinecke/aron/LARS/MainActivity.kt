@@ -3,8 +3,10 @@ package com.heinecke.aron.LARS
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.util.Log
 import android.view.Menu
+import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -32,6 +34,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -48,6 +51,10 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         mainViewModel = ViewModelProviders.of(this)[MainViewModel::class.java]
+        savedInstanceState?.run {
+            mainViewModel.userData.value = this.getParcelable(S_USERDATA)
+            mainViewModel.loginData.value = this.getParcelable(S_LOGINDATA)
+        }
 
         val fab: FloatingActionButton = findViewById(R.id.fab)
         fab.setOnClickListener { view ->
@@ -94,15 +101,19 @@ class MainActivity : AppCompatActivity() {
             if (destination.id == R.id.nav_scan) fab.show() else fab.hide()
         }
 
-        val navHeader = findViewById<TextView>(R.id.nav_header)
-        val navSubheader = findViewById<TextView>(R.id.nav_subheader)
         Log.d(this::class.java.name, "Initialized")
+
+        val navigationView = findViewById(R.id.nav_view) as NavigationView
+        val headerView: View = navigationView.getHeaderView(0)
+        val navTitle = headerView.findViewById(R.id.nav_header) as TextView
+        val navSubtitle = headerView.findViewById(R.id.nav_subheader) as TextView
+
 
         mainViewModel.userData.observe(this, Observer {
             if (it != null) {
                 Log.d(this::class.java.name, "Has userdata: ${it.email}")
-                navHeader.text = it.name
-                navSubheader.text = it.email
+                navTitle.text = it.name
+                navSubtitle.text = it.email
             } else {
                 Log.d(this::class.java.name, "No userdata")
                 val data = mainViewModel.getLoginData(this)
@@ -132,6 +143,16 @@ class MainActivity : AppCompatActivity() {
                 })
             }
         })
+    }
+
+
+
+    override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {
+        super.onSaveInstanceState(outState, outPersistentState)
+        outState?.run {
+            putParcelable(S_LOGINDATA,mainViewModel.loginData.value)
+            putParcelable(S_USERDATA,mainViewModel.userData.value)
+        }
     }
 
     @SuppressLint("SetTextI18n")
@@ -180,5 +201,10 @@ class MainActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    }
+
+    companion object {
+        const val S_USERDATA: String = "userdata"
+        const val S_LOGINDATA: String = "logindata"
     }
 }
