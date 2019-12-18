@@ -8,6 +8,7 @@ import com.heinecke.aron.LARS.data.model.Asset
 class EditorViewModel : ViewModel() {
     private val assetMutable: MutableLiveData<Asset> = MutableLiveData()
     internal var asset: LiveData<Asset> = assetMutable
+    val multiEdit: MutableLiveData<Boolean> = MutableLiveData()
 
     fun EditorViewModel() {
         // trigger user load.

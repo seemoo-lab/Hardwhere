@@ -15,8 +15,7 @@ import com.heinecke.aron.LARS.data.model.Asset
 import com.heinecke.aron.LARS.data.model.Selectable
 
 
-public class EditorFragment : Fragment() {
-    lateinit var location: EditText
+class EditorFragment : Fragment() {
     lateinit var editorViewModel: EditorViewModel
     lateinit var selectorViewModel: SelectorViewModel
 
@@ -26,6 +25,7 @@ public class EditorFragment : Fragment() {
         if (savedInstanceState == null) {
             arguments!!.run {
                 editorViewModel.setEditorAsset(this.getParcelable(PARAM_ASSET)!!)
+                editorViewModel.multiEdit.value = this.getBoolean(PARAM_MULTIEDIT)
             }
         }
     }
@@ -40,25 +40,27 @@ public class EditorFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        location = view.findViewById(R.id.locationPicker)
-        location.setOnClickListener {
-            Log.d(this::class.java.name, "Location clicked")
-            val (id, args) = SelectorFragment.newInstancePair(
-                editorViewModel.asset.value!!.rtd_location,
-                R.id.locationName,
-                Selectable.SelectableType.Location
-            )
-            findNavController().navigate(id, args)
-        }
+        val location: EditText = view.findViewById(R.id.locationPicker)
+        val manufacturer: EditText = view.findViewById(R.id.manufacturerPicker)
+        val model: EditText = view.findViewById(R.id.modelPicker)
+        val category: EditText = view.findViewById(R.id.categoryPicker)
+        val comment: EditText = view.findViewById(R.id.commentEditor)
+
+        setupSelectable(location,Selectable.SelectableType.Location, R.id.locationPicker) {editorViewModel.asset.value!!.rtd_location}
+        setupSelectable(manufacturer,Selectable.SelectableType.Manufacturer, R.id.manufacturerPicker) {editorViewModel.asset.value!!.manufacturer}
+        setupSelectable(model,Selectable.SelectableType.Model, R.id.modelPicker) {editorViewModel.asset.value!!.model}
+        setupSelectable(category,Selectable.SelectableType.Category, R.id.categoryPicker) {editorViewModel.asset.value!!.category}
 
         selectorViewModel = ViewModelProviders.of(requireActivity())[SelectorViewModel::class.java]
-
         selectorViewModel.selected.observe(viewLifecycleOwner, Observer {
             Log.d(this@EditorFragment::class.java.name,"Selected: $it")
             it?.run {
                 val currentVal = editorViewModel.asset.value!!
                 when (it.inputID) {
-                    R.id.locationName -> currentVal.rtd_location = it.item as Selectable.Location
+                    R.id.locationPicker -> currentVal.rtd_location = it.item as Selectable.Location
+                    R.id.manufacturerPicker -> currentVal.manufacturer= it.item as Selectable.Manufacturer
+                    R.id.modelPicker -> currentVal.model = it.item as Selectable.Model
+                    R.id.categoryPicker -> currentVal.category= it.item as Selectable.Category
                     else -> Log.w(
                         this@EditorFragment::class.java.name,
                         "Unknown inputID for selector update"
@@ -70,8 +72,25 @@ public class EditorFragment : Fragment() {
         editorViewModel.asset.observe(viewLifecycleOwner, Observer { it ->
             it?.run {
                 location.setText(this.rtd_location?.name ?: "")
+                model.setText(this.model?.name ?: "")
+                manufacturer.setText(this.manufacturer?.name ?: "")
+                category.setText(this.category?.name ?: "")
+                comment.setText(this.notes)
             }
         })
+    }
+
+    private fun <T: Selectable> setupSelectable(et: EditText, type: Selectable.SelectableType,
+                                                returnCode: Int, v: () -> T?) {
+        et.setOnClickListener {
+            Log.d(this::class.java.name, "$type clicked")
+            val (id, args) = SelectorFragment.newInstancePair(
+                v(),
+                returnCode,
+                type
+            )
+            findNavController().navigate(id, args)
+        }
     }
 
     companion object {
@@ -79,12 +98,14 @@ public class EditorFragment : Fragment() {
          * Returns a new instance pair to use on a NavController
          */
         @JvmStatic
-        fun newInstancePair(asset: Asset): Pair<Int, Bundle> {
+        fun newInstancePair(asset: Asset, multiedit: Boolean): Pair<Int, Bundle> {
             val args = Bundle()
             args.putParcelable(PARAM_ASSET, asset)
+            args.putBoolean(PARAM_MULTIEDIT, multiedit)
             return Pair(R.id.editorFragment, args)
         }
 
         private const val PARAM_ASSET = "asset"
+        private const val PARAM_MULTIEDIT = "multiedit"
     }
 }

@@ -26,8 +26,12 @@
     <string name="action_settings">Settings</string>
     <string name="invalid_asset_code">Invalid QR Code</string>
     <string name="title_multiedit">Multi-Edit</string>
+    <string name="title_clear">Clear List</string>
     <string name="invalid_scan_id">Invalid ID ? Unable to fetch asset.</string>
     <string name="hint_location">Location</string>
+    <string name="hint_category">Category</string>
+    <string name="hint_model">Model</string>
+    <string name="hint_manufacturer">Manufacturer</string>
     <string name="error_fetch_selectable">Can\'t fetch data!</string>
 
     <string name="menu_home">Home</string>
@@ -43,4 +47,5 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="search">Search</string>
+    <string name="hint_note">Note</string>
 </resources>

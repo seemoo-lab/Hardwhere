@@ -17,6 +17,7 @@ import com.heinecke.aron.LARS.Utils
 import com.heinecke.aron.LARS.data.APIClient
 import com.heinecke.aron.LARS.data.APIInterface
 import com.heinecke.aron.LARS.data.model.Asset
+import com.heinecke.aron.LARS.data.model.Selectable
 import com.heinecke.aron.LARS.ui.editor.EditorFragment
 import com.heinecke.aron.LARS.ui.editor.EditorViewModel
 import retrofit2.Call
@@ -32,6 +33,17 @@ class ScanFragment : Fragment() {
     private lateinit var mainViewModel: MainViewModel
     private lateinit var editorViewModel: EditorViewModel
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        scanViewModel =
+            ViewModelProviders.of(requireActivity())[ScanViewModel::class.java]
+        editorViewModel =
+            ViewModelProviders.of(requireActivity())[EditorViewModel::class.java]
+        mainViewModel = activity?.run {
+            ViewModelProviders.of(requireActivity())[MainViewModel::class.java]
+        } ?: throw Exception("Invalid Activity")
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -39,6 +51,11 @@ class ScanFragment : Fragment() {
     ): View? {
         setHasOptionsMenu(true)
         return inflater.inflate(R.layout.fragment_scan, container, false)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putParcelableArrayList(S_SCAN_LIST,scanViewModel.scanList)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -56,8 +73,13 @@ class ScanFragment : Fragment() {
                 } else {
                     Asset.getEmptyAsset(true)
                 }
-                val (id, args) = EditorFragment.newInstancePair(asset)
+                val (id, args) = EditorFragment.newInstancePair(asset,asset.isMultiAsset())
                 findNavController().navigate(id, args)
+                true
+            }
+            R.id.clear -> {
+                scanViewModel.scanList.clear()
+                viewAdapter.notifyDataSetChanged()
                 true
             }
             else -> false
@@ -66,24 +88,26 @@ class ScanFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        scanViewModel =
-            ViewModelProviders.of(this)[ScanViewModel::class.java]
-        editorViewModel =
-            ViewModelProviders.of(requireActivity())[EditorViewModel::class.java]
-
         val textView: TextView = view.findViewById(R.id.text_gallery)
-        scanViewModel.text.observe(this, Observer {
+        scanViewModel.text.observe(viewLifecycleOwner, Observer {
             textView.text = it
         })
-        mainViewModel = activity?.run {
-            ViewModelProviders.of(this)[MainViewModel::class.java]
-        } ?: throw Exception("Invalid Activity")
+
 
         val loginData = mainViewModel.getLoginData(requireContext())
         val client = APIClient.getClient(loginData.apiBackend, loginData.apiToken)
         val api = client.create(APIInterface::class.java)
 
-        mainViewModel.scanData.observe(this, Observer {
+        viewManager = LinearLayoutManager(context)
+        savedInstanceState?.run { scanViewModel.scanList.addAll(this.getParcelableArrayList(S_SCAN_LIST)!!) }
+        viewAdapter = ScanViewAdapter(scanViewModel.scanList)
+
+        recyclerView = view.findViewById<RecyclerView>(R.id.frag_scan_recycler).apply {
+            layoutManager = viewManager
+            adapter = viewAdapter
+        }
+
+        mainViewModel.scanData.observe(viewLifecycleOwner, Observer {
             it?.run {
                 textView.setText("Last ID: $this")
                 val id = this
@@ -112,15 +136,9 @@ class ScanFragment : Fragment() {
 
             } ?: textView.setText("No ID")
         })
+    }
 
-        viewManager = LinearLayoutManager(context)
-        viewAdapter = ScanViewAdapter(ArrayList())
-
-        recyclerView = view.findViewById<RecyclerView>(R.id.frag_scan_recycler).apply {
-            layoutManager = viewManager
-            adapter = viewAdapter
-        }
-
-        viewAdapter.notifyDataSetChanged()
+    companion object {
+        const val S_SCAN_LIST: String = "scan_list"
     }
 }

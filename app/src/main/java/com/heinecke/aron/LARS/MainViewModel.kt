@@ -12,7 +12,7 @@ class MainViewModel : ViewModel() {
      */
     val scanData = MutableLiveData<Int?>()
     val loginData = MutableLiveData<LoginData>()
-    val userData = MutableLiveData<UserData>()
+    val userData = MutableLiveData<UserData?>(null)
     public fun getLoginData(context: Context): LoginData {
         var data = loginData.value
         if (data == null) {
