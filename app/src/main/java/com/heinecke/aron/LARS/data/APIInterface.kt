@@ -2,6 +2,7 @@ package com.heinecke.aron.LARS.data
 
 import com.google.gson.Gson
 import com.google.gson.JsonElement
+import com.google.gson.JsonObject
 import com.heinecke.aron.LARS.data.model.Asset
 import com.heinecke.aron.LARS.data.model.SearchResults
 import com.heinecke.aron.LARS.data.model.Selectable
@@ -13,6 +14,8 @@ import com.heinecke.aron.LARS.data.model.Result as Result1
 interface APIInterface {
     @GET("api/v1/hardware/{id}")
     fun getAsset(@Path("id") id: Int): Call<Asset>
+    @GET("api/v1/hardware/{id}")
+    fun getAssetObservable(@Path("id") id: Int): Observable<Asset>
 
     @GET("api/v1/users/{id}")
     fun getUserInfo(@Path("id") id: Int): Call<Selectable.User>
@@ -29,8 +32,8 @@ interface APIInterface {
     /**
      * @param data JsonElement of data to update, use makePath the Asset
      */
-    @PATCH("api/v1/asset/{id}")
-    fun updateAsset(@Path("id") id: Int, @Body data: JsonElement) : Observable<Result1>
+    @PATCH("api/v1/hardware/{id}")
+    fun updateAsset(@Path("id") id: Int, @Body data: JsonObject) : Observable<Result1<Asset>>
 
     companion object {
         fun makeAssetPatch(data: Any) : JsonElement {

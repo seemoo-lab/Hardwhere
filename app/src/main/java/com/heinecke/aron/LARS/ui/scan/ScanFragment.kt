@@ -21,6 +21,9 @@ import com.heinecke.aron.LARS.data.model.Selectable
 import com.heinecke.aron.LARS.ui.APIFragment
 import com.heinecke.aron.LARS.ui.editor.EditorFragment
 import com.heinecke.aron.LARS.ui.editor.EditorViewModel
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -115,8 +118,8 @@ class ScanFragment : APIFragment() {
 
                     override fun onResponse(call: Call<Asset>?, response: Response<Asset>?) {
                         response?.run {
-                            if (this.isSuccessful && this.body().id == id) {
-                                viewAdapter.prepend(this.body())
+                            if (this.isSuccessful && this.body()!!.id == id) {
+                                viewAdapter.prepend(this.body()!!)
                             } else {
                                 Toast.makeText(
                                     requireContext(),
@@ -131,6 +134,43 @@ class ScanFragment : APIFragment() {
 
             } ?: textView.setText("No ID")
         })
+
+        // react to updates when editor finished
+        editorViewModel.editingFinished.observe(this, Observer {
+            Log.d(this@ScanFragment::class.java.name, "EditedAssets: $it")
+            if (it != null) {
+                updateAssets()
+                editorViewModel.reset()
+            }
+        })
+    }
+
+    private fun updateAssets() {
+        val client = getAPI()
+        val requests: List<Observable<Asset>> = scanViewModel.scanList.map {
+            client.getAssetObservable(it.id)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+        }
+
+        @Suppress("UNUSED_VARIABLE")
+        val ignored = Observable.zip(requests) { list ->
+            val assets = list.filter{
+                if (it is Asset) {
+                    return@filter true
+                }
+                false
+            }.map { it as Asset }
+            assets
+        }
+            .subscribe({
+                Log.d(this@ScanFragment::class.java.name,"Finished with $it")
+                scanViewModel.scanList.clear()
+                scanViewModel.scanList.addAll(it)
+                viewAdapter.notifyDataSetChanged()
+            }) {
+                Log.w(this@ScanFragment::class.java.name,"Error: $it")
+            }
     }
 
     companion object {

@@ -11,7 +11,7 @@ class MainViewModel : ViewModel() {
      * Scan data which is non-null if new asset codes were scanned
      */
     val scanData = MutableLiveData<Int?>()
-    val loginData = MutableLiveData<LoginData>()
+    val loginData = MutableLiveData<LoginData?>(null)
     val userData = MutableLiveData<UserData?>(null)
     fun getLoginData(context: Context): LoginData {
         var data = loginData.value

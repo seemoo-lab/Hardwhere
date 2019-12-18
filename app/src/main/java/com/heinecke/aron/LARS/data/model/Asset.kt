@@ -2,8 +2,10 @@ package com.heinecke.aron.LARS.data.model
 
 import android.os.Parcelable
 import com.google.gson.JsonElement
+import com.google.gson.JsonObject
 import com.heinecke.aron.LARS.data.model.Selectable.*
 import kotlinx.android.parcel.Parcelize
+import org.json.JSONObject
 
 @Parcelize
 data class Asset(
@@ -46,6 +48,19 @@ data class Asset(
         @JvmField
         val ID_NEW_ASSET = 0
 
+    }
+
+    fun createPatch() : JsonObject {
+        val base = JsonObject()
+        this.model?.run { base.addProperty("model_id",this.id) }
+        this.category?.run { base.addProperty("category",this.id) }
+        this.rtd_location?.run { base.addProperty("rtd_location_id",this.id) }
+        @Suppress("UNNECESSARY_SAFE_CALL")
+        this.name?.run { base.addProperty("name",this) }
+        @Suppress("UNNECESSARY_SAFE_CALL")
+        this.notes?.run { base.addProperty("notes",this) }
+
+        return base
     }
 
     fun isMultiAsset(): Boolean {

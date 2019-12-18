@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         val fab: FloatingActionButton = findViewById(R.id.fab)
-        fab.setOnClickListener { view ->
+        fab.setOnClickListener { _ ->
             val integrator = IntentIntegrator(this)
             integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE)
             integrator.setPrompt("Scan Asset QR Code")
@@ -96,7 +96,7 @@ class MainActivity : AppCompatActivity() {
                 handled
             }
         }
-        navController.addOnDestinationChangedListener { controller, destination, arguments ->
+        navController.addOnDestinationChangedListener { _, destination, _ ->
             mainViewModel.scanData.value = null
             if (destination.id == R.id.nav_scan) fab.show() else fab.hide()
         }

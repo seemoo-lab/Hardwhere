@@ -151,7 +151,7 @@ class SelectorFragment : APIFragment(),
         ) {
             response?.run {
                 val elements =
-                    this.body().rows.map { elem -> selectType.parseElement(elem) }
+                    this.body()!!.rows.map { elem -> selectType.parseElement(elem) }
                 if (this.isSuccessful) {
                     Log.d(this::class.java.name, "Body: $elements")
                     adapter.replaceElements(elements)

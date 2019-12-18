@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.EditText
+import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
@@ -46,7 +48,6 @@ class EditorFragment : APIFragment() {
             R.id.finishEdit -> {
                 Log.d(this::class.java.name, "finishing editor")
                 editorViewModel.updateAssets(getAPI())
-                findNavController().popBackStack()
                 true
             }
             else -> false
@@ -59,6 +60,7 @@ class EditorFragment : APIFragment() {
         val model: EditText = view.findViewById(R.id.modelPicker)
         val category: EditText = view.findViewById(R.id.categoryPicker)
         val comment: EditText = view.findViewById(R.id.commentEditor)
+        val loading: ProgressBar = view.findViewById(R.id.loading)
 
         setupSelectable(location,Selectable.SelectableType.Location, R.id.locationPicker) {editorViewModel.asset.value!!.rtd_location}
         setupSelectable(model,Selectable.SelectableType.Model, R.id.modelPicker) {editorViewModel.asset.value!!.model}
@@ -88,6 +90,21 @@ class EditorFragment : APIFragment() {
                 model.setText(this.model?.name ?: "")
                 category.setText(this.category?.name ?: "")
                 comment.setText(this.notes)
+            }
+        })
+
+        editorViewModel.loading.observe(this, Observer {
+            Log.d(this@EditorFragment::class.java.name,"Loading-Update: $it")
+            loading.visibility = if(it == null) View.INVISIBLE else View.INVISIBLE
+            if (it != null) {
+                if (it.success != null) {
+                    if (it.success == true) {
+                        findNavController().popBackStack()
+                    } else {
+                        Toast.makeText(requireContext(),"Failed: ${it.error}",Toast.LENGTH_LONG).show()
+                    }
+                    editorViewModel.loading.value = null // reset
+                }
             }
         })
     }

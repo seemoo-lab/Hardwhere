@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModelProviders
 import com.heinecke.aron.LARS.MainViewModel
 import com.heinecke.aron.LARS.data.APIClient
 import com.heinecke.aron.LARS.data.APIInterface
+import com.heinecke.aron.LARS.data.model.LoginData
 
 abstract class APIFragment : Fragment() {
     protected lateinit var mainViewModel: MainViewModel
@@ -22,10 +23,15 @@ abstract class APIFragment : Fragment() {
         } ?: throw Exception("Invalid Activity")
 
         mainViewModel.loginData.observe(this, Observer {
-            val loginData = mainViewModel.getLoginData(requireContext())
-            val client = APIClient.getClient(loginData.apiBackend, loginData.apiToken)
-            api = client.create(APIInterface::class.java)
+            updateAPI(it)
         })
+        updateAPI(mainViewModel.loginData.value)
+    }
+
+    private fun updateAPI(data: LoginData?) {
+        val login = data ?: mainViewModel.getLoginData(requireContext())
+        val client = APIClient.getClient(login.apiBackend, login.apiToken)
+        api = client.create(APIInterface::class.java)
     }
 
     protected fun getAPI(): APIInterface {
