@@ -2,20 +2,18 @@ package com.heinecke.aron.LARS.ui.editor
 
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.EditText
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import com.heinecke.aron.LARS.R
 import com.heinecke.aron.LARS.data.model.Asset
 import com.heinecke.aron.LARS.data.model.Selectable
+import com.heinecke.aron.LARS.ui.APIFragment
 
 
-class EditorFragment : Fragment() {
+class EditorFragment : APIFragment() {
     lateinit var editorViewModel: EditorViewModel
     lateinit var selectorViewModel: SelectorViewModel
 
@@ -25,7 +23,7 @@ class EditorFragment : Fragment() {
         if (savedInstanceState == null) {
             arguments!!.run {
                 editorViewModel.setEditorAsset(this.getParcelable(PARAM_ASSET)!!)
-                editorViewModel.multiEdit.value = this.getBoolean(PARAM_MULTIEDIT)
+                editorViewModel.multiEditAssets.value = this.getParcelableArrayList(PARAM_MULTIEDIT)
             }
         }
     }
@@ -35,7 +33,24 @@ class EditorFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        setHasOptionsMenu(true)
         return inflater.inflate(R.layout.fragment_editor, container, false)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.editor, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.finishEdit -> {
+                Log.d(this::class.java.name, "finishing editor")
+                editorViewModel.updateAssets(getAPI())
+                findNavController().popBackStack()
+                true
+            }
+            else -> false
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -70,6 +85,7 @@ class EditorFragment : Fragment() {
         })
 
         editorViewModel.asset.observe(viewLifecycleOwner, Observer { it ->
+            Log.d(this::class.java.name,"Asset update $it")
             it?.run {
                 location.setText(this.rtd_location?.name ?: "")
                 model.setText(this.model?.name ?: "")
@@ -98,10 +114,10 @@ class EditorFragment : Fragment() {
          * Returns a new instance pair to use on a NavController
          */
         @JvmStatic
-        fun newInstancePair(asset: Asset, multiedit: Boolean): Pair<Int, Bundle> {
+        fun newInstancePair(asset: Asset, multiedit: ArrayList<Asset>): Pair<Int, Bundle> {
             val args = Bundle()
             args.putParcelable(PARAM_ASSET, asset)
-            args.putBoolean(PARAM_MULTIEDIT, multiedit)
+            args.putParcelableArrayList(PARAM_MULTIEDIT, multiedit)
             return Pair(R.id.editorFragment, args)
         }
 

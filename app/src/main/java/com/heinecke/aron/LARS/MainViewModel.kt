@@ -13,7 +13,7 @@ class MainViewModel : ViewModel() {
     val scanData = MutableLiveData<Int?>()
     val loginData = MutableLiveData<LoginData>()
     val userData = MutableLiveData<UserData?>(null)
-    public fun getLoginData(context: Context): LoginData {
+    fun getLoginData(context: Context): LoginData {
         var data = loginData.value
         if (data == null) {
             val prefs = context.getSharedPreferences(Utils.PREFS_APP, 0)

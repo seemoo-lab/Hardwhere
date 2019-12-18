@@ -18,19 +18,19 @@ import com.heinecke.aron.LARS.data.APIClient
 import com.heinecke.aron.LARS.data.APIInterface
 import com.heinecke.aron.LARS.data.model.Asset
 import com.heinecke.aron.LARS.data.model.Selectable
+import com.heinecke.aron.LARS.ui.APIFragment
 import com.heinecke.aron.LARS.ui.editor.EditorFragment
 import com.heinecke.aron.LARS.ui.editor.EditorViewModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class ScanFragment : Fragment() {
+class ScanFragment : APIFragment() {
 
     private lateinit var scanViewModel: ScanViewModel
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: ScanViewAdapter
     private lateinit var viewManager: RecyclerView.LayoutManager
-    private lateinit var mainViewModel: MainViewModel
     private lateinit var editorViewModel: EditorViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,9 +39,6 @@ class ScanFragment : Fragment() {
             ViewModelProviders.of(requireActivity())[ScanViewModel::class.java]
         editorViewModel =
             ViewModelProviders.of(requireActivity())[EditorViewModel::class.java]
-        mainViewModel = activity?.run {
-            ViewModelProviders.of(requireActivity())[MainViewModel::class.java]
-        } ?: throw Exception("Invalid Activity")
     }
 
     override fun onCreateView(
@@ -73,7 +70,7 @@ class ScanFragment : Fragment() {
                 } else {
                     Asset.getEmptyAsset(true)
                 }
-                val (id, args) = EditorFragment.newInstancePair(asset,asset.isMultiAsset())
+                val (id, args) = EditorFragment.newInstancePair(asset,scanViewModel.scanList)
                 findNavController().navigate(id, args)
                 true
             }
@@ -94,9 +91,7 @@ class ScanFragment : Fragment() {
         })
 
 
-        val loginData = mainViewModel.getLoginData(requireContext())
-        val client = APIClient.getClient(loginData.apiBackend, loginData.apiToken)
-        val api = client.create(APIInterface::class.java)
+        val api = getAPI()
 
         viewManager = LinearLayoutManager(context)
         savedInstanceState?.run { scanViewModel.scanList.addAll(this.getParcelableArrayList(S_SCAN_LIST)!!) }

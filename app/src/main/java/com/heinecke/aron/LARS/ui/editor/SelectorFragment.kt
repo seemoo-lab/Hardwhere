@@ -19,6 +19,7 @@ import com.heinecke.aron.LARS.data.APIClient
 import com.heinecke.aron.LARS.data.APIInterface
 import com.heinecke.aron.LARS.data.model.SearchResults
 import com.heinecke.aron.LARS.data.model.Selectable
+import com.heinecke.aron.LARS.ui.APIFragment
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -29,7 +30,7 @@ import retrofit2.Response
  * Activities containing this fragment MUST implement the
  * [SelectorFragment.OnListFragmentInteractionListener] interface.
  */
-class SelectorFragment : Fragment(),
+class SelectorFragment : APIFragment(),
     SelectorRecyclerViewAdapter.OnListFragmentInteractionListener,
     SearchView.OnQueryTextListener {
 
@@ -37,7 +38,6 @@ class SelectorFragment : Fragment(),
     private var selectable: Selectable? = null
     private lateinit var selectType: Selectable.SelectableType
     private lateinit var viewModel: SelectorViewModel
-    private lateinit var mainModel: MainViewModel
     private lateinit var adapter: SelectorRecyclerViewAdapter
     private var returnCode: Int = 0
     private var api: APIInterface? = null
@@ -49,7 +49,6 @@ class SelectorFragment : Fragment(),
             returnCode = it.getInt(ARG_RETURN_CODE)
             selectType = it.getParcelable(ARG_TYPE)!!
         }
-        mainModel = ViewModelProviders.of(requireActivity())[MainViewModel::class.java]
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -82,14 +81,7 @@ class SelectorFragment : Fragment(),
         return view
     }
 
-    private fun getAPI(): APIInterface {
-        if (api == null) {
-            val loginData = mainModel.getLoginData(requireContext())
-            val client = APIClient.getClient(loginData.apiBackend, loginData.apiToken)
-            api = client.create(APIInterface::class.java)
-        }
-        return api!!
-    }
+
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.select, menu)

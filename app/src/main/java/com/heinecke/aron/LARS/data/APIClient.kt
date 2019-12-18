@@ -1,5 +1,6 @@
 package com.heinecke.aron.LARS.data
 
+import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.logging.HttpLoggingInterceptor
@@ -10,7 +11,7 @@ class APIClient {
     companion object {
         fun getClient(baseUrl: String, token: String): Retrofit {
             val interceptor = HttpLoggingInterceptor()
-            interceptor.level = HttpLoggingInterceptor.Level.NONE
+            interceptor.level = HttpLoggingInterceptor.Level.BODY
 
             val client: OkHttpClient =
                 OkHttpClient.Builder().addInterceptor {
@@ -22,12 +23,13 @@ class APIClient {
                     it.proceed(newRequest)
                 }.addInterceptor(interceptor).build()
 
-            val retrofit: Retrofit = Retrofit.Builder()
+            val gson = GsonBuilder().serializeNulls().create()
+
+            return Retrofit.Builder()
                 .client(client)
                 .baseUrl(baseUrl)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .build()
-            return retrofit
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.heinecke.aron.LARS.data.model
 
 import android.os.Parcelable
+import com.google.gson.JsonElement
 import com.heinecke.aron.LARS.data.model.Selectable.*
 import kotlinx.android.parcel.Parcelize
 
@@ -11,8 +12,11 @@ data class Asset(
     var date_at: Date?, var available_actions: Actions?,
     /** note that an invalid deserialization results in id = 0 **/
     val id: Int = 0,
-    val name: String, val notes: String
+    val name: String, val notes: String,
+    @Transient
+    val selected: Boolean = false
 ) : Parcelable {
+
     companion object {
         /**
          * Create a new empty asset
