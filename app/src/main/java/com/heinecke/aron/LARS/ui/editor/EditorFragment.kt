@@ -56,13 +56,11 @@ class EditorFragment : APIFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val location: EditText = view.findViewById(R.id.locationPicker)
-        val manufacturer: EditText = view.findViewById(R.id.manufacturerPicker)
         val model: EditText = view.findViewById(R.id.modelPicker)
         val category: EditText = view.findViewById(R.id.categoryPicker)
         val comment: EditText = view.findViewById(R.id.commentEditor)
 
         setupSelectable(location,Selectable.SelectableType.Location, R.id.locationPicker) {editorViewModel.asset.value!!.rtd_location}
-        setupSelectable(manufacturer,Selectable.SelectableType.Manufacturer, R.id.manufacturerPicker) {editorViewModel.asset.value!!.manufacturer}
         setupSelectable(model,Selectable.SelectableType.Model, R.id.modelPicker) {editorViewModel.asset.value!!.model}
         setupSelectable(category,Selectable.SelectableType.Category, R.id.categoryPicker) {editorViewModel.asset.value!!.category}
 
@@ -73,7 +71,6 @@ class EditorFragment : APIFragment() {
                 val currentVal = editorViewModel.asset.value!!
                 when (it.inputID) {
                     R.id.locationPicker -> currentVal.rtd_location = it.item as Selectable.Location
-                    R.id.manufacturerPicker -> currentVal.manufacturer= it.item as Selectable.Manufacturer
                     R.id.modelPicker -> currentVal.model = it.item as Selectable.Model
                     R.id.categoryPicker -> currentVal.category= it.item as Selectable.Category
                     else -> Log.w(
@@ -89,7 +86,6 @@ class EditorFragment : APIFragment() {
             it?.run {
                 location.setText(this.rtd_location?.name ?: "")
                 model.setText(this.model?.name ?: "")
-                manufacturer.setText(this.manufacturer?.name ?: "")
                 category.setText(this.category?.name ?: "")
                 comment.setText(this.notes)
             }
