@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.heinecke.aron.LARS.data.model.Asset
 
 class ScanViewModel : ViewModel() {
-
+    internal val resolving = MutableLiveData(0)
     private val _text = MutableLiveData<String>().apply {
         value = "This is scan Fragment"
     }

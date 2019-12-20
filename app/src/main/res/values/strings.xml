@@ -53,4 +53,5 @@
     <string name="title_finish_edit">Update</string>
     <string name="toast_no_tag_multiedit">Asset Tags have to be unique</string>
     <string name="duplicate_scan">Duplicate Item</string>
+    <string name="scan_hint">Scan assets to edit their attributes</string>
 </resources>

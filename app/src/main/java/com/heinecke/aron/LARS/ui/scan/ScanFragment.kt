@@ -3,6 +3,7 @@ package com.heinecke.aron.LARS.ui.scan
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.Observer
@@ -30,6 +31,8 @@ class ScanFragment : APIFragment() {
     private lateinit var viewAdapter: ScanViewAdapter
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var editorViewModel: EditorViewModel
+    private lateinit var progressBar: ProgressBar
+    private lateinit var scanHint: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,6 +78,7 @@ class ScanFragment : APIFragment() {
             R.id.clear -> {
                 scanViewModel.scanList.clear()
                 viewAdapter.notifyDataSetChanged()
+                updateHint()
                 true
             }
             else -> false
@@ -83,11 +87,9 @@ class ScanFragment : APIFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val textView: TextView = view.findViewById(R.id.text_gallery)
-        scanViewModel.text.observe(viewLifecycleOwner, Observer {
-            textView.text = it
-        })
-
+        scanHint = view.findViewById(R.id.scan_hint)
+        progressBar = view.findViewById(R.id.progressScanning)
+        progressBar.isIndeterminate = true
 
         val api = getAPI()
 
@@ -100,25 +102,32 @@ class ScanFragment : APIFragment() {
             adapter = viewAdapter
         }
 
+        scanViewModel.resolving.observe(this, Observer {
+            progressBar.visibility = if(it > 0) View.VISIBLE else View.GONE
+        })
+
+        updateHint()
+
         mainViewModel.scanData.observe(viewLifecycleOwner, Observer {
             it?.run {
-                textView.text = "Last ID: $this"
-
                 val id = this
                 if(scanViewModel.scanList.any { asset: Asset ->  asset.id == id }) {
                     Toast.makeText(context,R.string.duplicate_scan, Toast.LENGTH_SHORT).show()
                 } else {
+                    incLoading()
                     api.getAsset(this).enqueue(object : Callback<Asset> {
                         override fun onFailure(call: Call<Asset>?, t: Throwable?) {
                             Log.e(this::class.java.name, "Error resolving $id: $t")
                             Toast.makeText(requireContext(), "Can't request: $t", Toast.LENGTH_LONG)
                                 .show()
+                            decLoading()
                         }
 
                         override fun onResponse(call: Call<Asset>?, response: Response<Asset>?) {
                             response?.run {
                                 if (this.isSuccessful && this.body()!!.id == id) {
                                     viewAdapter.prepend(this.body()!!)
+                                    updateHint()
                                 } else {
                                     Toast.makeText(
                                         requireContext(),
@@ -127,10 +136,11 @@ class ScanFragment : APIFragment() {
                                     ).show()
                                 }
                             } ?: Utils.logResponseVerbose(this@ScanFragment::class.java, response)
+                            decLoading()
                         }
                     })
                 }
-            } ?: textView.setText("No ID")
+            }
         })
 
         // react to updates when editor finished
@@ -141,6 +151,21 @@ class ScanFragment : APIFragment() {
                 editorViewModel.reset()
             }
         })
+    }
+
+    private fun updateHint() {
+        scanHint.visibility = if(scanViewModel.scanList.isEmpty()) View.VISIBLE else View.GONE
+    }
+
+    private fun incLoading() {
+        scanViewModel.resolving.run {
+            value = value!! + 1
+        }
+    }
+    private fun decLoading() {
+        scanViewModel.resolving.run {
+            value = value!! -1
+        }
     }
 
     private fun updateAssets() {
