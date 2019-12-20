@@ -5,19 +5,14 @@ import android.util.Log
 import android.view.*
 import android.widget.TextView
 import android.widget.Toast
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.heinecke.aron.LARS.MainViewModel
 import com.heinecke.aron.LARS.R
 import com.heinecke.aron.LARS.Utils
-import com.heinecke.aron.LARS.data.APIClient
-import com.heinecke.aron.LARS.data.APIInterface
 import com.heinecke.aron.LARS.data.model.Asset
-import com.heinecke.aron.LARS.data.model.Selectable
 import com.heinecke.aron.LARS.ui.APIFragment
 import com.heinecke.aron.LARS.ui.editor.EditorFragment
 import com.heinecke.aron.LARS.ui.editor.EditorViewModel
@@ -107,7 +102,7 @@ class ScanFragment : APIFragment() {
 
         mainViewModel.scanData.observe(viewLifecycleOwner, Observer {
             it?.run {
-                textView.setText("Last ID: $this")
+                textView.text = "Last ID: $this"
                 val id = this
                 api.getAsset(this).enqueue(object : Callback<Asset> {
                     override fun onFailure(call: Call<Asset>?, t: Throwable?) {
@@ -137,8 +132,8 @@ class ScanFragment : APIFragment() {
 
         // react to updates when editor finished
         editorViewModel.editingFinished.observe(this, Observer {
-            Log.d(this@ScanFragment::class.java.name, "EditedAssets: $it")
             if (it != null) {
+                Log.d(this@ScanFragment::class.java.name, "EditedAssets")
                 updateAssets()
                 editorViewModel.reset()
             }

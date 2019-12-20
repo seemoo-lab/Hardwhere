@@ -69,6 +69,9 @@ class SelectorFragment : APIFragment(),
                 api.getSelectablePage(selectType.getTypeName(),50,0).enqueue(SearchResultCallback(requireContext(),selectType,adapter))
             }
         })
+        if (savedInstanceState != null) {
+            viewModel.resetSelected()
+        }
     }
 
     override fun onCreateView(
@@ -86,9 +89,7 @@ class SelectorFragment : APIFragment(),
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.select, menu)
         (menu.findItem(R.id.app_bar_search).actionView as SearchView).apply {
-            // Assumes current activity is the searchable activity
             setOnQueryTextListener(this@SelectorFragment)
-//            setIconifiedByDefault(false) // Do not iconify the widget; expand it by default
         }
 
     }
@@ -131,7 +132,7 @@ class SelectorFragment : APIFragment(),
 
     override fun onQueryTextSubmit(query: String?): Boolean {
         viewModel.searchString.value = query
-        return false
+        return true
     }
 
     override fun onQueryTextChange(newText: String?): Boolean {
