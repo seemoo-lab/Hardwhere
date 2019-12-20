@@ -95,7 +95,7 @@ class SelectorFragment : APIFragment(),
         (menu.findItem(R.id.app_bar_search).actionView as SearchView).apply {
             setOnQueryTextListener(this@SelectorFragment)
             setQuery(viewModel.searchString.value,false)
-            isIconified = viewModel.searchString.value.isNullOrEmpty()
+            isIconified = false
         }
     }
 
