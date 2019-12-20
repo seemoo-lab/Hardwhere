@@ -59,15 +59,6 @@ class MainActivity : AppCompatActivity() {
             mainViewModel.loginData.value = this.getParcelable(S_LOGINDATA)
         }
 
-        val fab: FloatingActionButton = findViewById(R.id.fab)
-        fab.setOnClickListener { _ ->
-            val integrator = IntentIntegrator(this)
-            integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE)
-            integrator.setPrompt("Scan Asset QR Code")
-            integrator.setBeepEnabled(true)
-            integrator.setBarcodeImageEnabled(false)
-            integrator.initiateScan()
-        }
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
         val navController = findNavController(R.id.nav_host_fragment)
@@ -96,10 +87,6 @@ class MainActivity : AppCompatActivity() {
                 // return the result of NavigationUI call
                 handled
             }
-        }
-        navController.addOnDestinationChangedListener { _, destination, _ ->
-            mainViewModel.scanData.value = null
-            if (destination.id == R.id.nav_scan) fab.show() else fab.hide()
         }
 
         Log.d(this::class.java.name, "Initialized")
@@ -146,30 +133,11 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-
-
     override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {
         super.onSaveInstanceState(outState, outPersistentState)
         outState?.run {
             putParcelable(S_LOGINDATA,mainViewModel.loginData.value)
             putParcelable(S_USERDATA,mainViewModel.userData.value)
-        }
-    }
-
-    @SuppressLint("SetTextI18n")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        val result =
-            IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
-        if (result != null) {
-            if (result.contents != null) {
-                Log.d(this::class.java.name, "Scanned: ${result.contents}")
-                assetPattern.find(result.contents, 0)?.groupValues?.run {
-                    this.forEach { item -> Log.d(this::class.java.name, "Item: $item") }
-                    mainViewModel.scanData.value = Integer.valueOf(this[1])
-                } ?: Toast.makeText(this, R.string.invalid_asset_code, Toast.LENGTH_LONG).show()
-            }
-        } else {
-            super.onActivityResult(requestCode, resultCode, data)
         }
     }
 

@@ -7,9 +7,18 @@ import com.heinecke.aron.LARS.data.model.Asset
 
 class ScanViewModel : ViewModel() {
     internal val resolving = MutableLiveData(0)
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is scan Fragment"
+    internal val scanList: MutableLiveData<ArrayList<Asset>> = MutableLiveData(ArrayList())
+    internal val assetPattern: Regex = Regex("^http.*/([0-9]+)$")
+
+
+    internal fun incLoading() {
+        resolving.run {
+            value = value!! + 1
+        }
     }
-    val scanList: ArrayList<Asset> = ArrayList()
-    val text: LiveData<String> = _text
+    internal fun decLoading() {
+        resolving.run {
+            value = value!! -1
+        }
+    }
 }

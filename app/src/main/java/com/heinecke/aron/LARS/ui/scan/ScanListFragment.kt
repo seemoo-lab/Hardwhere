@@ -5,14 +5,13 @@ import android.util.Log
 import android.view.*
 import android.widget.ProgressBar
 import android.widget.TextView
-import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.heinecke.aron.LARS.R
-import com.heinecke.aron.LARS.Utils
 import com.heinecke.aron.LARS.data.model.Asset
 import com.heinecke.aron.LARS.ui.APIFragment
 import com.heinecke.aron.LARS.ui.editor.EditorFragment
@@ -20,11 +19,8 @@ import com.heinecke.aron.LARS.ui.editor.EditorViewModel
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
-class ScanFragment : APIFragment() {
+class ScanListFragment : APIFragment() {
 
     private lateinit var scanViewModel: ScanViewModel
     private lateinit var recyclerView: RecyclerView
@@ -53,7 +49,7 @@ class ScanFragment : APIFragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putParcelableArrayList(S_SCAN_LIST,scanViewModel.scanList)
+        outState.putParcelableArrayList(S_SCAN_LIST,scanViewModel.scanList.value)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -71,12 +67,12 @@ class ScanFragment : APIFragment() {
                 } else {
                     Asset.getEmptyAsset(true)
                 }
-                val (id, args) = EditorFragment.newInstancePair(asset,scanViewModel.scanList)
+                val (id, args) = EditorFragment.newInstancePair(asset,scanViewModel.scanList.value!!)
                 findNavController().navigate(id, args)
                 true
             }
             R.id.clear -> {
-                scanViewModel.scanList.clear()
+                scanViewModel.scanList.value!!.clear()
                 viewAdapter.notifyDataSetChanged()
                 updateHint()
                 true
@@ -85,17 +81,24 @@ class ScanFragment : APIFragment() {
         }
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         scanHint = view.findViewById(R.id.scan_hint)
+
+        val fab: FloatingActionButton = view.findViewById(R.id.fab)
+        fab.setOnClickListener { _ ->
+            val id = ScannerFragment.newInstance()
+            findNavController().navigate(id)
+        }
         progressBar = view.findViewById(R.id.progressScanning)
         progressBar.isIndeterminate = true
 
         val api = getAPI()
 
         viewManager = LinearLayoutManager(context)
-        savedInstanceState?.run { scanViewModel.scanList.addAll(this.getParcelableArrayList(S_SCAN_LIST)!!) }
-        viewAdapter = ScanViewAdapter(scanViewModel.scanList)
+        savedInstanceState?.run { scanViewModel.scanList.value!!.addAll(this.getParcelableArrayList(S_SCAN_LIST)!!) }
+        viewAdapter = ScanViewAdapter(scanViewModel.scanList.value!!)
 
         recyclerView = view.findViewById<RecyclerView>(R.id.frag_scan_recycler).apply {
             layoutManager = viewManager
@@ -110,43 +113,15 @@ class ScanFragment : APIFragment() {
 
         mainViewModel.scanData.observe(viewLifecycleOwner, Observer {
             it?.run {
-                val id = this
-                if(scanViewModel.scanList.any { asset: Asset ->  asset.id == id }) {
-                    Toast.makeText(context,R.string.duplicate_scan, Toast.LENGTH_SHORT).show()
-                } else {
-                    incLoading()
-                    api.getAsset(this).enqueue(object : Callback<Asset> {
-                        override fun onFailure(call: Call<Asset>?, t: Throwable?) {
-                            Log.e(this::class.java.name, "Error resolving $id: $t")
-                            Toast.makeText(requireContext(), "Can't request: $t", Toast.LENGTH_LONG)
-                                .show()
-                            decLoading()
-                        }
-
-                        override fun onResponse(call: Call<Asset>?, response: Response<Asset>?) {
-                            response?.run {
-                                if (this.isSuccessful && this.body()!!.id == id) {
-                                    viewAdapter.prepend(this.body()!!)
-                                    updateHint()
-                                } else {
-                                    Toast.makeText(
-                                        requireContext(),
-                                        R.string.invalid_scan_id,
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                            } ?: Utils.logResponseVerbose(this@ScanFragment::class.java, response)
-                            decLoading()
-                        }
-                    })
-                }
+                Log.d(this@ScanListFragment::class.java.name,"ScanData updated.")
+                viewAdapter.notifyDataSetChanged()
             }
         })
 
         // react to updates when editor finished
         editorViewModel.editingFinished.observe(this, Observer {
             if (it != null) {
-                Log.d(this@ScanFragment::class.java.name, "EditedAssets")
+                Log.d(this@ScanListFragment::class.java.name, "EditedAssets")
                 updateAssets()
                 editorViewModel.reset()
             }
@@ -154,23 +129,12 @@ class ScanFragment : APIFragment() {
     }
 
     private fun updateHint() {
-        scanHint.visibility = if(scanViewModel.scanList.isEmpty()) View.VISIBLE else View.GONE
-    }
-
-    private fun incLoading() {
-        scanViewModel.resolving.run {
-            value = value!! + 1
-        }
-    }
-    private fun decLoading() {
-        scanViewModel.resolving.run {
-            value = value!! -1
-        }
+        scanHint.visibility = if(scanViewModel.scanList.value!!.isEmpty()) View.VISIBLE else View.GONE
     }
 
     private fun updateAssets() {
         val client = getAPI()
-        val requests: List<Observable<Asset>> = scanViewModel.scanList.map {
+        val requests: List<Observable<Asset>> = scanViewModel.scanList.value!!.map {
             client.getAssetObservable(it.id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -187,12 +151,12 @@ class ScanFragment : APIFragment() {
             assets
         }
             .subscribe({
-                Log.d(this@ScanFragment::class.java.name,"Finished with $it")
-                scanViewModel.scanList.clear()
-                scanViewModel.scanList.addAll(it)
+                Log.d(this@ScanListFragment::class.java.name,"Finished with $it")
+                scanViewModel.scanList.value!!.clear()
+                scanViewModel.scanList.value!!.addAll(it)
                 viewAdapter.notifyDataSetChanged()
             }) {
-                Log.w(this@ScanFragment::class.java.name,"Error: $it")
+                Log.w(this@ScanListFragment::class.java.name,"Error: $it")
             }
     }
 
