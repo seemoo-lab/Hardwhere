@@ -103,30 +103,33 @@ class ScanFragment : APIFragment() {
         mainViewModel.scanData.observe(viewLifecycleOwner, Observer {
             it?.run {
                 textView.text = "Last ID: $this"
+
                 val id = this
-                api.getAsset(this).enqueue(object : Callback<Asset> {
-                    override fun onFailure(call: Call<Asset>?, t: Throwable?) {
-                        Log.e(this::class.java.name, "Error resolving $id: $t")
-                        Toast.makeText(requireContext(), "Can't request: $t", Toast.LENGTH_LONG)
-                            .show()
-                    }
+                if(scanViewModel.scanList.any { asset: Asset ->  asset.id == id }) {
+                    Toast.makeText(context,R.string.duplicate_scan, Toast.LENGTH_SHORT).show()
+                } else {
+                    api.getAsset(this).enqueue(object : Callback<Asset> {
+                        override fun onFailure(call: Call<Asset>?, t: Throwable?) {
+                            Log.e(this::class.java.name, "Error resolving $id: $t")
+                            Toast.makeText(requireContext(), "Can't request: $t", Toast.LENGTH_LONG)
+                                .show()
+                        }
 
-                    override fun onResponse(call: Call<Asset>?, response: Response<Asset>?) {
-                        response?.run {
-                            if (this.isSuccessful && this.body()!!.id == id) {
-                                viewAdapter.prepend(this.body()!!)
-                            } else {
-                                Toast.makeText(
-                                    requireContext(),
-                                    R.string.invalid_scan_id,
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        } ?: Utils.logResponseVerbose(this@ScanFragment::class.java, response)
-                    }
-
-                })
-
+                        override fun onResponse(call: Call<Asset>?, response: Response<Asset>?) {
+                            response?.run {
+                                if (this.isSuccessful && this.body()!!.id == id) {
+                                    viewAdapter.prepend(this.body()!!)
+                                } else {
+                                    Toast.makeText(
+                                        requireContext(),
+                                        R.string.invalid_scan_id,
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            } ?: Utils.logResponseVerbose(this@ScanFragment::class.java, response)
+                        }
+                    })
+                }
             } ?: textView.setText("No ID")
         })
 
