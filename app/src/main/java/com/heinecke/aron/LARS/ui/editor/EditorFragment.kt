@@ -18,6 +18,9 @@ import com.heinecke.aron.LARS.ui.APIFragment
 class EditorFragment : APIFragment() {
     lateinit var editorViewModel: EditorViewModel
     lateinit var selectorViewModel: SelectorViewModel
+    private lateinit var comment: EditText
+    private lateinit var tag: EditText
+    private lateinit var name: EditText
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +50,10 @@ class EditorFragment : APIFragment() {
         return when (item.itemId) {
             R.id.finishEdit -> {
                 Log.d(this::class.java.name, "finishing editor")
+                val asset = editorViewModel.asset.value!!
+                asset.notes = comment.text.toString()
+                asset.asset_tag = tag.text.toString()
+                asset.name = name.text.toString()
                 editorViewModel.updateAssets(getAPI())
                 true
             }
@@ -59,12 +66,21 @@ class EditorFragment : APIFragment() {
         val location: EditText = view.findViewById(R.id.locationPicker)
         val model: EditText = view.findViewById(R.id.modelPicker)
         val category: EditText = view.findViewById(R.id.categoryPicker)
-        val comment: EditText = view.findViewById(R.id.commentEditor)
+        comment = view.findViewById(R.id.commentEditor)
+        tag = view.findViewById(R.id.assetTag)
+        name = view.findViewById(R.id.assetName)
         val loading: ProgressBar = view.findViewById(R.id.loading)
 
         setupSelectable(location,Selectable.SelectableType.Location, R.id.locationPicker) {editorViewModel.asset.value!!.rtd_location}
         setupSelectable(model,Selectable.SelectableType.Model, R.id.modelPicker) {editorViewModel.asset.value!!.model}
         setupSelectable(category,Selectable.SelectableType.Category, R.id.categoryPicker) {editorViewModel.asset.value!!.category}
+
+        val multiEdit = editorViewModel.multiEditAssets.value!!.size > 1
+        if (multiEdit) {
+            tag.setOnClickListener {
+                Toast.makeText(requireContext(),R.string.toast_no_tag_multiedit,Toast.LENGTH_SHORT).show()
+            }
+        }
 
         selectorViewModel = ViewModelProviders.of(requireActivity())[SelectorViewModel::class.java]
         selectorViewModel.selected.observe(viewLifecycleOwner, Observer {
@@ -80,6 +96,7 @@ class EditorFragment : APIFragment() {
                         "Unknown inputID for selector update"
                     )
                 }
+                selectorViewModel.resetSelected()
             }
         })
 
@@ -90,6 +107,8 @@ class EditorFragment : APIFragment() {
                 model.setText(this.model?.name ?: "")
                 category.setText(this.category?.name ?: "")
                 comment.setText(this.notes)
+                tag.setText(this.asset_tag)
+                this@EditorFragment.name.setText(this.name)
             }
         })
 
