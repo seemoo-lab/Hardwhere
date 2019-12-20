@@ -163,17 +163,16 @@ class LoginActivity : AppCompatActivity() {
                 try {
                     val loginData: LoginData = gson.fromJson(result.contents, LoginData::class.java)
                     Log.d(this::class.java.name, "Data: ${loginData.apiToken}")
-                    val apiToken = findViewById<EditText>(R.id.apiToken)
-                    val apiEndpoint = findViewById<EditText>(R.id.apiEndpoint)
-                    val userID = findViewById<EditText>(R.id.userID)
+                    val apiToken: EditText = findViewById(R.id.apiToken)
+                    val apiEndpoint: EditText = findViewById(R.id.apiEndpoint)
+                    val userID: EditText = findViewById(R.id.userID)
                     apiToken.setText(loginData.apiToken)
                     apiEndpoint.setText(loginData.apiBackend)
-                    userID.setText(Integer.toString(loginData.userID))
+                    userID.setText(loginData.userID.toString())
                 } catch (e: JsonSyntaxException) {
                     Toast.makeText(this, R.string.invalid_login_json, Toast.LENGTH_LONG).show()
                     Log.d(this::class.java.name, "Can't parse login json", e)
                 }
-
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data)

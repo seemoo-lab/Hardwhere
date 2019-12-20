@@ -23,7 +23,10 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.google.zxing.integration.android.IntentIntegrator
 import com.heinecke.aron.LARS.Utils.Companion.PREFS_APP
+import com.heinecke.aron.LARS.Utils.Companion.PREFS_KEY_BACKEND
 import com.heinecke.aron.LARS.Utils.Companion.PREFS_KEY_FIRST_RUN
+import com.heinecke.aron.LARS.Utils.Companion.PREFS_KEY_TOKEN
+import com.heinecke.aron.LARS.Utils.Companion.PREFS_KEY_UID
 import com.heinecke.aron.LARS.Utils.Companion.logResponseVerbose
 import com.heinecke.aron.LARS.data.APIClient
 import com.heinecke.aron.LARS.data.APIInterface
@@ -80,9 +83,7 @@ class MainActivity : AppCompatActivity() {
         navView.setNavigationItemSelectedListener {
             if (it.itemId == R.id.nav_logout) {
                 Log.d(this@MainActivity::class.java.name, "logout")
-                val prefs = getSharedPreferences(PREFS_APP, 0).edit()
-                prefs.putBoolean(PREFS_KEY_FIRST_RUN, true)
-                prefs.apply()
+                resetLogin()
                 showLogin()
                 true
             } else {
@@ -103,10 +104,10 @@ class MainActivity : AppCompatActivity() {
 
         Log.d(this::class.java.name, "Initialized")
 
-        val navigationView = findViewById(R.id.nav_view) as NavigationView
+        val navigationView: NavigationView = findViewById(R.id.nav_view)
         val headerView: View = navigationView.getHeaderView(0)
-        val navTitle = headerView.findViewById(R.id.nav_header) as TextView
-        val navSubtitle = headerView.findViewById(R.id.nav_subheader) as TextView
+        val navTitle: TextView = headerView.findViewById(R.id.nav_header)
+        val navSubtitle: TextView = headerView.findViewById(R.id.nav_subheader)
 
 
         mainViewModel.userData.observe(this, Observer {
@@ -178,6 +179,15 @@ class MainActivity : AppCompatActivity() {
         if (firstRun) {
             showLogin()
         }
+    }
+
+    private fun resetLogin() {
+        val prefs = getSharedPreferences(PREFS_APP, 0).edit()
+        prefs.putBoolean(PREFS_KEY_FIRST_RUN, true)
+        prefs.remove(PREFS_KEY_BACKEND)
+        prefs.remove(PREFS_KEY_TOKEN)
+        prefs.remove(PREFS_KEY_UID)
+        prefs.apply()
     }
 
     private fun showLogin() {
