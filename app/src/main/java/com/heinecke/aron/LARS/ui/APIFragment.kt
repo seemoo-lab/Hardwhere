@@ -19,8 +19,8 @@ abstract class APIFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         mainViewModel = activity?.run {
-            ViewModelProviders.of(requireActivity())[MainViewModel::class.java]
-        } ?: throw Exception("Invalid Activity")
+            ViewModelProviders.of(this)[MainViewModel::class.java]
+        } ?: throw Exception("Requires Activity!")
 
         mainViewModel.loginData.observe(this, Observer {
             updateAPI(it)

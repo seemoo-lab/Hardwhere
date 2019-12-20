@@ -15,7 +15,7 @@ class APIClient {
     companion object {
         fun getClient(baseUrl: String, token: String): Retrofit {
             val interceptor = HttpLoggingInterceptor()
-            interceptor.level = HttpLoggingInterceptor.Level.BODY
+            interceptor.level = HttpLoggingInterceptor.Level.NONE
 
             val client: OkHttpClient =
                 OkHttpClient.Builder().addInterceptor {

@@ -6,17 +6,14 @@ import android.util.Log
 import android.view.*
 import android.widget.SearchView
 import android.widget.Toast
-import androidx.fragment.app.Fragment
+import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.heinecke.aron.LARS.MainViewModel
 import com.heinecke.aron.LARS.R
 import com.heinecke.aron.LARS.Utils
-import com.heinecke.aron.LARS.data.APIClient
-import com.heinecke.aron.LARS.data.APIInterface
 import com.heinecke.aron.LARS.data.model.SearchResults
 import com.heinecke.aron.LARS.data.model.Selectable
 import com.heinecke.aron.LARS.ui.APIFragment
@@ -40,7 +37,6 @@ class SelectorFragment : APIFragment(),
     private lateinit var viewModel: SelectorViewModel
     private lateinit var adapter: SelectorRecyclerViewAdapter
     private var returnCode: Int = 0
-    private var api: APIInterface? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,6 +56,7 @@ class SelectorFragment : APIFragment(),
                 adapter = this@SelectorFragment.adapter
             }
         }
+
         viewModel = ViewModelProviders.of(requireActivity())[SelectorViewModel::class.java]
         viewModel.searchString.observe(viewLifecycleOwner, Observer {
             val api = getAPI()
@@ -69,10 +66,17 @@ class SelectorFragment : APIFragment(),
                 api.getSelectablePage(selectType.getTypeName(),50,0).enqueue(SearchResultCallback(requireContext(),selectType,adapter))
             }
         })
-        if (savedInstanceState != null) {
-            viewModel.resetSelected()
+
+
+        viewModel.lastType.value.run {
+            if(selectType != this) {
+                viewModel.resetSearchString()
+            }
+            viewModel.lastType.value = selectType
         }
     }
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -90,8 +94,9 @@ class SelectorFragment : APIFragment(),
         inflater.inflate(R.menu.select, menu)
         (menu.findItem(R.id.app_bar_search).actionView as SearchView).apply {
             setOnQueryTextListener(this@SelectorFragment)
+            setQuery(viewModel.searchString.value,false)
+            isIconified = viewModel.searchString.value.isNullOrEmpty()
         }
-
     }
 
     class SelectorData(
@@ -159,7 +164,7 @@ class SelectorFragment : APIFragment(),
                 } else {
                     Toast.makeText(
                         context,
-                        "Unable to fetch results",
+                        R.string.error_fetch_selectable,
                         Toast.LENGTH_SHORT
                     ).show()
                 }
