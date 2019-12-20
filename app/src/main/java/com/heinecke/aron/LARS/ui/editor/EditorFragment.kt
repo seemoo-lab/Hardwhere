@@ -76,6 +76,7 @@ class EditorFragment : APIFragment() {
         setupSelectable(category,Selectable.SelectableType.Category, R.id.categoryPicker) {editorViewModel.asset.value!!.category}
 
         val multiEdit = editorViewModel.multiEditAssets.value!!.size > 1
+        tag.isFocusable = !multiEdit
         if (multiEdit) {
             tag.setOnClickListener {
                 Toast.makeText(requireContext(),R.string.toast_no_tag_multiedit,Toast.LENGTH_SHORT).show()
