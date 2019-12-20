@@ -6,7 +6,14 @@
 
     <TextView
         android:id="@+id/modelName"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/assetTag"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="20sp"
         android:textStyle="bold" />
@@ -18,7 +25,7 @@
         android:textSize="18sp" />
 
     <TextView
-        android:id="@+id/assetID"
+        android:id="@+id/assetName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="18sp" />

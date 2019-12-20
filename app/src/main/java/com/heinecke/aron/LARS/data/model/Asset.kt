@@ -18,7 +18,8 @@ data class Asset(
     var date_at: Date?, var available_actions: Actions?,
     /** note that an invalid deserialization results in id = 0 **/
     val id: Int = 0,
-    val name: String, val notes: String,
+    var name: String?, var notes: String?,
+    var asset_tag: String?,
     @Transient
     val selected: Boolean = false
 ) : Parcelable {
@@ -38,6 +39,7 @@ data class Asset(
                 null,
                 null,
                 if (multiAsset) ID_MULTI_ASSET else ID_NEW_ASSET,
+                "",
                 "",
                 ""
             )
@@ -59,6 +61,8 @@ data class Asset(
         this.name?.run { base.addProperty("name",this) }
         @Suppress("UNNECESSARY_SAFE_CALL")
         this.notes?.run { base.addProperty("notes",this) }
+        this.asset_tag?.run { base.addProperty("asset_tag",this) }
+        this.name?.run { base.addProperty("name",this) }
 
         return base
     }
