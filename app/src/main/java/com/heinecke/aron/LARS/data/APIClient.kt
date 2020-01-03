@@ -1,6 +1,7 @@
 package com.heinecke.aron.LARS.data
 
 import com.google.gson.*
+import com.heinecke.aron.LARS.BuildConfig
 import com.heinecke.aron.LARS.data.model.Date
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -13,11 +14,13 @@ import java.lang.reflect.Type
 
 class APIClient {
     companion object {
+        const val SIMULATE_SLOW_NETWORK: Boolean = true
+
         fun getClient(baseUrl: String, token: String): Retrofit {
             val interceptor = HttpLoggingInterceptor()
             interceptor.level = HttpLoggingInterceptor.Level.NONE
 
-            val client: OkHttpClient =
+            val builder =
                 OkHttpClient.Builder().addInterceptor {
                     val newRequest: Request = it.request().newBuilder()
                         .addHeader("Authorization", "Bearer $token")
@@ -25,10 +28,18 @@ class APIClient {
                         .addHeader("Content-Type", "application/json")
                         .build()
                     it.proceed(newRequest)
-                }.addInterceptor(interceptor).build()
+                }
+            if (SIMULATE_SLOW_NETWORK && BuildConfig.DEBUG) {
+                builder.addInterceptor(interceptor)
+                    .addInterceptor {
+                        Thread.sleep(4000)
+                        it.proceed(it.request())
+                    }
+            }
+            val client: OkHttpClient = builder.build()
 
             val gson = GsonBuilder().serializeNulls()
-                .registerTypeAdapter(Date::class.java,DateModelDeserializer()).create()
+                .registerTypeAdapter(Date::class.java, DateModelDeserializer()).create()
 
             return Retrofit.Builder()
                 .client(client)
@@ -50,9 +61,9 @@ class APIClient {
             context: JsonDeserializationContext?
         ): Date? {
             return if (json.isJsonObject) {
-                Gson().fromJson<Date>(json,Date::class.java)
+                Gson().fromJson<Date>(json, Date::class.java)
             } else {
-                Date(datetime = json.asString,formatted = json.asString)
+                Date(datetime = json.asString, formatted = json.asString)
             }
         }
     }
