@@ -14,17 +14,18 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.heinecke.aron.LARS.R
 import com.heinecke.aron.LARS.data.model.Asset
 import com.heinecke.aron.LARS.ui.APIFragment
-import com.heinecke.aron.LARS.ui.editor.EditorFragment
-import com.heinecke.aron.LARS.ui.editor.EditorViewModel
+import com.heinecke.aron.LARS.ui.editor.asset.EditorFragment
+import com.heinecke.aron.LARS.ui.editor.asset.EditorViewModel
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
-class ScanListFragment : APIFragment() {
+
+class ScanListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListFragmentInteractionListener {
 
     private lateinit var scanViewModel: ScanViewModel
     private lateinit var recyclerView: RecyclerView
-    private lateinit var viewAdapter: ScanViewAdapter
+    private lateinit var viewAdapter: AssetRecyclerViewAdapter
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var editorViewModel: EditorViewModel
     private lateinit var progressBar: ProgressBar
@@ -60,7 +61,6 @@ class ScanListFragment : APIFragment() {
         Log.d(this::class.java.name, "onOptionsItemSelected")
         return when (item.itemId) {
             R.id.edit -> {
-                Log.d(this::class.java.name, "starting editor")
                 // use empty item otherwise
                 val asset = if (viewAdapter.itemCount == 1) {
                     viewAdapter.getItemAt(0)
@@ -75,6 +75,10 @@ class ScanListFragment : APIFragment() {
                 scanViewModel.scanList.value!!.clear()
                 viewAdapter.notifyDataSetChanged()
                 updateHint()
+                true
+            }
+            R.id.manual -> {
+
                 true
             }
             else -> false
@@ -94,11 +98,9 @@ class ScanListFragment : APIFragment() {
         progressBar = view.findViewById(R.id.progressScanning)
         progressBar.isIndeterminate = true
 
-        val api = getAPI()
-
         viewManager = LinearLayoutManager(context)
         savedInstanceState?.run { scanViewModel.scanList.value!!.addAll(this.getParcelableArrayList(S_SCAN_LIST)!!) }
-        viewAdapter = ScanViewAdapter(scanViewModel.scanList.value!!)
+        viewAdapter = AssetRecyclerViewAdapter(this, scanViewModel.scanList.value!!)
 
         recyclerView = view.findViewById<RecyclerView>(R.id.frag_scan_recycler).apply {
             layoutManager = viewManager
@@ -162,5 +164,9 @@ class ScanListFragment : APIFragment() {
 
     companion object {
         const val S_SCAN_LIST: String = "scan_list"
+    }
+
+    override fun onListFragmentInteraction(item: Asset) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

@@ -8,13 +8,24 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.heinecke.aron.LARS.R
 import com.heinecke.aron.LARS.data.model.Asset
-import org.w3c.dom.Text
 
-class ScanViewAdapter(private val assetList: ArrayList<Asset>) :
-    RecyclerView.Adapter<ScanViewAdapter.ViewHolder>() {
+class AssetRecyclerViewAdapter(private val mListener: OnListFragmentInteractionListener?,
+                               private val assetList: ArrayList<Asset>) :
+    RecyclerView.Adapter<AssetRecyclerViewAdapter.ViewHolder>() {
+
+    private val mOnClickListener: View.OnClickListener
+
+    init {
+        mOnClickListener = View.OnClickListener { v ->
+            val item = v.tag as Asset
+            // Notify the active callbacks interface (the activity, if the fragment is attached to
+            // one) that an item has been selected.
+            mListener?.onListFragmentInteraction(item)
+        }
+    }
 
     // holder class to hold reference
-    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         //get view reference
         var modelName: TextView = view.findViewById(R.id.modelName)
         var locationName: TextView = view.findViewById(R.id.locationName)
@@ -45,6 +56,17 @@ class ScanViewAdapter(private val assetList: ArrayList<Asset>) :
         holder.assetName.text = asset.name ?: "<no name>"
         holder.locationName.text = asset.rtd_location?.name ?: "<no location>"
         holder.assetTag.text = asset.asset_tag ?: "<no tag>"
+
+        holder.view.setOnClickListener(mOnClickListener)
+    }
+
+    /**
+     * Replace elements with new ones
+     */
+    fun replaceElements(newData: List<Asset>) {
+        this.assetList.clear()
+        this.assetList.addAll(newData)
+        this.notifyDataSetChanged()
     }
 
     override fun getItemCount(): Int {
@@ -63,5 +85,20 @@ class ScanViewAdapter(private val assetList: ArrayList<Asset>) :
     fun prepend(item: Asset) {
         this.assetList.add(0, item)
         this.notifyItemInserted(0)
+    }
+
+    /**
+     * This interface must be implemented by activities that contain this
+     * fragment to allow an interaction in this fragment to be communicated
+     * to the activity and potentially other fragments contained in that
+     * activity.
+     *
+     *
+     * See the Android Training lesson
+     * [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html)
+     * for more information.
+     */
+    interface OnListFragmentInteractionListener {
+        fun onListFragmentInteraction(item: Asset)
     }
 }

@@ -1,4 +1,4 @@
-package com.heinecke.aron.LARS.ui.editor
+package com.heinecke.aron.LARS.ui.scan
 
 import android.content.Context
 import android.os.Bundle
@@ -11,11 +11,10 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.gson.JsonElement
 import com.heinecke.aron.LARS.R
 import com.heinecke.aron.LARS.Utils
+import com.heinecke.aron.LARS.data.model.Asset
 import com.heinecke.aron.LARS.data.model.SearchResults
-import com.heinecke.aron.LARS.data.model.Selectable
 import com.heinecke.aron.LARS.ui.APIFragment
 import retrofit2.Call
 import retrofit2.Callback
@@ -28,28 +27,18 @@ import retrofit2.Response
  * [SelectorFragment.OnListFragmentInteractionListener] interface.
  */
 class SelectorFragment : APIFragment(),
-    SelectorRecyclerViewAdapter.OnListFragmentInteractionListener,
+    AssetRecyclerViewAdapter.OnListFragmentInteractionListener,
     SearchView.OnQueryTextListener {
 
     // currently selected item or null
-    private var selectable: Selectable? = null
-    private lateinit var selectType: Selectable.SelectableType
-    private lateinit var viewModel: SelectorViewModel
-    private lateinit var adapter: SelectorRecyclerViewAdapter
+    private lateinit var viewModel: ScanViewModel
+    private lateinit var adapter: AssetRecyclerViewAdapter
     private var returnCode: Int = 0
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            selectable = it.getParcelable(ARG_SELECTABLE)
-            returnCode = it.getInt(ARG_RETURN_CODE)
-            selectType = it.getParcelable(ARG_TYPE)!!
-        }
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        adapter = SelectorRecyclerViewAdapter(this@SelectorFragment)
+        savedInstanceState?.run { viewModel.scanList.value!!.addAll(this.getParcelableArrayList(S_SCAN_LIST)!!) }
+        adapter = AssetRecyclerViewAdapter(this,viewModel.searchResults.value!!)
         if (view is RecyclerView) {
             with(view) {
                 layoutManager = LinearLayoutManager(context)
@@ -57,23 +46,15 @@ class SelectorFragment : APIFragment(),
             }
         }
 
-        viewModel = ViewModelProviders.of(requireActivity())[SelectorViewModel::class.java]
+        viewModel = ViewModelProviders.of(requireActivity())[ScanViewModel::class.java]
         viewModel.searchString.observe(viewLifecycleOwner, Observer {
             val api = getAPI()
             if (it != null && it.isNotBlank()) {
-                api.searchSelectable(selectType.getTypeName(),it).enqueue(SearchResultCallback(requireContext(),selectType,adapter))
+//                api.searchSelectable(selectType.getTypeName(),it).enqueue(SearchResultCallback(requireContext(),selectType,adapter))
             } else {
-                api.getSelectablePage(selectType.getTypeName(),50,0).enqueue(SearchResultCallback(requireContext(),selectType,adapter))
+
             }
         })
-
-
-        viewModel.lastType.value.run {
-            if(selectType != this) {
-                viewModel.resetSearchString()
-            }
-            viewModel.lastType.value = selectType
-        }
     }
 
 
@@ -88,7 +69,10 @@ class SelectorFragment : APIFragment(),
         return view
     }
 
-
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putParcelableArrayList(S_SCAN_LIST,viewModel.searchResults.value)
+    }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.select, menu)
@@ -99,40 +83,18 @@ class SelectorFragment : APIFragment(),
         }
     }
 
-    class SelectorData(
-        /** Item that is selected **/
-        val item: Selectable,
-        /** InputID that got passed, can be used by caller for input identification **/
-        val inputID: Int
-    )
-
     companion object {
-        const val ARG_SELECTABLE = "selectable"
-        const val ARG_RETURN_CODE = "returnCode"
-        const val ARG_TYPE = "type"
-
-        /**
-         * Get new pair of fragment id,args for spawn on NavController
-         */
-        @JvmStatic
-        fun newInstancePair(
-            selectable: Selectable?,
-            returnCode: Int,
-            type: Selectable.SelectableType
-        ): Pair<Int, Bundle> {
-            val args = Bundle().apply {
-                putParcelable(ARG_SELECTABLE, selectable)
-                putInt(ARG_RETURN_CODE, returnCode)
-                putParcelable(ARG_TYPE, type)
-            }
-            return Pair(R.id.selector_fragment, args)
-        }
+        const val S_SCAN_LIST: String = "scan_list"
     }
 
-    override fun onListFragmentInteraction(item: Selectable) {
+    override fun onListFragmentInteraction(item: Asset) {
         Log.d(this@SelectorFragment::class.java.name,"Selected: $item")
-        viewModel.setSelected(SelectorData(item, returnCode))
-        findNavController().popBackStack()
+        if (viewModel.scanList.value!!.any { asset: Asset ->  asset.id == id }) {
+            Toast.makeText(context,R.string.duplicate_manual, Toast.LENGTH_SHORT).show()
+        } else {
+            viewModel.scanList.value!!.add(item)
+            findNavController().popBackStack()
+        }
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
@@ -145,19 +107,18 @@ class SelectorFragment : APIFragment(),
         return true
     }
 
-    class SearchResultCallback(val context: Context, val selectType: Selectable.SelectableType, val adapter: SelectorRecyclerViewAdapter) : Callback<SearchResults<JsonElement>> {
-        override fun onFailure(call: Call<SearchResults<JsonElement>>?, t: Throwable?) {
+    class SearchResultCallback(val context: Context, val adapter: AssetRecyclerViewAdapter) : Callback<SearchResults<Asset>> {
+        override fun onFailure(call: Call<SearchResults<Asset>>?, t: Throwable?) {
             Log.w(this::class.java.name, "$t")
             Toast.makeText(context,R.string.error_fetch_selectable,Toast.LENGTH_SHORT).show()
         }
 
         override fun onResponse(
-            call: Call<SearchResults<JsonElement>>?,
-            response: Response<SearchResults<JsonElement>>?
+            call: Call<SearchResults<Asset>>?,
+            response: Response<SearchResults<Asset>>?
         ) {
             response?.run {
-                val elements =
-                    this.body()!!.rows.map { elem -> selectType.parseElement(elem) }
+                val elements = this.body()!!.rows
                 if (this.isSuccessful) {
                     Log.d(this::class.java.name, "Body: $elements")
                     adapter.replaceElements(elements)
@@ -171,4 +132,5 @@ class SelectorFragment : APIFragment(),
             } ?: Utils.logResponseVerbose(this::class.java, response)
         }
     }
+
 }

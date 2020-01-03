@@ -1,4 +1,4 @@
-package com.heinecke.aron.LARS.ui.editor
+package com.heinecke.aron.LARS.ui.editor.asset
 
 import android.os.Bundle
 import android.util.Log
@@ -13,6 +13,8 @@ import com.heinecke.aron.LARS.R
 import com.heinecke.aron.LARS.data.model.Asset
 import com.heinecke.aron.LARS.data.model.Selectable
 import com.heinecke.aron.LARS.ui.APIFragment
+import com.heinecke.aron.LARS.ui.editor.SelectorFragment
+import com.heinecke.aron.LARS.ui.editor.SelectorViewModel
 
 
 class EditorFragment : APIFragment() {
@@ -28,7 +30,9 @@ class EditorFragment : APIFragment() {
         if (savedInstanceState == null) {
             arguments!!.run {
                 editorViewModel.setEditorAsset(this.getParcelable(PARAM_ASSET)!!)
-                editorViewModel.multiEditAssets.value = this.getParcelableArrayList(PARAM_MULTIEDIT)
+                editorViewModel.multiEditAssets.value = this.getParcelableArrayList(
+                    PARAM_MULTIEDIT
+                )
             }
         }
     }

@@ -1,9 +1,8 @@
-package com.heinecke.aron.LARS.ui.editor
+package com.heinecke.aron.LARS.ui.editor.asset
 
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import com.heinecke.aron.LARS.data.APIInterface
 import com.heinecke.aron.LARS.data.model.Asset
@@ -34,7 +33,8 @@ class EditorViewModel : ViewModel() {
     }
 
     fun updateAssets(client: APIInterface) {
-        loading.value = Loading()
+        loading.value =
+            Loading()
 
         val requests: MutableList<Observable<Result<Asset>>> = mutableListOf()
         val singleAsset = asset.value!!
@@ -65,11 +65,21 @@ class EditorViewModel : ViewModel() {
         }
             .subscribe({
                 Log.d(this@EditorViewModel::class.java.name,"Finished with $it")
-                loading.postValue(Loading(null,it.isEmpty()))
+                loading.postValue(
+                    Loading(
+                        null,
+                        it.isEmpty()
+                    )
+                )
                 editingFinished.postValue(1)
             }) {
                 Log.w(this@EditorViewModel::class.java.name,"Error: $it")
-                loading.postValue(Loading(it,false))
+                loading.postValue(
+                    Loading(
+                        it,
+                        false
+                    )
+                )
             }
     }
 

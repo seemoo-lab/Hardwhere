@@ -16,18 +16,20 @@ interface APIInterface {
     fun getAsset(@Path("id") id: Int): Call<Asset>
     @GET("api/v1/hardware/{id}")
     fun getAssetObservable(@Path("id") id: Int): Observable<Asset>
+    @GET("api/v1/hardware")
+    fun searchAsset(@Query("search") searchQuery: String): Call<SearchResults<Asset>>
 
     @GET("api/v1/users/{id}")
     fun getUserInfo(@Path("id") id: Int): Call<Selectable.User>
 
     @GET("api/v1/{type}")
-    fun searchSelectable(@Path("type") type: String, @Query("search") searchQuery: String): Call<SearchResults>
+    fun searchSelectable(@Path("type") type: String, @Query("search") searchQuery: String): Call<SearchResults<JsonElement>>
 
     @GET("api/v1/{type}/{id}")
     fun getSelectable(@Path("type") type: String, @Path("id") id: Int): Call<JsonElement>
 
     @GET("api/v1/{type}")
-    fun getSelectablePage(@Path("type") type: String, @Query("limit") limit: Int, @Query("offset") offset: Int): Call<SearchResults>
+    fun getSelectablePage(@Path("type") type: String, @Query("limit") limit: Int, @Query("offset") offset: Int): Call<SearchResults<JsonElement>>
 
     /**
      * @param data JsonElement of data to update, use makePath the Asset

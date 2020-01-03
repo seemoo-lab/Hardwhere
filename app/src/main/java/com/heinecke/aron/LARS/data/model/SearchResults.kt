@@ -1,5 +1,3 @@
 package com.heinecke.aron.LARS.data.model
 
-import com.google.gson.JsonElement
-
-data class SearchResults(val total: Int, val rows: List<JsonElement>)
+data class SearchResults<T>(val total: Int, val rows: List<T>)

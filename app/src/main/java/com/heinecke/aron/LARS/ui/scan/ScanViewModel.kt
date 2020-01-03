@@ -10,6 +10,9 @@ class ScanViewModel : ViewModel() {
     internal val scanList: MutableLiveData<ArrayList<Asset>> = MutableLiveData(ArrayList())
     internal val assetPattern: Regex = Regex("^http.*/([0-9]+)$")
 
+    // Search Fragment
+    internal val searchString: MutableLiveData<String> = MutableLiveData("")
+    internal val searchResults: MutableLiveData<ArrayList<Asset>> = MutableLiveData(ArrayList())
 
     internal fun incLoading() {
         resolving.run {
