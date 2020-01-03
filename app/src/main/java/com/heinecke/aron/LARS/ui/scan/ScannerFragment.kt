@@ -13,7 +13,6 @@ import com.heinecke.aron.LARS.R
 import com.heinecke.aron.LARS.Utils
 import com.heinecke.aron.LARS.data.model.Asset
 import com.heinecke.aron.LARS.ui.APIFragment
-import com.heinecke.aron.LARS.ui.editor.EditorFragment
 import com.journeyapps.barcodescanner.BarcodeCallback
 import com.journeyapps.barcodescanner.BarcodeResult
 import com.journeyapps.barcodescanner.DecoratedBarcodeView

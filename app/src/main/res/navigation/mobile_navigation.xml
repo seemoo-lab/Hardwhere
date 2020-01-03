@@ -30,8 +30,8 @@
         tools:layout="@layout/fragment_tools" />
     <fragment
         android:id="@+id/editorFragment"
-        android:name="com.heinecke.aron.LARS.ui.editor.EditorFragment"
-        android:label="EditorFragment" >
+        android:name="com.heinecke.aron.LARS.ui.editor.asset.EditorFragment"
+        android:label="@string/title_editor_asset" >
         <action
             android:id="@+id/action_editorFragment_to_selectorFragment"
             app:destination="@id/selector_fragment"
@@ -52,7 +52,7 @@
     <fragment
         android:id="@+id/scannerFragment"
         android:name="com.heinecke.aron.LARS.ui.scan.ScannerFragment"
-        android:label="ScannerFragment" >
+        android:label="@string/title_scanner" >
         <action
             android:id="@+id/action_scannerFragment_to_nav_scan2"
             app:destination="@id/nav_scan"

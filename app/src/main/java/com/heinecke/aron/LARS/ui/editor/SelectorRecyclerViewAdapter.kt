@@ -32,6 +32,9 @@ class SelectorRecyclerViewAdapter(
         }
     }
 
+    /**
+     * Replace elements with new ones
+     */
     fun replaceElements(newData: List<Selectable>) {
         this.mValues.clear()
         this.mValues.addAll(newData)

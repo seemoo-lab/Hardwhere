@@ -10,6 +10,9 @@ import com.heinecke.aron.LARS.data.APIClient
 import com.heinecke.aron.LARS.data.APIInterface
 import com.heinecke.aron.LARS.data.model.LoginData
 
+/**
+ * Base fragment with API access, contains getAPI() function with cached API access and credentials
+ */
 abstract class APIFragment : Fragment() {
     protected lateinit var mainViewModel: MainViewModel
     private lateinit var api: APIInterface
