@@ -33,7 +33,11 @@ class AssetSearchFragment : APIFragment(),
     // currently selected item or null
     private lateinit var viewModel: ScanViewModel
     private lateinit var adapter: AssetRecyclerViewAdapter
-    private var returnCode: Int = 0
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel = ViewModelProviders.of(requireActivity())[ScanViewModel::class.java]
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -56,9 +60,9 @@ class AssetSearchFragment : APIFragment(),
         viewModel.searchString.observe(viewLifecycleOwner, Observer {
             val api = getAPI()
             if (it != null && it.isNotBlank()) {
-//                api.searchSelectable(selectType.getTypeName(),it).enqueue(SearchResultCallback(requireContext(),selectType,adapter))
+                api.searchAsset(it).enqueue(SearchResultCallback(requireContext(),adapter))
             } else {
-
+                adapter.clearItems()
             }
         })
     }

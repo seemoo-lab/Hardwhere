@@ -59,7 +59,10 @@ class AssetRecyclerViewAdapter(
         holder.locationName.text = asset.rtd_location?.name ?: "<no location>"
         holder.assetTag.text = asset.asset_tag ?: "<no tag>"
 
-        holder.view.setOnClickListener(mOnClickListener)
+        with(holder.view) {
+            tag = asset
+            setOnClickListener(mOnClickListener)
+        }
     }
 
     /**
@@ -87,6 +90,11 @@ class AssetRecyclerViewAdapter(
     fun prepend(item: Asset) {
         this.assetList.add(0, item)
         this.notifyItemInserted(0)
+    }
+
+    fun clearItems() {
+        this.assetList.clear()
+        this.notifyDataSetChanged()
     }
 
     /**
