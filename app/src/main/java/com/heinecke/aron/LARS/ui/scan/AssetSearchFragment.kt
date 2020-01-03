@@ -26,7 +26,7 @@ import retrofit2.Response
  * Activities containing this fragment MUST implement the
  * [SelectorFragment.OnListFragmentInteractionListener] interface.
  */
-class SelectorFragment : APIFragment(),
+class AssetSearchFragment : APIFragment(),
     AssetRecyclerViewAdapter.OnListFragmentInteractionListener,
     SearchView.OnQueryTextListener {
 
@@ -42,7 +42,7 @@ class SelectorFragment : APIFragment(),
         if (view is RecyclerView) {
             with(view) {
                 layoutManager = LinearLayoutManager(context)
-                adapter = this@SelectorFragment.adapter
+                adapter = this@AssetSearchFragment.adapter
             }
         }
 
@@ -56,8 +56,6 @@ class SelectorFragment : APIFragment(),
             }
         })
     }
-
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -77,7 +75,7 @@ class SelectorFragment : APIFragment(),
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.select, menu)
         (menu.findItem(R.id.app_bar_search).actionView as SearchView).apply {
-            setOnQueryTextListener(this@SelectorFragment)
+            setOnQueryTextListener(this@AssetSearchFragment)
             setQuery(viewModel.searchString.value,false)
             isIconified = false
         }
@@ -85,10 +83,18 @@ class SelectorFragment : APIFragment(),
 
     companion object {
         const val S_SCAN_LIST: String = "scan_list"
+
+        /**
+         * Returns a new instance pair to use on a NavController
+         */
+        @JvmStatic
+        fun newInstanceID(): Int {
+            return R.id.asset_search_fragment
+        }
     }
 
     override fun onListFragmentInteraction(item: Asset) {
-        Log.d(this@SelectorFragment::class.java.name,"Selected: $item")
+        Log.d(this@AssetSearchFragment::class.java.name,"Selected: $item")
         if (viewModel.scanList.value!!.any { asset: Asset ->  asset.id == id }) {
             Toast.makeText(context,R.string.duplicate_manual, Toast.LENGTH_SHORT).show()
         } else {

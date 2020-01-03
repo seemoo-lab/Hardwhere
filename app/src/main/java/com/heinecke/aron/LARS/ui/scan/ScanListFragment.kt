@@ -50,7 +50,7 @@ class ScanListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListFragmentI
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putParcelableArrayList(S_SCAN_LIST,scanViewModel.scanList.value)
+        outState.putParcelableArrayList(S_SCAN_LIST, scanViewModel.scanList.value)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -67,7 +67,10 @@ class ScanListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListFragmentI
                 } else {
                     Asset.getEmptyAsset(true)
                 }
-                val (id, args) = EditorFragment.newInstancePair(asset,scanViewModel.scanList.value!!)
+                val (id, args) = EditorFragment.newInstancePair(
+                    asset,
+                    scanViewModel.scanList.value!!
+                )
                 findNavController().navigate(id, args)
                 true
             }
@@ -78,7 +81,7 @@ class ScanListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListFragmentI
                 true
             }
             R.id.manual -> {
-
+                findNavController().navigate(AssetSearchFragment.newInstanceID())
                 true
             }
             else -> false
@@ -99,7 +102,13 @@ class ScanListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListFragmentI
         progressBar.isIndeterminate = true
 
         viewManager = LinearLayoutManager(context)
-        savedInstanceState?.run { scanViewModel.scanList.value!!.addAll(this.getParcelableArrayList(S_SCAN_LIST)!!) }
+        savedInstanceState?.run {
+            scanViewModel.scanList.value!!.addAll(
+                this.getParcelableArrayList(
+                    S_SCAN_LIST
+                )!!
+            )
+        }
         viewAdapter = AssetRecyclerViewAdapter(this, scanViewModel.scanList.value!!)
 
         recyclerView = view.findViewById<RecyclerView>(R.id.frag_scan_recycler).apply {
@@ -108,14 +117,14 @@ class ScanListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListFragmentI
         }
 
         scanViewModel.resolving.observe(this, Observer {
-            progressBar.visibility = if(it > 0) View.VISIBLE else View.GONE
+            progressBar.visibility = if (it > 0) View.VISIBLE else View.GONE
         })
 
         updateHint()
 
         mainViewModel.scanData.observe(viewLifecycleOwner, Observer {
             it?.run {
-                Log.d(this@ScanListFragment::class.java.name,"ScanData updated.")
+                Log.d(this@ScanListFragment::class.java.name, "ScanData updated.")
                 viewAdapter.notifyDataSetChanged()
             }
         })
@@ -131,7 +140,8 @@ class ScanListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListFragmentI
     }
 
     private fun updateHint() {
-        scanHint.visibility = if(scanViewModel.scanList.value!!.isEmpty()) View.VISIBLE else View.GONE
+        scanHint.visibility =
+            if (scanViewModel.scanList.value!!.isEmpty()) View.VISIBLE else View.GONE
     }
 
     private fun updateAssets() {
@@ -144,7 +154,7 @@ class ScanListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListFragmentI
 
         @Suppress("UNUSED_VARIABLE")
         val ignored = Observable.zip(requests) { list ->
-            val assets = list.filter{
+            val assets = list.filter {
                 if (it is Asset) {
                     return@filter true
                 }
@@ -153,12 +163,12 @@ class ScanListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListFragmentI
             assets
         }
             .subscribe({
-                Log.d(this@ScanListFragment::class.java.name,"Finished with $it")
+                Log.d(this@ScanListFragment::class.java.name, "Finished with $it")
                 scanViewModel.scanList.value!!.clear()
                 scanViewModel.scanList.value!!.addAll(it)
                 viewAdapter.notifyDataSetChanged()
             }) {
-                Log.w(this@ScanListFragment::class.java.name,"Error: $it")
+                Log.w(this@ScanListFragment::class.java.name, "Error: $it")
             }
     }
 
