@@ -34,7 +34,7 @@ class SelectorViewModel : ViewModel() {
      * Reset search string, internal use
      */
     fun resetSearchString() {
-        Log.d(this::class.java.name,"ResetSearchString")
+        Log.d(this::class.java.name, "ResetSearchString")
         searchString.value = ""
     }
 }

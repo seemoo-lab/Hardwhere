@@ -3,9 +3,7 @@ package com.heinecke.aron.LARS.data.model
 import android.os.Parcelable
 import com.google.gson.Gson
 import com.google.gson.JsonElement
-import com.heinecke.aron.LARS.data.APIInterface
 import kotlinx.android.parcel.Parcelize
-import retrofit2.Call
 
 /**
  * Interface for models that have a name & id, used for selection dialogs
@@ -65,7 +63,7 @@ interface Selectable : Parcelable {
             }
         };
 
-        abstract fun getTypeName() : String
+        abstract fun getTypeName(): String
         abstract fun parseElement(input: JsonElement): Selectable
     }
 

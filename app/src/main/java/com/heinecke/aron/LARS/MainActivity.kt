@@ -1,6 +1,5 @@
 package com.heinecke.aron.LARS
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.os.PersistableBundle
@@ -19,9 +18,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
-import com.google.zxing.integration.android.IntentIntegrator
 import com.heinecke.aron.LARS.Utils.Companion.PREFS_APP
 import com.heinecke.aron.LARS.Utils.Companion.PREFS_KEY_BACKEND
 import com.heinecke.aron.LARS.Utils.Companion.PREFS_KEY_FIRST_RUN
@@ -136,8 +133,8 @@ class MainActivity : AppCompatActivity() {
     override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {
         super.onSaveInstanceState(outState, outPersistentState)
         outState?.run {
-            putParcelable(S_LOGINDATA,mainViewModel.loginData.value)
-            putParcelable(S_USERDATA,mainViewModel.userData.value)
+            putParcelable(S_LOGINDATA, mainViewModel.loginData.value)
+            putParcelable(S_USERDATA, mainViewModel.userData.value)
         }
     }
 

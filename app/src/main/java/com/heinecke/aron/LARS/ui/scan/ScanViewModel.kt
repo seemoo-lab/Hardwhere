@@ -1,6 +1,5 @@
 package com.heinecke.aron.LARS.ui.scan
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.heinecke.aron.LARS.data.model.Asset
@@ -19,9 +18,10 @@ class ScanViewModel : ViewModel() {
             value = value!! + 1
         }
     }
+
     internal fun decLoading() {
         resolving.run {
-            value = value!! -1
+            value = value!! - 1
         }
     }
 }

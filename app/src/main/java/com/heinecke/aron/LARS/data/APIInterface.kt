@@ -14,8 +14,10 @@ import com.heinecke.aron.LARS.data.model.Result as Result1
 interface APIInterface {
     @GET("api/v1/hardware/{id}")
     fun getAsset(@Path("id") id: Int): Call<Asset>
+
     @GET("api/v1/hardware/{id}")
     fun getAssetObservable(@Path("id") id: Int): Observable<Asset>
+
     @GET("api/v1/hardware")
     fun searchAsset(@Query("search") searchQuery: String): Call<SearchResults<Asset>>
 
@@ -35,10 +37,10 @@ interface APIInterface {
      * @param data JsonElement of data to update, use makePath the Asset
      */
     @PATCH("api/v1/hardware/{id}")
-    fun updateAsset(@Path("id") id: Int, @Body data: JsonObject) : Observable<Result1<Asset>>
+    fun updateAsset(@Path("id") id: Int, @Body data: JsonObject): Observable<Result1<Asset>>
 
     companion object {
-        fun makeAssetPatch(data: Any) : JsonElement {
+        fun makeAssetPatch(data: Any): JsonElement {
             val gson = Gson()
             val jsonelem = gson.toJsonTree(data)
             jsonelem.asJsonObject.entrySet().removeIf {

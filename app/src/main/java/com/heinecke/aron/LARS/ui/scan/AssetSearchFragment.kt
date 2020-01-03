@@ -37,8 +37,14 @@ class AssetSearchFragment : APIFragment(),
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        savedInstanceState?.run { viewModel.scanList.value!!.addAll(this.getParcelableArrayList(S_SCAN_LIST)!!) }
-        adapter = AssetRecyclerViewAdapter(this,viewModel.searchResults.value!!)
+        savedInstanceState?.run {
+            viewModel.scanList.value!!.addAll(
+                this.getParcelableArrayList(
+                    S_SCAN_LIST
+                )!!
+            )
+        }
+        adapter = AssetRecyclerViewAdapter(this, viewModel.searchResults.value!!)
         if (view is RecyclerView) {
             with(view) {
                 layoutManager = LinearLayoutManager(context)
@@ -69,14 +75,14 @@ class AssetSearchFragment : APIFragment(),
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putParcelableArrayList(S_SCAN_LIST,viewModel.searchResults.value)
+        outState.putParcelableArrayList(S_SCAN_LIST, viewModel.searchResults.value)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.select, menu)
         (menu.findItem(R.id.app_bar_search).actionView as SearchView).apply {
             setOnQueryTextListener(this@AssetSearchFragment)
-            setQuery(viewModel.searchString.value,false)
+            setQuery(viewModel.searchString.value, false)
             isIconified = false
         }
     }
@@ -94,9 +100,9 @@ class AssetSearchFragment : APIFragment(),
     }
 
     override fun onListFragmentInteraction(item: Asset) {
-        Log.d(this@AssetSearchFragment::class.java.name,"Selected: $item")
-        if (viewModel.scanList.value!!.any { asset: Asset ->  asset.id == id }) {
-            Toast.makeText(context,R.string.duplicate_manual, Toast.LENGTH_SHORT).show()
+        Log.d(this@AssetSearchFragment::class.java.name, "Selected: $item")
+        if (viewModel.scanList.value!!.any { asset: Asset -> asset.id == id }) {
+            Toast.makeText(context, R.string.duplicate_manual, Toast.LENGTH_SHORT).show()
         } else {
             viewModel.scanList.value!!.add(item)
             findNavController().popBackStack()
@@ -113,10 +119,11 @@ class AssetSearchFragment : APIFragment(),
         return true
     }
 
-    class SearchResultCallback(val context: Context, val adapter: AssetRecyclerViewAdapter) : Callback<SearchResults<Asset>> {
+    class SearchResultCallback(val context: Context, val adapter: AssetRecyclerViewAdapter) :
+        Callback<SearchResults<Asset>> {
         override fun onFailure(call: Call<SearchResults<Asset>>?, t: Throwable?) {
             Log.w(this::class.java.name, "$t")
-            Toast.makeText(context,R.string.error_fetch_selectable,Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, R.string.error_fetch_selectable, Toast.LENGTH_SHORT).show()
         }
 
         override fun onResponse(

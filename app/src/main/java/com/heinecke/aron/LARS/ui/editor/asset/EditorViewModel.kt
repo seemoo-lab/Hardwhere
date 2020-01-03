@@ -40,12 +40,14 @@ class EditorViewModel : ViewModel() {
         val singleAsset = asset.value!!
         val patchData = singleAsset.createPatch()
         if (!singleAsset.isMultiAsset()) {
-            requests.add(client.updateAsset(singleAsset.id,patchData)
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.newThread()))
+            requests.add(
+                client.updateAsset(singleAsset.id, patchData)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(Schedulers.newThread())
+            )
         } else {
             requests.addAll(multiEditAssets.value!!.map {
-                client.updateAsset(it.id,patchData)
+                client.updateAsset(it.id, patchData)
                     .subscribeOn(Schedulers.io())
                     .observeOn(Schedulers.newThread())
             })
@@ -53,9 +55,9 @@ class EditorViewModel : ViewModel() {
 
         @Suppress("UNUSED_VARIABLE")
         val ignored = Observable.zip(requests) { list ->
-            val failed = list.filter{
+            val failed = list.filter {
                 if (it is Result<*>) {
-                    if(it.status == "success") {
+                    if (it.status == "success") {
                         return@filter false
                     }
                 }
@@ -64,7 +66,7 @@ class EditorViewModel : ViewModel() {
             failed
         }
             .subscribe({
-                Log.d(this@EditorViewModel::class.java.name,"Finished with $it")
+                Log.d(this@EditorViewModel::class.java.name, "Finished with $it")
                 loading.postValue(
                     Loading(
                         null,
@@ -73,7 +75,7 @@ class EditorViewModel : ViewModel() {
                 )
                 editingFinished.postValue(1)
             }) {
-                Log.w(this@EditorViewModel::class.java.name,"Error: $it")
+                Log.w(this@EditorViewModel::class.java.name, "Error: $it")
                 loading.postValue(
                     Loading(
                         it,
@@ -87,9 +89,11 @@ class EditorViewModel : ViewModel() {
         editingFinished.value = null
     }
 
-    data class Loading(val error: Throwable? = null,
-                       /**
-                        * non-null on finish
-                        */
-                       val success: Boolean? = null)
+    data class Loading(
+        val error: Throwable? = null,
+        /**
+         * non-null on finish
+         */
+        val success: Boolean? = null
+    )
 }

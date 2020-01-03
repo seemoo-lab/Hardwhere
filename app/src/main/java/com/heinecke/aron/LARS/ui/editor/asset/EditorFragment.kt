@@ -75,27 +75,43 @@ class EditorFragment : APIFragment() {
         name = view.findViewById(R.id.assetName)
         val loading: ProgressBar = view.findViewById(R.id.loading)
 
-        setupSelectable(location,Selectable.SelectableType.Location, R.id.locationPicker) {editorViewModel.asset.value!!.rtd_location}
-        setupSelectable(model,Selectable.SelectableType.Model, R.id.modelPicker) {editorViewModel.asset.value!!.model}
-        setupSelectable(category,Selectable.SelectableType.Category, R.id.categoryPicker) {editorViewModel.asset.value!!.category}
+        setupSelectable(
+            location,
+            Selectable.SelectableType.Location,
+            R.id.locationPicker
+        ) { editorViewModel.asset.value!!.rtd_location }
+        setupSelectable(
+            model,
+            Selectable.SelectableType.Model,
+            R.id.modelPicker
+        ) { editorViewModel.asset.value!!.model }
+        setupSelectable(
+            category,
+            Selectable.SelectableType.Category,
+            R.id.categoryPicker
+        ) { editorViewModel.asset.value!!.category }
 
         val multiEdit = editorViewModel.multiEditAssets.value!!.size > 1
         tag.isFocusable = !multiEdit
         if (multiEdit) {
             tag.setOnClickListener {
-                Toast.makeText(requireContext(),R.string.toast_no_tag_multiedit,Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    R.string.toast_no_tag_multiedit,
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
 
         selectorViewModel = ViewModelProviders.of(requireActivity())[SelectorViewModel::class.java]
         selectorViewModel.selected.observe(viewLifecycleOwner, Observer {
-            Log.d(this@EditorFragment::class.java.name,"Selected: $it")
+            Log.d(this@EditorFragment::class.java.name, "Selected: $it")
             it?.run {
                 val currentVal = editorViewModel.asset.value!!
                 when (it.inputID) {
                     R.id.locationPicker -> currentVal.rtd_location = it.item as Selectable.Location
                     R.id.modelPicker -> currentVal.model = it.item as Selectable.Model
-                    R.id.categoryPicker -> currentVal.category= it.item as Selectable.Category
+                    R.id.categoryPicker -> currentVal.category = it.item as Selectable.Category
                     else -> Log.w(
                         this@EditorFragment::class.java.name,
                         "Unknown inputID for selector update"
@@ -106,7 +122,7 @@ class EditorFragment : APIFragment() {
         })
 
         editorViewModel.asset.observe(viewLifecycleOwner, Observer { it ->
-            Log.d(this::class.java.name,"Asset update $it")
+            Log.d(this::class.java.name, "Asset update $it")
             it?.run {
                 location.setText(this.rtd_location?.name ?: "")
                 model.setText(this.model?.name ?: "")
@@ -118,14 +134,15 @@ class EditorFragment : APIFragment() {
         })
 
         editorViewModel.loading.observe(this, Observer {
-            Log.d(this@EditorFragment::class.java.name,"Loading-Update: $it")
-            loading.visibility = if(it == null) View.INVISIBLE else View.INVISIBLE
+            Log.d(this@EditorFragment::class.java.name, "Loading-Update: $it")
+            loading.visibility = if (it == null) View.INVISIBLE else View.INVISIBLE
             if (it != null) {
                 if (it.success != null) {
                     if (it.success == true) {
                         findNavController().popBackStack()
                     } else {
-                        Toast.makeText(requireContext(),"Failed: ${it.error}",Toast.LENGTH_LONG).show()
+                        Toast.makeText(requireContext(), "Failed: ${it.error}", Toast.LENGTH_LONG)
+                            .show()
                     }
                     editorViewModel.loading.value = null // reset
                 }
@@ -133,8 +150,10 @@ class EditorFragment : APIFragment() {
         })
     }
 
-    private fun <T: Selectable> setupSelectable(et: EditText, type: Selectable.SelectableType,
-                                                returnCode: Int, v: () -> T?) {
+    private fun <T : Selectable> setupSelectable(
+        et: EditText, type: Selectable.SelectableType,
+        returnCode: Int, v: () -> T?
+    ) {
         et.setOnClickListener {
             Log.d(this::class.java.name, "$type clicked")
             val (id, args) = SelectorFragment.newInstancePair(

@@ -9,8 +9,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.heinecke.aron.LARS.R
 import com.heinecke.aron.LARS.data.model.Asset
 
-class AssetRecyclerViewAdapter(private val mListener: OnListFragmentInteractionListener?,
-                               private val assetList: ArrayList<Asset>) :
+class AssetRecyclerViewAdapter(
+    private val mListener: OnListFragmentInteractionListener?,
+    private val assetList: ArrayList<Asset>
+) :
     RecyclerView.Adapter<AssetRecyclerViewAdapter.ViewHolder>() {
 
     private val mOnClickListener: View.OnClickListener

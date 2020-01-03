@@ -43,7 +43,7 @@ class ScannerFragment : APIFragment() {
         barcodeView.decodeContinuous(object : BarcodeCallback {
             override fun barcodeResult(result: BarcodeResult?) {
                 result?.run {
-                    if(result.text == null || result.text == lastText) {
+                    if (result.text == null || result.text == lastText) {
                         return;
                     }
                     lastText = result.text
@@ -54,22 +54,30 @@ class ScannerFragment : APIFragment() {
                     viewModel.assetPattern.find(lastText!!, 0)?.groupValues?.run {
                         this.forEach { item -> Log.d(this::class.java.name, "Item: $item") }
                         val id = Integer.valueOf(this[1])
-                        if(viewModel.scanList.value!!.any { asset: Asset ->  asset.id == id }) {
-                            Toast.makeText(context,R.string.duplicate_scan, Toast.LENGTH_SHORT).show()
+                        if (viewModel.scanList.value!!.any { asset: Asset -> asset.id == id }) {
+                            Toast.makeText(context, R.string.duplicate_scan, Toast.LENGTH_SHORT)
+                                .show()
                         } else {
                             viewModel.incLoading()
                             api.getAsset(id).enqueue(object : Callback<Asset> {
                                 override fun onFailure(call: Call<Asset>?, t: Throwable?) {
                                     Log.e(this::class.java.name, "Error resolving $id: $t")
-                                    Toast.makeText(requireContext(), "Can't request: $t", Toast.LENGTH_LONG)
+                                    Toast.makeText(
+                                        requireContext(),
+                                        "Can't request: $t",
+                                        Toast.LENGTH_LONG
+                                    )
                                         .show()
                                     viewModel.decLoading()
                                 }
 
-                                override fun onResponse(call: Call<Asset>?, response: Response<Asset>?) {
+                                override fun onResponse(
+                                    call: Call<Asset>?,
+                                    response: Response<Asset>?
+                                ) {
                                     response?.run {
                                         if (this.isSuccessful && this.body()!!.id == id) {
-                                            viewModel.scanList.value!!.add(0,this.body()!!)
+                                            viewModel.scanList.value!!.add(0, this.body()!!)
                                         } else {
                                             Toast.makeText(
                                                 requireContext(),
@@ -77,14 +85,21 @@ class ScannerFragment : APIFragment() {
                                                 Toast.LENGTH_SHORT
                                             ).show()
                                         }
-                                    } ?: Utils.logResponseVerbose(this@ScannerFragment::class.java, response)
+                                    } ?: Utils.logResponseVerbose(
+                                        this@ScannerFragment::class.java,
+                                        response
+                                    )
                                     viewModel.decLoading()
                                 }
                             })
                         }
 
                         mainViewModel.scanData.value = Integer.valueOf(this[1])
-                    } ?: Toast.makeText(requireContext(), R.string.invalid_asset_code, Toast.LENGTH_LONG).show()
+                    } ?: Toast.makeText(
+                        requireContext(),
+                        R.string.invalid_asset_code,
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
 
 
@@ -124,7 +139,7 @@ class ScannerFragment : APIFragment() {
          * Returns a new instance pair to use on a NavController
          */
         @JvmStatic
-        fun newInstance(): Int{
+        fun newInstance(): Int {
             return R.id.scannerFragment
         }
     }

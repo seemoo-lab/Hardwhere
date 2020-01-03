@@ -61,21 +61,22 @@ class SelectorFragment : APIFragment(),
         viewModel.searchString.observe(viewLifecycleOwner, Observer {
             val api = getAPI()
             if (it != null && it.isNotBlank()) {
-                api.searchSelectable(selectType.getTypeName(),it).enqueue(SearchResultCallback(requireContext(),selectType,adapter))
+                api.searchSelectable(selectType.getTypeName(), it)
+                    .enqueue(SearchResultCallback(requireContext(), selectType, adapter))
             } else {
-                api.getSelectablePage(selectType.getTypeName(),50,0).enqueue(SearchResultCallback(requireContext(),selectType,adapter))
+                api.getSelectablePage(selectType.getTypeName(), 50, 0)
+                    .enqueue(SearchResultCallback(requireContext(), selectType, adapter))
             }
         })
 
 
         viewModel.lastType.value.run {
-            if(selectType != this) {
+            if (selectType != this) {
                 viewModel.resetSearchString()
             }
             viewModel.lastType.value = selectType
         }
     }
-
 
 
     override fun onCreateView(
@@ -89,12 +90,11 @@ class SelectorFragment : APIFragment(),
     }
 
 
-
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.select, menu)
         (menu.findItem(R.id.app_bar_search).actionView as SearchView).apply {
             setOnQueryTextListener(this@SelectorFragment)
-            setQuery(viewModel.searchString.value,false)
+            setQuery(viewModel.searchString.value, false)
             isIconified = false
         }
     }
@@ -130,7 +130,7 @@ class SelectorFragment : APIFragment(),
     }
 
     override fun onListFragmentInteraction(item: Selectable) {
-        Log.d(this@SelectorFragment::class.java.name,"Selected: $item")
+        Log.d(this@SelectorFragment::class.java.name, "Selected: $item")
         viewModel.setSelected(SelectorData(item, returnCode))
         findNavController().popBackStack()
     }
@@ -145,10 +145,14 @@ class SelectorFragment : APIFragment(),
         return true
     }
 
-    class SearchResultCallback(val context: Context, val selectType: Selectable.SelectableType, val adapter: SelectorRecyclerViewAdapter) : Callback<SearchResults<JsonElement>> {
+    class SearchResultCallback(
+        val context: Context,
+        val selectType: Selectable.SelectableType,
+        val adapter: SelectorRecyclerViewAdapter
+    ) : Callback<SearchResults<JsonElement>> {
         override fun onFailure(call: Call<SearchResults<JsonElement>>?, t: Throwable?) {
             Log.w(this::class.java.name, "$t")
-            Toast.makeText(context,R.string.error_fetch_selectable,Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, R.string.error_fetch_selectable, Toast.LENGTH_SHORT).show()
         }
 
         override fun onResponse(
