@@ -118,6 +118,7 @@ class ScanListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListFragmentI
 
         scanViewModel.resolving.observe(this, Observer {
             progressBar.visibility = if (it > 0) View.VISIBLE else View.GONE
+            updateHint()
         })
 
         updateHint()
@@ -126,6 +127,7 @@ class ScanListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListFragmentI
             it?.run {
                 Log.d(this@ScanListFragment::class.java.name, "ScanData updated.")
                 viewAdapter.notifyDataSetChanged()
+                updateHint()
             }
         })
 
