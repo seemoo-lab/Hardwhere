@@ -49,6 +49,7 @@ class ScannerFragment : APIFragment() {
                     lastText = result.text
 
                     beepManager.playBeepSound()
+                    Utils.vibrate(context!!,100)
 
                     Log.d(this::class.java.name, "Scanned: $result")
                     viewModel.assetPattern.find(lastText!!, 0)?.groupValues?.run {

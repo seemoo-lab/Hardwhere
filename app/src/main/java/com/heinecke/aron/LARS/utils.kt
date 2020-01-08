@@ -1,8 +1,14 @@
 package com.heinecke.aron.LARS
 
+import android.content.Context
+import android.content.Context.VIBRATOR_SERVICE
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.util.Log
 import okhttp3.Request
 import retrofit2.Response
+
 
 const val API_KEY_STATUS = "status"
 const val API_KEY_MSG = "message"
@@ -32,6 +38,16 @@ class Utils {
                 cl::class.java.name,
                 "Response: isSuccessfull: ${resp?.isSuccessful} Code: ${resp?.code()} Body: ${resp?.body()}"
             )
+        }
+
+        fun vibrate(context: Context, ms: Long) {
+
+            if (Build.VERSION.SDK_INT >= 26) {
+                val effect = VibrationEffect.createOneShot(ms,VibrationEffect.DEFAULT_AMPLITUDE)
+                (context.getSystemService(VIBRATOR_SERVICE) as Vibrator).vibrate(effect)
+            } else {
+                (context.getSystemService(VIBRATOR_SERVICE) as Vibrator).vibrate(ms)
+            }
         }
 
         @JvmField
