@@ -61,14 +61,7 @@ class ScanListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListFragmentI
         Log.d(this::class.java.name, "onOptionsItemSelected")
         return when (item.itemId) {
             R.id.edit -> {
-                // use empty item otherwise
-                val asset = if (viewAdapter.itemCount == 1) {
-                    viewAdapter.getItemAt(0)
-                } else {
-                    Asset.getEmptyAsset(true)
-                }
                 val (id, args) = EditorFragment.newInstancePair(
-                    asset,
                     scanViewModel.scanList.value!!
                 )
                 findNavController().navigate(id, args)
@@ -179,6 +172,6 @@ class ScanListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListFragmentI
     }
 
     override fun onListFragmentInteraction(item: Asset) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+//        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

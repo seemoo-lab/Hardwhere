@@ -9,7 +9,7 @@ import kotlinx.android.parcel.Parcelize
 data class Asset(
     var model: Model?, var category: Category?,
     /**
-     * Non editable, comes from model
+     * <b>Non editable<b>, inherited from model
      */
     val manufacturer: Manufacturer?,
     var rtd_location: Location?, var updated_at: Date?,

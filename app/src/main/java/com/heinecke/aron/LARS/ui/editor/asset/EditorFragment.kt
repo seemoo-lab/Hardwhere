@@ -10,29 +10,41 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import com.heinecke.aron.LARS.R
+import com.heinecke.aron.LARS.Utils
 import com.heinecke.aron.LARS.data.model.Asset
 import com.heinecke.aron.LARS.data.model.Selectable
 import com.heinecke.aron.LARS.ui.APIFragment
 import com.heinecke.aron.LARS.ui.editor.SelectorFragment
 import com.heinecke.aron.LARS.ui.editor.SelectorViewModel
 
-
+/**
+ * Asset editor fragment
+ */
 class EditorFragment : APIFragment() {
     lateinit var editorViewModel: EditorViewModel
     lateinit var selectorViewModel: SelectorViewModel
-    private lateinit var comment: EditText
-    private lateinit var tag: EditText
-    private lateinit var name: EditText
+    private lateinit var commentET: EditText
+    private lateinit var tagET: EditText
+    private lateinit var nameET: EditText
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         editorViewModel = ViewModelProviders.of(requireActivity())[EditorViewModel::class.java]
         if (savedInstanceState == null) {
             arguments!!.run {
-                editorViewModel.setEditorAsset(this.getParcelable(PARAM_ASSET)!!)
                 editorViewModel.multiEditAssets.value = this.getParcelableArrayList(
-                    PARAM_MULTIEDIT
+                    PARAM_ASSETS
                 )
+                with(editorViewModel.multiEditAssets.value!!) {
+                    if(size == 1) {
+                        editorViewModel.setEditorAsset(this[0])
+                    } else {
+                        val displayAsset = Asset.getEmptyAsset(true)
+                        // display equal attributes for all assets
+                        Utils.getEqualAssetAttributes(displayAsset,this)
+                        editorViewModel.setEditorAsset(displayAsset)
+                    }
+                }
             }
         }
     }
@@ -54,10 +66,11 @@ class EditorFragment : APIFragment() {
         return when (item.itemId) {
             R.id.finishEdit -> {
                 Log.d(this::class.java.name, "finishing editor")
-                val asset = editorViewModel.asset.value!!
-                asset.notes = comment.text.toString()
-                asset.asset_tag = tag.text.toString()
-                asset.name = name.text.toString()
+                with(editorViewModel.asset.value!!) {
+                    notes = commentET.text.toString()
+                    asset_tag = tagET.text.toString()
+                    name = nameET.text.toString()
+                }
                 editorViewModel.updateAssets(getAPI())
                 true
             }
@@ -70,9 +83,9 @@ class EditorFragment : APIFragment() {
         val location: EditText = view.findViewById(R.id.locationPicker)
         val model: EditText = view.findViewById(R.id.modelPicker)
         val category: EditText = view.findViewById(R.id.categoryPicker)
-        comment = view.findViewById(R.id.commentEditor)
-        tag = view.findViewById(R.id.assetTag)
-        name = view.findViewById(R.id.assetName)
+        commentET = view.findViewById(R.id.commentEditor)
+        tagET = view.findViewById(R.id.assetTag)
+        nameET = view.findViewById(R.id.assetName)
         val loading: ProgressBar = view.findViewById(R.id.loading)
 
         setupSelectable(
@@ -92,9 +105,9 @@ class EditorFragment : APIFragment() {
         ) { editorViewModel.asset.value!!.category }
 
         val multiEdit = editorViewModel.multiEditAssets.value!!.size > 1
-        tag.isFocusable = !multiEdit
+        tagET.isFocusable = !multiEdit
         if (multiEdit) {
-            tag.setOnClickListener {
+            tagET.setOnClickListener {
                 Toast.makeText(
                     requireContext(),
                     R.string.toast_no_tag_multiedit,
@@ -127,9 +140,9 @@ class EditorFragment : APIFragment() {
                 location.setText(this.rtd_location?.name ?: "")
                 model.setText(this.model?.name ?: "")
                 category.setText(this.category?.name ?: "")
-                comment.setText(this.notes)
-                tag.setText(this.asset_tag)
-                this@EditorFragment.name.setText(this.name)
+                commentET.setText(this.notes)
+                tagET.setText(this.asset_tag)
+                this@EditorFragment.nameET.setText(this.name)
             }
         })
 
@@ -167,17 +180,16 @@ class EditorFragment : APIFragment() {
 
     companion object {
         /**
-         * Returns a new instance pair to use on a NavController
+         * Create a new navigation resource ID and param bundle pair to be used with nagController.
+         * Multi-edit features are determined on the amount of elements in [assets]
          */
         @JvmStatic
-        fun newInstancePair(asset: Asset, multiedit: ArrayList<Asset>): Pair<Int, Bundle> {
+        fun newInstancePair(assets: ArrayList<Asset>): Pair<Int, Bundle> {
             val args = Bundle()
-            args.putParcelable(PARAM_ASSET, asset)
-            args.putParcelableArrayList(PARAM_MULTIEDIT, multiedit)
+            args.putParcelableArrayList(PARAM_ASSETS, assets)
             return Pair(R.id.editorFragment, args)
         }
 
-        private const val PARAM_ASSET = "asset"
-        private const val PARAM_MULTIEDIT = "multiedit"
+        private const val PARAM_ASSETS = "assets"
     }
 }

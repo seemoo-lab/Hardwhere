@@ -6,6 +6,7 @@ import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.Log
+import com.heinecke.aron.LARS.data.model.Asset
 import okhttp3.Request
 import retrofit2.Response
 
@@ -15,6 +16,35 @@ const val API_KEY_MSG = "message"
 
 class Utils {
     companion object {
+        /**
+         * Finds all equal asset attributes in [assets] and set these on [displayAsset]
+         */
+        fun getEqualAssetAttributes(displayAsset: Asset, assets: ArrayList<Asset>) {
+            val firstAsset = assets[0]
+            var name = firstAsset.name
+            var category = firstAsset.category
+            var location = firstAsset.rtd_location
+            var model = firstAsset.model
+            var comment = firstAsset.notes
+
+            for ((index, value) in assets.withIndex()) {
+                if( index == 0)
+                    continue
+
+                if(name != null && name != value.name) name = null
+                if(comment != null && comment != value.name) comment = null
+                if(category != null && category != value.category) category = null
+                if(location != null && location != value.rtd_location) location = null
+                if(model != null && model != value.model) model = null
+            }
+
+            if(!name.isNullOrEmpty()) displayAsset.name = name
+            if(!comment.isNullOrEmpty()) displayAsset.notes = comment
+            if(category != null) displayAsset.category = category
+            if(location != null) displayAsset.rtd_location = location
+            if(model != null) displayAsset.model = model
+        }
+
         fun stripEndpint(endpoint: String): String {
             return endpoint.trim().trimEnd('/')
         }

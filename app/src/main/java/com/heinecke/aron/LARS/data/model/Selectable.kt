@@ -67,18 +67,90 @@ interface Selectable : Parcelable {
         abstract fun parseElement(input: JsonElement): Selectable
     }
 
+    // we can't do @EqualsAndHasCode(of="index") and can't implement it in the interface
+    // thus we have to do the plumbing here
     @Parcelize
-    data class Model(override val name: String, override val id: Int) : Selectable
+    data class Model(override val id: Int, override val name: String) : Selectable {
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+            if (javaClass != other?.javaClass) {
+                return false
+            }
+            other as Selectable
+            if (id != other.id) {
+                return false
+            }
+            return true
+        }
+    }
 
     @Parcelize
-    data class User(override var name: String, var email: String, override var id: Int) : Selectable
+    data class User(override var id: Int, override var name: String, var email: String) : Selectable {
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+            if (javaClass != other?.javaClass) {
+                return false
+            }
+            other as Selectable
+            if (id != other.id) {
+                return false
+            }
+            return true
+        }
+    }
 
     @Parcelize
-    data class Manufacturer(override val id: Int, override val name: String) : Selectable
+    data class Manufacturer(override val id: Int, override val name: String) : Selectable {
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+            if (javaClass != other?.javaClass) {
+                return false
+            }
+            other as Selectable
+            if (id != other.id) {
+                return false
+            }
+            return true
+        }
+    }
 
     @Parcelize
-    data class Location(override val id: Int, override val name: String) : Selectable
+    data class Location(override val id: Int, override val name: String) : Selectable {
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+            if (javaClass != other?.javaClass) {
+                return false
+            }
+            other as Selectable
+            if (id != other.id) {
+                return false
+            }
+            return true
+        }
+    }
 
     @Parcelize
-    data class Category(override val id: Int, override val name: String) : Selectable
+    data class Category(override val id: Int, override val name: String) : Selectable {
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+            if (javaClass != other?.javaClass) {
+                return false
+            }
+            other as Selectable
+            if (id != other.id) {
+                return false
+            }
+            return true
+        }
+    }
 }
