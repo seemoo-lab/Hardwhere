@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.heinecke.aron.LARS.R
 import com.heinecke.aron.LARS.Utils
 import com.heinecke.aron.LARS.data.model.Asset
@@ -32,7 +33,7 @@ class AssetSearchFragment : APIFragment(),
 
     // currently selected item or null
     private lateinit var viewModel: ScanViewModel
-    private lateinit var progressBar: ProgressBar
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var adapter: AssetRecyclerViewAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,7 +52,7 @@ class AssetSearchFragment : APIFragment(),
         }
         adapter = AssetRecyclerViewAdapter(this, viewModel.searchResults.value!!)
         val recyclerView: RecyclerView = view.findViewById(R.id.list)
-        progressBar = view.findViewById(R.id.progressBar)
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshContainer)
         with(recyclerView) {
             layoutManager = LinearLayoutManager(context)
             adapter = this@AssetSearchFragment.adapter
@@ -59,20 +60,27 @@ class AssetSearchFragment : APIFragment(),
 
         viewModel = ViewModelProviders.of(requireActivity())[ScanViewModel::class.java]
         viewModel.run {
+            swipeRefreshLayout.setOnRefreshListener { updateData(searchString.value) }
             searchString.observe(viewLifecycleOwner, Observer {
-                lastNetworkCall?.cancel()
-                val api = getAPI()
-                if (it != null && it.isNotBlank()) {
-                    incLoading()
-                    lastNetworkCall = api.searchAsset(it)
-                    lastNetworkCall!!.enqueue(SearchResultCallback(requireContext(),adapter, this))
-                } else {
-                    adapter.clearItems()
-                }
+                updateData(it)
             })
             resolving.observe(viewLifecycleOwner, Observer {
-                progressBar.visibility = if(it == 0) View.GONE else View.VISIBLE
+                swipeRefreshLayout.isRefreshing = it != 0
             })
+        }
+    }
+
+    private fun updateData(data: String?) {
+        viewModel.run {
+            lastNetworkCall?.cancel()
+            val api = getAPI()
+            if (data != null && data.isNotBlank()) {
+                incLoading()
+                lastNetworkCall = api.searchAsset(data)
+                lastNetworkCall!!.enqueue(SearchResultCallback(requireContext(),adapter, this))
+            } else {
+                adapter.clearItems()
+            }
         }
     }
 

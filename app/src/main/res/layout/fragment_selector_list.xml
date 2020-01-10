@@ -1,20 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
-
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="0dp"
-        android:indeterminate="true"
-        android:visibility="gone" />
-
+    android:id="@+id/swipeRefreshContainer"
+    android:layout_height="match_parent">
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/list"
         android:name="com.heinecke.aron.LARS.ui.editor.SelectorFragment"
@@ -24,5 +14,5 @@
         android:layout_marginRight="16dp"
         app:layoutManager="LinearLayoutManager"
         tools:context="com.heinecke.aron.LARS.ui.editor.SelectorFragment"
-        tools:listitem="@layout/fragment_selector"></androidx.recyclerview.widget.RecyclerView>
-</LinearLayout>
+        tools:listitem="@layout/fragment_selector" />
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

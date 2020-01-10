@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.gson.JsonElement
 import com.heinecke.aron.LARS.R
 import com.heinecke.aron.LARS.Utils
@@ -38,7 +39,7 @@ class SelectorFragment : APIFragment(),
     private lateinit var selectType: Selectable.SelectableType
     private lateinit var viewModel: SelectorViewModel
     private lateinit var adapter: SelectorRecyclerViewAdapter
-    private lateinit var progressBar: ProgressBar
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private var returnCode: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,7 +55,7 @@ class SelectorFragment : APIFragment(),
         super.onViewCreated(view, savedInstanceState)
         adapter = SelectorRecyclerViewAdapter(this@SelectorFragment)
         val recyclerView: RecyclerView = view.findViewById(R.id.list)
-        progressBar = view.findViewById(R.id.progressBar)
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshContainer)
         with(recyclerView) {
             layoutManager = LinearLayoutManager(context)
             adapter = this@SelectorFragment.adapter
@@ -62,18 +63,9 @@ class SelectorFragment : APIFragment(),
 
         viewModel = ViewModelProviders.of(requireActivity())[SelectorViewModel::class.java]
         viewModel.run {
+            swipeRefreshLayout.setOnRefreshListener { updateData(searchString.value) }
             searchString.observe(viewLifecycleOwner, Observer {
-                lastNetworkCall?.cancel()
-                incLoading()
-                val api = getAPI()
-                val call = if (it != null && it.isNotBlank()) {
-                    api.searchSelectable(selectType.getTypeName(), it)
-                } else {
-                    api.getSelectablePage(selectType.getTypeName(), DEFAULT_LOAD_AMOUNT, 0)
-                }
-
-                lastNetworkCall = call
-                call.enqueue(SearchResultCallback(requireContext(), selectType, adapter, this))
+                updateData(it)
             })
 
 
@@ -85,13 +77,26 @@ class SelectorFragment : APIFragment(),
             }
 
             resolving.observe(viewLifecycleOwner, Observer {
-                progressBar.visibility = if(it == 0) View.GONE else View.VISIBLE
+                swipeRefreshLayout.isRefreshing = it != 0
             })
         }
 
     }
 
+    private fun updateData(data: String?) {
+        viewModel.lastNetworkCall?.cancel()
+        viewModel.incLoading()
+        val api = getAPI()
+        val call = if (data != null && data.isNotBlank()) {
+            api.searchSelectable(selectType.getTypeName(), data)
+        } else {
+            api.getSelectablePage(selectType.getTypeName(), DEFAULT_LOAD_AMOUNT, 0)
+        }
 
+        viewModel.lastNetworkCall = call
+        call.enqueue(SearchResultCallback(requireContext(), selectType, adapter, viewModel))
+    }
+    
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
