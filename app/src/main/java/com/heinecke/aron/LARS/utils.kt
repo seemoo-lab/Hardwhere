@@ -20,6 +20,8 @@ class Utils {
          * Finds all equal asset attributes in [assets] and set these on [displayAsset]
          */
         fun getEqualAssetAttributes(displayAsset: Asset, assets: ArrayList<Asset>) {
+            if(assets.size == 0)
+                return
             val firstAsset = assets[0]
             var name = firstAsset.name
             var category = firstAsset.category
