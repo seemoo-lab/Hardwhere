@@ -1,5 +1,6 @@
 package com.heinecke.aron.LARS.data
 
+import android.util.Log
 import com.google.gson.*
 import com.heinecke.aron.LARS.BuildConfig
 import com.heinecke.aron.LARS.data.model.Date
@@ -14,7 +15,7 @@ import java.lang.reflect.Type
 
 class APIClient {
     companion object {
-        const val SIMULATE_SLOW_NETWORK: Boolean = true
+        private const val SIMULATE_SLOW_NETWORK: Boolean = false
 
         fun getClient(baseUrl: String, token: String): Retrofit {
             val interceptor = HttpLoggingInterceptor()

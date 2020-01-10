@@ -1,9 +1,11 @@
 package com.heinecke.aron.LARS.ui.scan
 
 import android.content.Context
+import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.ProgressBar
 import android.widget.SearchView
 import android.widget.Toast
 import androidx.lifecycle.Observer
@@ -22,9 +24,7 @@ import retrofit2.Response
 
 
 /**
- * A fragment representing a list of Items.
- * Activities containing this fragment MUST implement the
- * [SelectorFragment.OnListFragmentInteractionListener] interface.
+ * Asset search fragment
  */
 class AssetSearchFragment : APIFragment(),
     AssetRecyclerViewAdapter.OnListFragmentInteractionListener,
@@ -32,6 +32,7 @@ class AssetSearchFragment : APIFragment(),
 
     // currently selected item or null
     private lateinit var viewModel: ScanViewModel
+    private lateinit var progressBar: ProgressBar
     private lateinit var adapter: AssetRecyclerViewAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,22 +50,30 @@ class AssetSearchFragment : APIFragment(),
             )
         }
         adapter = AssetRecyclerViewAdapter(this, viewModel.searchResults.value!!)
-        if (view is RecyclerView) {
-            with(view) {
-                layoutManager = LinearLayoutManager(context)
-                adapter = this@AssetSearchFragment.adapter
-            }
+        val recyclerView: RecyclerView = view.findViewById(R.id.list)
+        progressBar = view.findViewById(R.id.progressBar)
+        with(recyclerView) {
+            layoutManager = LinearLayoutManager(context)
+            adapter = this@AssetSearchFragment.adapter
         }
 
         viewModel = ViewModelProviders.of(requireActivity())[ScanViewModel::class.java]
-        viewModel.searchString.observe(viewLifecycleOwner, Observer {
-            val api = getAPI()
-            if (it != null && it.isNotBlank()) {
-                api.searchAsset(it).enqueue(SearchResultCallback(requireContext(),adapter))
-            } else {
-                adapter.clearItems()
-            }
-        })
+        viewModel.run {
+            searchString.observe(viewLifecycleOwner, Observer {
+                lastNetworkCall?.cancel()
+                val api = getAPI()
+                if (it != null && it.isNotBlank()) {
+                    incLoading()
+                    lastNetworkCall = api.searchAsset(it)
+                    lastNetworkCall!!.enqueue(SearchResultCallback(requireContext(),adapter, this))
+                } else {
+                    adapter.clearItems()
+                }
+            })
+            resolving.observe(viewLifecycleOwner, Observer {
+                progressBar.visibility = if(it == 0) View.GONE else View.VISIBLE
+            })
+        }
     }
 
     override fun onCreateView(
@@ -123,17 +132,21 @@ class AssetSearchFragment : APIFragment(),
         return true
     }
 
-    class SearchResultCallback(val context: Context, val adapter: AssetRecyclerViewAdapter) :
+    class SearchResultCallback(val context: Context, private val adapter: AssetRecyclerViewAdapter, private val viewModel: ScanViewModel) :
         Callback<SearchResults<Asset>> {
         override fun onFailure(call: Call<SearchResults<Asset>>?, t: Throwable?) {
-            Log.w(this::class.java.name, "$t")
-            Toast.makeText(context, R.string.error_fetch_selectable, Toast.LENGTH_SHORT).show()
+            viewModel.decLoading()
+            if(!call!!.isCanceled) {
+                Log.w(this::class.java.name, "$t")
+                Toast.makeText(context, R.string.error_fetch_selectable, Toast.LENGTH_SHORT).show()
+            }
         }
 
         override fun onResponse(
             call: Call<SearchResults<Asset>>?,
             response: Response<SearchResults<Asset>>?
         ) {
+            viewModel.decLoading()
             response?.run {
                 val elements = this.body()!!.rows
                 if (this.isSuccessful) {

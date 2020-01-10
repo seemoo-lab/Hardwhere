@@ -3,11 +3,16 @@ package com.heinecke.aron.LARS.ui.editor
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.gson.JsonElement
+import com.heinecke.aron.LARS.data.model.SearchResults
 import com.heinecke.aron.LARS.data.model.Selectable
+import retrofit2.Call
 
 class SelectorViewModel : ViewModel() {
+    internal val resolving = MutableLiveData(0)
     internal val data: MutableLiveData<MutableList<Selectable>> = MutableLiveData(mutableListOf())
     internal val searchString: MutableLiveData<String> = MutableLiveData("")
+    internal var lastNetworkCall: Call<SearchResults<JsonElement>>? = null
     /**
      * Storage for last type to allow cross-select persistence
      */
@@ -36,5 +41,18 @@ class SelectorViewModel : ViewModel() {
     fun resetSearchString() {
         Log.d(this::class.java.name, "ResetSearchString")
         searchString.value = ""
+    }
+
+
+    internal fun incLoading() {
+        resolving.run {
+            value = value!! + 1
+        }
+    }
+
+    internal fun decLoading() {
+        resolving.run {
+            value = value!! - 1
+        }
     }
 }

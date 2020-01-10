@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.ProgressBar
 import android.widget.SearchView
 import android.widget.Toast
 import androidx.lifecycle.Observer
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.JsonElement
 import com.heinecke.aron.LARS.R
 import com.heinecke.aron.LARS.Utils
+import com.heinecke.aron.LARS.Utils.Companion.DEFAULT_LOAD_AMOUNT
 import com.heinecke.aron.LARS.data.model.SearchResults
 import com.heinecke.aron.LARS.data.model.Selectable
 import com.heinecke.aron.LARS.ui.APIFragment
@@ -23,9 +25,9 @@ import retrofit2.Response
 
 
 /**
- * A fragment representing a list of Items.
- * Activities containing this fragment MUST implement the
- * [SelectorFragment.OnListFragmentInteractionListener] interface.
+ * A fragment representing a list of Scannable-Items that can be searched
+ *
+ * This is similar to [com.heinecke.aron.LARS.ui.scan.AssetSearchFragment] but different enough to be a re-implementation
  */
 class SelectorFragment : APIFragment(),
     SelectorRecyclerViewAdapter.OnListFragmentInteractionListener,
@@ -36,6 +38,7 @@ class SelectorFragment : APIFragment(),
     private lateinit var selectType: Selectable.SelectableType
     private lateinit var viewModel: SelectorViewModel
     private lateinit var adapter: SelectorRecyclerViewAdapter
+    private lateinit var progressBar: ProgressBar
     private var returnCode: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,32 +53,42 @@ class SelectorFragment : APIFragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         adapter = SelectorRecyclerViewAdapter(this@SelectorFragment)
-        if (view is RecyclerView) {
-            with(view) {
-                layoutManager = LinearLayoutManager(context)
-                adapter = this@SelectorFragment.adapter
-            }
+        val recyclerView: RecyclerView = view.findViewById(R.id.list)
+        progressBar = view.findViewById(R.id.progressBar)
+        with(recyclerView) {
+            layoutManager = LinearLayoutManager(context)
+            adapter = this@SelectorFragment.adapter
         }
 
         viewModel = ViewModelProviders.of(requireActivity())[SelectorViewModel::class.java]
-        viewModel.searchString.observe(viewLifecycleOwner, Observer {
-            val api = getAPI()
-            if (it != null && it.isNotBlank()) {
-                api.searchSelectable(selectType.getTypeName(), it)
-                    .enqueue(SearchResultCallback(requireContext(), selectType, adapter))
-            } else {
-                api.getSelectablePage(selectType.getTypeName(), 50, 0)
-                    .enqueue(SearchResultCallback(requireContext(), selectType, adapter))
-            }
-        })
+        viewModel.run {
+            searchString.observe(viewLifecycleOwner, Observer {
+                lastNetworkCall?.cancel()
+                incLoading()
+                val api = getAPI()
+                val call = if (it != null && it.isNotBlank()) {
+                    api.searchSelectable(selectType.getTypeName(), it)
+                } else {
+                    api.getSelectablePage(selectType.getTypeName(), DEFAULT_LOAD_AMOUNT, 0)
+                }
+
+                lastNetworkCall = call
+                call.enqueue(SearchResultCallback(requireContext(), selectType, adapter, this))
+            })
 
 
-        viewModel.lastType.value.run {
-            if (selectType != this) {
-                viewModel.resetSearchString()
+            lastType.value.run {
+                if (selectType != this) {
+                    resetSearchString()
+                }
+                lastType.value = selectType
             }
-            viewModel.lastType.value = selectType
+
+            resolving.observe(viewLifecycleOwner, Observer {
+                progressBar.visibility = if(it == 0) View.GONE else View.VISIBLE
+            })
         }
+
     }
 
 
@@ -148,17 +161,24 @@ class SelectorFragment : APIFragment(),
     class SearchResultCallback(
         val context: Context,
         val selectType: Selectable.SelectableType,
-        val adapter: SelectorRecyclerViewAdapter
+        val adapter: SelectorRecyclerViewAdapter,
+        val viewModel: SelectorViewModel
     ) : Callback<SearchResults<JsonElement>> {
         override fun onFailure(call: Call<SearchResults<JsonElement>>?, t: Throwable?) {
-            Log.w(this::class.java.name, "$t")
-            Toast.makeText(context, R.string.error_fetch_selectable, Toast.LENGTH_SHORT).show()
+            viewModel.decLoading()
+            if(!call!!.isCanceled) {
+                Log.w(this::class.java.name, "$t")
+                Toast.makeText(context, R.string.error_fetch_selectable, Toast.LENGTH_SHORT).show()
+            } else {
+                Log.w(this::class.java.name,"Canceled request")
+            }
         }
 
         override fun onResponse(
             call: Call<SearchResults<JsonElement>>?,
             response: Response<SearchResults<JsonElement>>?
         ) {
+            viewModel.decLoading()
             response?.run {
                 val elements =
                     this.body()!!.rows.map { elem -> selectType.parseElement(elem) }

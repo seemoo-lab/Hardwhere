@@ -83,6 +83,9 @@ class Utils {
         }
 
         @JvmField
+        val DEFAULT_LOAD_AMOUNT = 50
+
+        @JvmField
         val KEY_ENDPOINT = "endpoint_api"
         @JvmField
         val KEY_TOKEN = "token_api"

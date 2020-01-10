@@ -36,12 +36,12 @@ class EditorFragment : APIFragment() {
                     PARAM_ASSETS
                 )
                 with(editorViewModel.multiEditAssets.value!!) {
-                    if(size == 1) {
+                    if (size == 1) {
                         editorViewModel.setEditorAsset(this[0])
                     } else {
                         val displayAsset = Asset.getEmptyAsset(true)
                         // display equal attributes for all assets
-                        Utils.getEqualAssetAttributes(displayAsset,this)
+                        Utils.getEqualAssetAttributes(displayAsset, this)
                         editorViewModel.setEditorAsset(displayAsset)
                     }
                 }
