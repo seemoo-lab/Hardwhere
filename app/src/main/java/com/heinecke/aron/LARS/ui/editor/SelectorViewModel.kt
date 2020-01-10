@@ -10,7 +10,7 @@ import retrofit2.Call
 
 class SelectorViewModel : ViewModel() {
     internal val resolving = MutableLiveData(0)
-    internal val data: MutableLiveData<MutableList<Selectable>> = MutableLiveData(mutableListOf())
+    internal val data: MutableLiveData<ArrayList<Selectable>> = MutableLiveData(ArrayList())
     internal val searchString: MutableLiveData<String> = MutableLiveData("")
     internal var lastNetworkCall: Call<SearchResults<JsonElement>>? = null
     /**

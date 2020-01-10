@@ -1,11 +1,9 @@
 package com.heinecke.aron.LARS.ui.scan
 
 import android.content.Context
-import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.widget.ProgressBar
 import android.widget.SearchView
 import android.widget.Toast
 import androidx.lifecycle.Observer
@@ -43,12 +41,14 @@ class AssetSearchFragment : APIFragment(),
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel = ViewModelProviders.of(requireActivity())[ScanViewModel::class.java]
         savedInstanceState?.run {
             viewModel.scanList.value!!.addAll(
                 this.getParcelableArrayList(
-                    S_SCAN_LIST
+                    S_DATA
                 )!!
             )
+            viewModel.searchString.value = getString(S_SEARCH_STRING)
         }
         adapter = AssetRecyclerViewAdapter(this, viewModel.searchResults.value!!)
         val recyclerView: RecyclerView = view.findViewById(R.id.list)
@@ -57,8 +57,6 @@ class AssetSearchFragment : APIFragment(),
             layoutManager = LinearLayoutManager(context)
             adapter = this@AssetSearchFragment.adapter
         }
-
-        viewModel = ViewModelProviders.of(requireActivity())[ScanViewModel::class.java]
         viewModel.run {
             swipeRefreshLayout.setOnRefreshListener { updateData(searchString.value) }
             searchString.observe(viewLifecycleOwner, Observer {
@@ -96,7 +94,8 @@ class AssetSearchFragment : APIFragment(),
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putParcelableArrayList(S_SCAN_LIST, viewModel.searchResults.value)
+        outState.putParcelableArrayList(S_DATA, viewModel.searchResults.value)
+        outState.putString(S_SEARCH_STRING, viewModel.searchString.value)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -109,7 +108,8 @@ class AssetSearchFragment : APIFragment(),
     }
 
     companion object {
-        const val S_SCAN_LIST: String = "scan_list"
+        const val S_DATA: String = "data"
+        const val S_SEARCH_STRING: String = "search_input"
 
         /**
          * Returns a new instance pair to use on a NavController

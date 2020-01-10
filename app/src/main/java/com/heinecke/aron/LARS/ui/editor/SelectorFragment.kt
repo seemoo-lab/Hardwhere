@@ -20,6 +20,7 @@ import com.heinecke.aron.LARS.Utils.Companion.DEFAULT_LOAD_AMOUNT
 import com.heinecke.aron.LARS.data.model.SearchResults
 import com.heinecke.aron.LARS.data.model.Selectable
 import com.heinecke.aron.LARS.ui.APIFragment
+import com.heinecke.aron.LARS.ui.scan.AssetSearchFragment
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -51,8 +52,28 @@ class SelectorFragment : APIFragment(),
         }
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(ARG_TYPE,selectType.getTypeName())
+        outState.putParcelableArrayList(S_DATA,viewModel.data.value!!)
+        outState.putString(S_SEARCH_STRING+selectType.getTypeName(),viewModel.searchString.value)
+    }
+
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel = ViewModelProviders.of(requireActivity())[SelectorViewModel::class.java]
+        savedInstanceState?.run {
+            if(getString(ARG_TYPE) == selectType.getTypeName())
+                viewModel.data.value!!.addAll(
+                    this.getParcelableArrayList(
+                        S_DATA
+                    )!!
+                )
+            viewModel.searchString.value = getString(S_SEARCH_STRING+selectType.getTypeName(),"")
+        }
+
         adapter = SelectorRecyclerViewAdapter(this@SelectorFragment)
         val recyclerView: RecyclerView = view.findViewById(R.id.list)
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshContainer)
@@ -61,7 +82,7 @@ class SelectorFragment : APIFragment(),
             adapter = this@SelectorFragment.adapter
         }
 
-        viewModel = ViewModelProviders.of(requireActivity())[SelectorViewModel::class.java]
+
         viewModel.run {
             swipeRefreshLayout.setOnRefreshListener { updateData(searchString.value) }
             searchString.observe(viewLifecycleOwner, Observer {
@@ -96,7 +117,7 @@ class SelectorFragment : APIFragment(),
         viewModel.lastNetworkCall = call
         call.enqueue(SearchResultCallback(requireContext(), selectType, adapter, viewModel))
     }
-    
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -128,6 +149,8 @@ class SelectorFragment : APIFragment(),
         const val ARG_SELECTABLE = "selectable"
         const val ARG_RETURN_CODE = "returnCode"
         const val ARG_TYPE = "type"
+        const val S_DATA = "data"
+        const val S_SEARCH_STRING: String = "search_input"
 
         /**
          * Get new pair of fragment id,args for spawn on NavController
