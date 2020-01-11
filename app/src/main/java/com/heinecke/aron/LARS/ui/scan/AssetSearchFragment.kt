@@ -98,12 +98,24 @@ class AssetSearchFragment : APIFragment(),
         outState.putString(S_SEARCH_STRING, viewModel.searchString.value)
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if(item.itemId == R.id.filter) {
+            val filterPopup = AssetFilterBTFragment()
+            filterPopup.show(fragmentManager!!,filterPopup.tag)
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.select, menu)
-        (menu.findItem(R.id.app_bar_search).actionView as SearchView).apply {
+        (menu.findItem(R.id.app_bar_search).actionView as SearchView).run {
             setOnQueryTextListener(this@AssetSearchFragment)
             setQuery(viewModel.searchString.value, false)
             isIconified = false
+        }
+        (menu.findItem(R.id.filter) as MenuItem).run {
+            setVisible(true)
         }
     }
 

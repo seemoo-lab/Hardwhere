@@ -1,7 +1,9 @@
 package com.heinecke.aron.LARS.data.model
 
 import android.os.Parcelable
+import androidx.annotation.StringRes
 import com.google.gson.JsonObject
+import com.heinecke.aron.LARS.R
 import com.heinecke.aron.LARS.data.model.Selectable.*
 import kotlinx.android.parcel.Parcelize
 
@@ -57,8 +59,49 @@ data class Asset(
         @JvmField
         val ID_NEW_ASSET = 0
 
+        /**
+         * Helper enum for asset search filtering by field.
+         *
+         * It makes the bigger amount of the dirty work required when still using hard typing and no reflections
+         */
+        enum class AssetFilter(val value: Int) {
+            Model(R.string.hint_model) {
+                override fun contains(asset: Asset, input: String): Boolean = contains(asset.model,input)
+            },
+            Category(R.string.hint_category) {
+                override fun contains(asset: Asset, input: String): Boolean = contains(asset.category,input)
+            },
+            Location(R.string.hint_location) {
+                override fun contains(asset: Asset, input: String): Boolean = contains(asset.rtd_location,input)
+            },
+            Name(R.string.hint_asset_name) {
+                override fun contains(asset: Asset, input: String): Boolean = contains(asset.name,input)
+            },
+            Notes(R.string.hint_note) {
+                override fun contains(asset: Asset, input: String): Boolean = contains(asset.notes,input)
+            },
+            Tag(R.string.hint_asset_tag) {
+                override fun contains(asset: Asset, input: String): Boolean = contains(asset.asset_tag,input)
+            };
+
+            /**
+             * Returns whether the asset matches this filter
+             */
+            abstract fun contains(asset: Asset, input: String): Boolean
+
+            protected fun <T: Selectable> contains(sel: T?, input: String): Boolean {
+                return sel?.name?.contains(input) ?: false
+            }
+            protected fun contains(sel: String?, input: String): Boolean {
+                return sel?.contains(input) ?: false
+            }
+        }
     }
 
+    /**
+     * Create an asset patch for updating assets. The resulting JsonObject only contains
+     * the fields that are non-null.
+     */
     fun createPatch(): JsonObject {
         val base = JsonObject()
         this.model?.run { base.addProperty("model_id", this.id) }

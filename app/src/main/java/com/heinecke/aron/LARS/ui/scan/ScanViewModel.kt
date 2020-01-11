@@ -15,6 +15,8 @@ class ScanViewModel : ViewModel() {
     internal val searchString: MutableLiveData<String> = MutableLiveData("")
     internal val searchResults: MutableLiveData<ArrayList<Asset>> = MutableLiveData(ArrayList())
     internal var lastNetworkCall: Call<SearchResults<Asset>>? = null
+    // Filter
+    internal val filterMode: MutableLiveData<Asset.Companion.AssetFilter> = MutableLiveData()
 
     internal fun incLoading() {
         resolving.run {
