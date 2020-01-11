@@ -19,18 +19,14 @@ interface Selectable : Parcelable {
                 return Gson().fromJson<Selectable.Model>(input, Selectable.Model::class.java)
             }
 
-            override fun getTypeName(): String {
-                return "models"
-            }
+            override fun getTypeName(): String = "models"
         },
         User {
             override fun parseElement(input: JsonElement): Selectable {
                 return Gson().fromJson<Selectable.User>(input, Selectable.User::class.java)
             }
 
-            override fun getTypeName(): String {
-                return "users"
-            }
+            override fun getTypeName(): String = "users"
         },
         Manufacturer {
             override fun parseElement(input: JsonElement): Selectable {
@@ -40,27 +36,21 @@ interface Selectable : Parcelable {
                 )
             }
 
-            override fun getTypeName(): String {
-                return "manufacturers"
-            }
+            override fun getTypeName(): String = "manufacturers"
         },
         Location {
             override fun parseElement(input: JsonElement): Selectable {
                 return Gson().fromJson<Selectable.Location>(input, Selectable.Location::class.java)
             }
 
-            override fun getTypeName(): String {
-                return "locations"
-            }
+            override fun getTypeName(): String = "locations"
         },
         Category {
             override fun parseElement(input: JsonElement): Selectable {
                 return Gson().fromJson<Selectable.Category>(input, Selectable.Category::class.java)
             }
 
-            override fun getTypeName(): String {
-                return "categories"
-            }
+            override fun getTypeName(): String = "categories"
         };
 
         abstract fun getTypeName(): String
