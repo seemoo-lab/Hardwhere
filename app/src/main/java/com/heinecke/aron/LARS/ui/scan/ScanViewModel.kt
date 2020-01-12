@@ -1,14 +1,18 @@
 package com.heinecke.aron.LARS.ui.scan
 
-import android.util.Log
-import androidx.lifecycle.*
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.heinecke.aron.LARS.Utils.Companion.safeLet
 import com.heinecke.aron.LARS.data.model.Asset
 import com.heinecke.aron.LARS.data.model.Asset.Companion.AssetFilter
 import com.heinecke.aron.LARS.data.model.SearchResults
 import retrofit2.Call
 
-
+/**
+ * ScanViewModel used by [AssetFilterBTFragment], [AssetListFragment], [ScannerFragment] &
+ * [AssetSearchFragment]
+ */
 class ScanViewModel : ViewModel() {
     internal val resolving = MutableLiveData(0)
     internal val scanList: MutableLiveData<ArrayList<Asset>> = MutableLiveData(ArrayList())

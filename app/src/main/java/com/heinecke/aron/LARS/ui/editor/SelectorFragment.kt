@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.widget.ProgressBar
 import android.widget.SearchView
 import android.widget.Toast
 import androidx.lifecycle.Observer
@@ -20,7 +19,6 @@ import com.heinecke.aron.LARS.Utils.Companion.DEFAULT_LOAD_AMOUNT
 import com.heinecke.aron.LARS.data.model.SearchResults
 import com.heinecke.aron.LARS.data.model.Selectable
 import com.heinecke.aron.LARS.ui.APIFragment
-import com.heinecke.aron.LARS.ui.scan.AssetSearchFragment
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

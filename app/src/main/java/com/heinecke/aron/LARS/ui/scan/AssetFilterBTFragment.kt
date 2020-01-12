@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import android.widget.ScrollView
 import android.widget.TextView
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProviders
@@ -14,7 +13,8 @@ import com.heinecke.aron.LARS.R
 import com.heinecke.aron.LARS.data.model.Asset.Companion.AssetFilter
 
 /**
- * Asset filter options as BottomSheetDialogFragment
+ * Asset filter options as BottomSheetDialogFragment.
+ * Uses the [ScanViewModel]
  */
 class AssetFilterBTFragment : BottomSheetDialogFragment() {
 

@@ -20,7 +20,10 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-
+/**
+ * Fragment for continuous scanning assets.
+ * Uses the [ScanViewModel]
+ */
 class ScannerFragment : APIFragment() {
     private var lastText: String? = null
     private lateinit var barcodeView: DecoratedBarcodeView

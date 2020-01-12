@@ -23,7 +23,8 @@ import retrofit2.Response
 
 
 /**
- * Asset search fragment
+ * Asset search fragment.
+ * Uses the [ScanViewModel]
  */
 class AssetSearchFragment : APIFragment(),
     AssetRecyclerViewAdapter.OnListFragmentInteractionListener,

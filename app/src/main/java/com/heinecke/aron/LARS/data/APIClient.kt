@@ -1,6 +1,5 @@
 package com.heinecke.aron.LARS.data
 
-import android.util.Log
 import com.google.gson.*
 import com.heinecke.aron.LARS.BuildConfig
 import com.heinecke.aron.LARS.data.model.Date

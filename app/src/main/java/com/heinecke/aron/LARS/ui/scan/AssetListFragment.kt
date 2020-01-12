@@ -20,8 +20,11 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
-
-class ScanListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListFragmentInteractionListener {
+/**
+ * Asset list fragment for adding,scanning, removing and editing assets<br>
+ *     Uses the [ScanViewModel]
+ */
+class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListFragmentInteractionListener {
 
     private lateinit var scanViewModel: ScanViewModel
     private lateinit var recyclerView: RecyclerView
@@ -118,7 +121,7 @@ class ScanListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListFragmentI
 
         mainViewModel.scanData.observe(viewLifecycleOwner, Observer {
             it?.run {
-                Log.d(this@ScanListFragment::class.java.name, "ScanData updated.")
+                Log.d(this@AssetListFragment::class.java.name, "ScanData updated.")
                 viewAdapter.notifyDataSetChanged()
                 updateHint()
             }
@@ -127,7 +130,7 @@ class ScanListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListFragmentI
         // react to updates when editor finished
         editorViewModel.editingFinished.observe(this, Observer {
             if (it != null) {
-                Log.d(this@ScanListFragment::class.java.name, "EditedAssets")
+                Log.d(this@AssetListFragment::class.java.name, "EditedAssets")
                 updateAssets()
                 editorViewModel.reset()
             }
@@ -158,12 +161,12 @@ class ScanListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListFragmentI
             assets
         }
             .subscribe({
-                Log.d(this@ScanListFragment::class.java.name, "Finished with $it")
+                Log.d(this@AssetListFragment::class.java.name, "Finished with $it")
                 scanViewModel.scanList.value!!.clear()
                 scanViewModel.scanList.value!!.addAll(it)
                 viewAdapter.notifyDataSetChanged()
             }) {
-                Log.w(this@ScanListFragment::class.java.name, "Error: $it")
+                Log.w(this@AssetListFragment::class.java.name, "Error: $it")
             }
     }
 

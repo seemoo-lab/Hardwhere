@@ -1,7 +1,6 @@
 package com.heinecke.aron.LARS.data.model
 
 import android.os.Parcelable
-import androidx.annotation.StringRes
 import com.google.gson.JsonObject
 import com.heinecke.aron.LARS.R
 import com.heinecke.aron.LARS.data.model.Selectable.*
