@@ -191,7 +191,6 @@ class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListInteract
     }
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder?, direction: Int, position: Int) {
-        Toast.makeText(context, "TODO: Remove",Toast.LENGTH_SHORT).show()
-//        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        viewAdapter.removeItem(position)
     }
 }

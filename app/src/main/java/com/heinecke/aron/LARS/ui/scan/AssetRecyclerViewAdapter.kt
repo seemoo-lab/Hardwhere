@@ -103,6 +103,11 @@ class AssetRecyclerViewAdapter(
         this.notifyDataSetChanged()
     }
 
+    fun removeItem(position: Int) {
+        this.assetList.removeAt(position)
+        this.notifyItemRemoved(position)
+    }
+
     /**
      * Interface for recyclerview listeners
      */
