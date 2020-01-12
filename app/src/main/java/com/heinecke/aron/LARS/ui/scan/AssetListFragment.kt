@@ -105,11 +105,9 @@ class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListInteract
 
         viewManager = LinearLayoutManager(context)
         savedInstanceState?.run {
-            scanViewModel.scanList.value!!.addAll(
-                this.getParcelableArrayList(
-                    S_SCAN_LIST
-                )!!
-            )
+            val scanList = scanViewModel.scanList.value!!
+            if(scanList.size == 0)
+                scanList.addAll(this.getParcelableArrayList(S_SCAN_LIST)!!)
         }
         viewAdapter = AssetRecyclerViewAdapter(this, scanViewModel.scanList.value!!)
 
