@@ -126,5 +126,7 @@ class Utils {
         val PREFS_KEY_BACKEND = "backend"
         @JvmField
         val PREFS_KEY_TOKEN = "token"
+        @JvmField
+        val ITEM_OLDAGE_MS = 1000*5
     }
 }

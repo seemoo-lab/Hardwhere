@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.heinecke.aron.LARS.R
 import com.heinecke.aron.LARS.Utils
+import com.heinecke.aron.LARS.Utils.Companion.ITEM_OLDAGE_MS
 import com.heinecke.aron.LARS.data.model.Asset
 import com.heinecke.aron.LARS.ui.APIFragment
 import com.heinecke.aron.LARS.ui.editor.asset.EditorFragment
@@ -48,6 +49,14 @@ class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListInteract
             ViewModelProviders.of(requireActivity())[EditorViewModel::class.java]
     }
 
+    override fun onResume() {
+        super.onResume()
+        if(System.currentTimeMillis() - scanViewModel.lastUpdate > ITEM_OLDAGE_MS) {
+            scanViewModel.lastUpdate = System.currentTimeMillis()
+            updateAssets()
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -60,6 +69,7 @@ class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListInteract
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putParcelableArrayList(S_SCAN_LIST, scanViewModel.scanList.value)
+        outState.putLong(S_UPDATE_TIME,scanViewModel.lastUpdate)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -67,7 +77,6 @@ class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListInteract
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        Log.d(this::class.java.name, "onOptionsItemSelected")
         return when (item.itemId) {
             R.id.edit -> {
                 val (id, args) = EditorFragment.newInstancePair(
@@ -106,8 +115,10 @@ class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListInteract
         viewManager = LinearLayoutManager(context)
         savedInstanceState?.run {
             val scanList = scanViewModel.scanList.value!!
-            if(scanList.size == 0)
+            if(scanList.size == 0) {
                 scanList.addAll(this.getParcelableArrayList(S_SCAN_LIST)!!)
+                scanViewModel.lastUpdate = getLong(S_UPDATE_TIME)
+            }
         }
         viewAdapter = AssetRecyclerViewAdapter(this, scanViewModel.scanList.value!!)
 
@@ -152,6 +163,7 @@ class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListInteract
 
     private fun updateAssets() {
         val client = getAPI()
+        scanViewModel.incLoading()
         val requests: List<Observable<Asset>> = scanViewModel.scanList.value!!.map {
             client.getAssetObservable(it.id)
                 .subscribeOn(Schedulers.io())
@@ -169,11 +181,15 @@ class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListInteract
             assets
         }
             .subscribe({
-                Log.d(this@AssetListFragment::class.java.name, "Finished with $it")
-                scanViewModel.scanList.value!!.clear()
-                scanViewModel.scanList.value!!.addAll(it)
-                viewAdapter.notifyDataSetChanged()
+                scanViewModel.run {
+                    decLoading()
+                    Log.d(this@AssetListFragment::class.java.name, "Finished with $it")
+                    scanList.value!!.clear()
+                    scanList.value!!.addAll(it)
+                    viewAdapter.notifyDataSetChanged()
+                }
             }) {
+                scanViewModel.decLoading()
                 Utils.displayToastUp(context!!,R.string.error_fetch_update,Toast.LENGTH_LONG)
                 Log.w(this@AssetListFragment::class.java.name, "Error: $it")
             }
@@ -181,6 +197,7 @@ class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListInteract
 
     companion object {
         const val S_SCAN_LIST: String = "scan_list"
+        const val S_UPDATE_TIME: String = "update_time"
     }
 
     override fun onListItemClicked(item: Asset) {

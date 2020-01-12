@@ -17,6 +17,10 @@ class ScanViewModel : ViewModel() {
     internal val resolving = MutableLiveData(0)
     internal val scanList: MutableLiveData<ArrayList<Asset>> = MutableLiveData(ArrayList())
     internal val assetPattern: Regex = Regex("^http.*/([0-9]+)$")
+    /**
+     * Last time assets got updated
+     */
+    internal var lastUpdate: Long = System.currentTimeMillis()
 
     // Search Fragment
 
