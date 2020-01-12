@@ -24,23 +24,29 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/userID"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/userID_cont"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="24dp"
-        android:autofillHints="password"
-        android:digits="0123456789"
-        android:hint="@string/prompt_user_id"
-        android:imeActionLabel="@string/action_sign_in_short"
-        android:imeOptions="actionDone"
-        android:inputType="number"
-        android:selectAllOnFocus="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/apiToken" />
+        app:layout_constraintTop_toBottomOf="@+id/apiToken_cont">
+
+        <EditText
+            android:id="@+id/userID"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autofillHints="password"
+            android:digits="0123456789"
+            android:hint="@string/prompt_user_id"
+            android:imeActionLabel="@string/action_sign_in_short"
+            android:imeOptions="actionDone"
+            android:inputType="number"
+            android:selectAllOnFocus="true" />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/login"
@@ -55,40 +61,52 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/userID"
+        app:layout_constraintTop_toBottomOf="@+id/userID_cont"
         app:layout_constraintVertical_bias="0.2" />
 
-    <EditText
-        android:id="@+id/apiToken"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/apiToken_cont"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="24dp"
-        android:autofillHints="password"
-        android:hint="@string/prompt_api_token"
-        android:imeActionLabel="@string/action_sign_in_short"
-        android:imeOptions="actionDone"
-        android:inputType="textPassword"
-        android:selectAllOnFocus="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/apiEndpoint" />
+        app:layout_constraintTop_toBottomOf="@+id/apiEndpoint_cont">
 
-    <EditText
-        android:id="@+id/apiEndpoint"
+        <EditText
+            android:id="@+id/apiToken"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autofillHints="password"
+            android:hint="@string/prompt_api_token"
+            android:imeActionLabel="@string/action_sign_in_short"
+            android:imeOptions="actionDone"
+            android:inputType="textPassword"
+            android:selectAllOnFocus="true" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/apiEndpoint_cont"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="24dp"
-        android:autofillHints="URL"
-        android:hint="@string/prompt_api_endpoint"
-        android:inputType="textEmailAddress"
-        android:selectAllOnFocus="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/scanLogin" />
+        app:layout_constraintTop_toBottomOf="@+id/scanLogin">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/apiEndpoint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autofillHints="URL"
+            android:hint="@string/prompt_api_endpoint"
+            android:inputType="textEmailAddress"
+            android:selectAllOnFocus="true" />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <ProgressBar
         android:id="@+id/loading"
@@ -105,4 +123,14 @@
         app:layout_constraintStart_toStartOf="@+id/apiToken"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.3" />
+
+    <!--    <com.google.android.material.textfield.TextInputLayout-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content">-->
+
+    <!--        <com.google.android.material.textfield.TextInputEditText-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:hint="hint" />-->
+    <!--    </com.google.android.material.textfield.TextInputLayout>-->
 </androidx.constraintlayout.widget.ConstraintLayout>
