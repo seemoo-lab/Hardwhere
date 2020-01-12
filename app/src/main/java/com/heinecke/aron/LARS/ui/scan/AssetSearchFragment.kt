@@ -50,7 +50,7 @@ class AssetSearchFragment : APIFragment(),
             )
             viewModel.searchString.value = getString(S_SEARCH_STRING)
         }
-        adapter = AssetRecyclerViewAdapter(this, viewModel.searchResults.value!!)
+        adapter = AssetRecyclerViewAdapter(this, arrayListOf())
         val recyclerView: RecyclerView = view.findViewById(R.id.list)
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshContainer)
         with(recyclerView) {
@@ -64,6 +64,9 @@ class AssetSearchFragment : APIFragment(),
             })
             resolving.observe(viewLifecycleOwner, Observer {
                 swipeRefreshLayout.isRefreshing = it != 0
+            })
+            searchFiltered.observe(this@AssetSearchFragment, Observer {
+                adapter.replaceElements(it)
             })
         }
     }
@@ -94,7 +97,7 @@ class AssetSearchFragment : APIFragment(),
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putParcelableArrayList(S_DATA, viewModel.searchResults.value)
+        outState.putParcelableArrayList(S_DATA, viewModel.searchFetchData.value)
         outState.putString(S_SEARCH_STRING, viewModel.searchString.value)
     }
 
@@ -168,10 +171,8 @@ class AssetSearchFragment : APIFragment(),
         ) {
             viewModel.decLoading()
             response?.run {
-                val elements = this.body()!!.rows
                 if (this.isSuccessful) {
-                    Log.d(this::class.java.name, "Body: $elements")
-                    adapter.replaceElements(elements)
+                    viewModel.searchFetchData.value = this.body()!!.rows
                 } else {
                     Toast.makeText(
                         context,
