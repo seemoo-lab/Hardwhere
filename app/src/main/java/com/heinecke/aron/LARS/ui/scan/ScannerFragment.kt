@@ -104,8 +104,6 @@ class ScannerFragment : APIFragment() {
                         Toast.LENGTH_LONG
                     ).show()
                 }
-
-
             }
 
             override fun possibleResultPoints(resultPoints: MutableList<ResultPoint>?) {

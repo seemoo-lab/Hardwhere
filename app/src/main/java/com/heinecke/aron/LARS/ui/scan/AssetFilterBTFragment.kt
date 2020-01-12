@@ -34,7 +34,6 @@ class AssetFilterBTFragment : BottomSheetDialogFragment() {
 
     private fun inflateFilterView(inflater: LayoutInflater, filter: AssetFilter, mode: MutableLiveData<AssetFilter>): View {
         val view = inflater.inflate(R.layout.view_asset_filter, null)
-//        view.tag = filter.name
         view.findViewById<TextView>(R.id.filter_button).setText(filter.value)
         view.setOnClickListener {
             mode.value = filter

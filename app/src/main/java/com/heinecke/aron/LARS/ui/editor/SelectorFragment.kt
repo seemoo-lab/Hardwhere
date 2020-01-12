@@ -168,7 +168,7 @@ class SelectorFragment : APIFragment(),
         }
     }
 
-    override fun onListFragmentInteraction(item: Selectable) {
+    override fun onListItemClicked(item: Selectable) {
         Log.d(this@SelectorFragment::class.java.name, "Selected: $item")
         viewModel.setSelected(SelectorData(item, returnCode))
         findNavController().popBackStack()

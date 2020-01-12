@@ -27,7 +27,7 @@ class SelectorRecyclerViewAdapter(
             val item = v.tag as Selectable
             // Notify the active callbacks interface (the activity, if the fragment is attached to
             // one) that an item has been selected.
-            mListener?.onListFragmentInteraction(item)
+            mListener?.onListItemClicked(item)
         }
     }
 
@@ -67,17 +67,9 @@ class SelectorRecyclerViewAdapter(
     }
 
     /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training lesson
-     * [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html)
-     * for more information.
+     * Interface for recyclerview listeners
      */
     interface OnListFragmentInteractionListener {
-        fun onListFragmentInteraction(item: Selectable)
+        fun onListItemClicked(item: Selectable)
     }
 }
