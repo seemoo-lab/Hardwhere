@@ -1,5 +1,6 @@
 package com.heinecke.aron.LARS.ui.scan
 
+import android.os.Bundle
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -17,10 +18,12 @@ class ScanViewModel : ViewModel() {
     internal val resolving = MutableLiveData(0)
     internal val scanList: MutableLiveData<ArrayList<Asset>> = MutableLiveData(ArrayList())
     internal val assetPattern: Regex = Regex("^http.*/([0-9]+)$")
+    @JvmField val S_SCAN_LIST: String = "scan_list"
+    @JvmField val S_UPDATE_TIME: String = "update_time"
     /**
      * Last time assets got updated
      */
-    internal var lastUpdate: Long = System.currentTimeMillis()
+    private var lastUpdate: Long = System.currentTimeMillis()
 
     // Search Fragment
 
@@ -62,6 +65,23 @@ class ScanViewModel : ViewModel() {
             data.filter { x -> filter.contains(x, search) }
         } ?: searchFiltered.value ?: listOf()
     }
+
+    internal fun saveViewModelState(outState: Bundle) {
+        outState.putParcelableArrayList(S_SCAN_LIST, scanList.value)
+        outState.putLong(S_UPDATE_TIME,lastUpdate())
+    }
+    internal fun restoreViewModelState(state: Bundle) {
+        val scanList = scanList.value!!
+        // don't re-add the same list again on rotation, only on kill restore
+        if(scanList.size == 0) {
+            scanList.addAll(state.getParcelableArrayList(S_SCAN_LIST)!!)
+            lastUpdate = state.getLong(S_UPDATE_TIME)
+        }
+    }
+    internal fun updateLastUpdated() {
+        lastUpdate = System.currentTimeMillis()
+    }
+    internal fun lastUpdate(): Long = lastUpdate
 
     internal fun decLoading() {
         resolving.run {

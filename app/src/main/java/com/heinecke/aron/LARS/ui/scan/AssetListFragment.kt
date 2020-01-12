@@ -51,8 +51,8 @@ class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListInteract
 
     override fun onResume() {
         super.onResume()
-        if(System.currentTimeMillis() - scanViewModel.lastUpdate > ITEM_OLDAGE_MS) {
-            scanViewModel.lastUpdate = System.currentTimeMillis()
+        if(System.currentTimeMillis() - scanViewModel.lastUpdate() > ITEM_OLDAGE_MS) {
+            scanViewModel.updateLastUpdated()
             updateAssets()
         }
     }
@@ -68,8 +68,7 @@ class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListInteract
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putParcelableArrayList(S_SCAN_LIST, scanViewModel.scanList.value)
-        outState.putLong(S_UPDATE_TIME,scanViewModel.lastUpdate)
+        scanViewModel.saveViewModelState(outState)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -114,11 +113,7 @@ class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListInteract
 
         viewManager = LinearLayoutManager(context)
         savedInstanceState?.run {
-            val scanList = scanViewModel.scanList.value!!
-            if(scanList.size == 0) {
-                scanList.addAll(this.getParcelableArrayList(S_SCAN_LIST)!!)
-                scanViewModel.lastUpdate = getLong(S_UPDATE_TIME)
-            }
+            scanViewModel.restoreViewModelState(this)
         }
         viewAdapter = AssetRecyclerViewAdapter(this, scanViewModel.scanList.value!!)
 
@@ -162,6 +157,8 @@ class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListInteract
     }
 
     private fun updateAssets() {
+        //TODO: check what happens when an item is gone, we probably fail all items then?
+        // pretty bad on auto-fetch after timeout
         val client = getAPI()
         scanViewModel.incLoading()
         val requests: List<Observable<Asset>> = scanViewModel.scanList.value!!.map {
@@ -183,21 +180,17 @@ class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListInteract
             .subscribe({
                 scanViewModel.run {
                     decLoading()
-                    Log.d(this@AssetListFragment::class.java.name, "Finished with $it")
                     scanList.value!!.clear()
                     scanList.value!!.addAll(it)
                     viewAdapter.notifyDataSetChanged()
+                    updateLastUpdated()
+                    Log.d(this@AssetListFragment::class.java.name, "Finished with $it")
                 }
             }) {
                 scanViewModel.decLoading()
                 Utils.displayToastUp(context!!,R.string.error_fetch_update,Toast.LENGTH_LONG)
                 Log.w(this@AssetListFragment::class.java.name, "Error: $it")
             }
-    }
-
-    companion object {
-        const val S_SCAN_LIST: String = "scan_list"
-        const val S_UPDATE_TIME: String = "update_time"
     }
 
     override fun onListItemClicked(item: Asset) {
