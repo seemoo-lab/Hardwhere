@@ -35,7 +35,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/apiToken_cont">
 
-        <EditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/userID"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -75,7 +75,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/apiEndpoint_cont">
 
-        <EditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/apiToken"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -119,8 +119,8 @@
         android:layout_marginBottom="64dp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/apiToken"
-        app:layout_constraintStart_toStartOf="@+id/apiToken"
+        app:layout_constraintEnd_toEndOf="@+id/apiToken_cont"
+        app:layout_constraintStart_toStartOf="@+id/apiToken_cont"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.3" />
 

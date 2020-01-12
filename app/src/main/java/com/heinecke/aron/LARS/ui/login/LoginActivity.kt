@@ -16,6 +16,7 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.google.android.material.textfield.TextInputEditText
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.zxing.integration.android.IntentIntegrator
@@ -34,9 +35,9 @@ class LoginActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_login)
 
-        val apiToken = findViewById<EditText>(R.id.apiToken)
-        val apiEndpoint = findViewById<EditText>(R.id.apiEndpoint)
-        val userID = findViewById<EditText>(R.id.userID)
+        val apiToken = findViewById<TextInputEditText>(R.id.apiToken)
+        val apiEndpoint = findViewById<TextInputEditText>(R.id.apiEndpoint)
+        val userID = findViewById<TextInputEditText>(R.id.userID)
         val login = findViewById<Button>(R.id.login)
         val loading = findViewById<ProgressBar>(R.id.loading)
         val scanLogin = findViewById<Button>(R.id.scanLogin)
