@@ -4,13 +4,16 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.heinecke.aron.LARS.R
 import com.heinecke.aron.LARS.data.model.Asset
+import com.heinecke.aron.LARS.ui.lib.RecyclerItemTouchHelper
 
 class AssetRecyclerViewAdapter(
-    private val mListener: OnListFragmentInteractionListener?,
+    private val mListener: OnListInteractionListener?,
     private val assetList: ArrayList<Asset>
 ) :
     RecyclerView.Adapter<AssetRecyclerViewAdapter.ViewHolder>() {
@@ -22,24 +25,27 @@ class AssetRecyclerViewAdapter(
             val item = v.tag as Asset
             // Notify the active callbacks interface (the activity, if the fragment is attached to
             // one) that an item has been selected.
-            mListener?.onListFragmentInteraction(item)
+            mListener?.onListItemClicked(item)
         }
     }
 
     // holder class to hold reference
-    inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+    inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view), RecyclerItemTouchHelper.SwipeViewHolder {
         //get view reference
         var modelName: TextView = view.findViewById(R.id.modelName)
         var locationName: TextView = view.findViewById(R.id.locationName)
         var assetName: TextView = view.findViewById(R.id.assetName)
         var assetTag: TextView = view.findViewById(R.id.assetTag)
+        var viewForeground: LinearLayout = view.findViewById(R.id.view_foreground)
+        var viewBackground: RelativeLayout = view.findViewById(R.id.view_background)
+        override fun viewForeground(): View = viewForeground
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         // create view holder to hold reference
         return ViewHolder(
             LayoutInflater.from(parent.context).inflate(
-                R.layout.fragment_scan_list,
+                R.layout.recycler_list_item_asset,
                 parent,
                 false
             )
@@ -98,17 +104,10 @@ class AssetRecyclerViewAdapter(
     }
 
     /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training lesson
-     * [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html)
-     * for more information.
+     * Interface for recyclerview listeners
      */
-    interface OnListFragmentInteractionListener {
-        fun onListFragmentInteraction(item: Asset)
+    interface OnListInteractionListener {
+        fun onListItemClicked(item: Asset)
+//        fun onListItemSwiped(item: Asset)
     }
 }

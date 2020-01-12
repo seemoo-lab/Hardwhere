@@ -27,7 +27,7 @@ import retrofit2.Response
  * Uses the [ScanViewModel]
  */
 class AssetSearchFragment : APIFragment(),
-    AssetRecyclerViewAdapter.OnListFragmentInteractionListener,
+    AssetRecyclerViewAdapter.OnListInteractionListener,
     SearchView.OnQueryTextListener {
 
     // currently selected item or null
@@ -136,7 +136,7 @@ class AssetSearchFragment : APIFragment(),
         }
     }
 
-    override fun onListFragmentInteraction(item: Asset) {
+    override fun onListItemClicked(item: Asset) {
         Log.d(this@AssetSearchFragment::class.java.name, "Selected: $item")
         if (viewModel.scanList.value!!.any { asset: Asset -> asset.id == id }) {
             Toast.makeText(context, R.string.duplicate_manual, Toast.LENGTH_SHORT).show()

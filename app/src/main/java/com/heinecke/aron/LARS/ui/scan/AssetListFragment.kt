@@ -5,9 +5,11 @@ import android.util.Log
 import android.view.*
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -16,15 +18,18 @@ import com.heinecke.aron.LARS.data.model.Asset
 import com.heinecke.aron.LARS.ui.APIFragment
 import com.heinecke.aron.LARS.ui.editor.asset.EditorFragment
 import com.heinecke.aron.LARS.ui.editor.asset.EditorViewModel
+import com.heinecke.aron.LARS.ui.lib.RecyclerItemTouchHelper
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+
 
 /**
  * Asset list fragment for adding,scanning, removing and editing assets<br>
  *     Uses the [ScanViewModel]
  */
-class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListFragmentInteractionListener {
+class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListInteractionListener,
+    RecyclerItemTouchHelper.SwipeListener {
 
     private lateinit var scanViewModel: ScanViewModel
     private lateinit var recyclerView: RecyclerView
@@ -112,6 +117,10 @@ class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListFragment
             adapter = viewAdapter
         }
 
+        val itemTouchHelperCallback: ItemTouchHelper.SimpleCallback =
+            RecyclerItemTouchHelper(this, ItemTouchHelper.LEFT)
+        ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerView)
+
         scanViewModel.resolving.observe(this, Observer {
             progressBar.visibility = if (it > 0) View.VISIBLE else View.GONE
             updateHint()
@@ -174,7 +183,13 @@ class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListFragment
         const val S_SCAN_LIST: String = "scan_list"
     }
 
-    override fun onListFragmentInteraction(item: Asset) {
+    override fun onListItemClicked(item: Asset) {
+        Toast.makeText(context, "TODO: Info",Toast.LENGTH_SHORT).show()
+//        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun onSwiped(viewHolder: RecyclerView.ViewHolder?, direction: Int, position: Int) {
+        Toast.makeText(context, "TODO: Remove",Toast.LENGTH_SHORT).show()
 //        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }
