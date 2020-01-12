@@ -143,6 +143,6 @@ class Utils {
         @JvmField
         val PREFS_KEY_TOKEN = "token"
         @JvmField
-        val ITEM_OLDAGE_MS = 1000*5
+        val ITEM_OLDAGE_MS = 1000*60*5
     }
 }
