@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.heinecke.aron.LARS.R
 import com.heinecke.aron.LARS.Utils
+import com.heinecke.aron.LARS.Utils.Companion.hideKeyboard
 import com.heinecke.aron.LARS.data.model.Asset
 import com.heinecke.aron.LARS.data.model.SearchResults
 import com.heinecke.aron.LARS.ui.APIFragment
@@ -142,6 +143,7 @@ class AssetSearchFragment : APIFragment(),
             Toast.makeText(context, R.string.duplicate_manual, Toast.LENGTH_SHORT).show()
         } else {
             viewModel.scanList.value!!.add(item)
+            hideKeyboard(activity!!)
             findNavController().popBackStack()
         }
     }

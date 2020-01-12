@@ -171,6 +171,7 @@ class SelectorFragment : APIFragment(),
     override fun onListItemClicked(item: Selectable) {
         Log.d(this@SelectorFragment::class.java.name, "Selected: $item")
         viewModel.setSelected(SelectorData(item, returnCode))
+        Utils.hideKeyboard(activity!!)
         findNavController().popBackStack()
     }
 
