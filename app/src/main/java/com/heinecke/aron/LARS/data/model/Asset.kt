@@ -65,6 +65,9 @@ data class Asset(
          * It makes the bigger amount of the dirty work required when still using hard typing and no reflections
          */
         enum class AssetFilter(val value: Int) {
+            None(R.string.no_filter) {
+                override fun contains(asset: Asset, input: String): Boolean = true
+            },
             Model(R.string.hint_model) {
                 override fun contains(asset: Asset, input: String): Boolean = contains(asset.model,input)
             },
