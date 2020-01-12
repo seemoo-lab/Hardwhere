@@ -7,6 +7,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:orientation="vertical">
 
         <com.google.android.material.textfield.TextInputLayout
@@ -40,7 +42,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:focusable="false"
-                android:hint="@string/hint_location" />
+                android:hint="@string/hint_location"
+                android:inputType="textNoSuggestions" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -52,8 +55,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:focusable="false"
-                android:hint="@string/hint_category" />
+                android:hint="@string/hint_category"
+                android:inputType="textNoSuggestions" />
         </com.google.android.material.textfield.TextInputLayout>
+
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -63,24 +68,27 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:focusable="false"
-                android:hint="@string/hint_model" />
+                android:hint="@string/hint_model"
+                android:inputType="textNoSuggestions" />
         </com.google.android.material.textfield.TextInputLayout>
+
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/commentEditor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="top|start"
+                android:hint="@string/hint_note"
+                android:importantForAutofill="no"
                 android:inputType="textMultiLine"
                 android:lines="4"
-                android:hint="@string/hint_note"
                 android:minLines="6"
-                android:gravity="top|start"
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent"
-                android:scrollbars="vertical"
-                android:importantForAutofill="no" />
+                android:scrollbars="vertical" />
         </com.google.android.material.textfield.TextInputLayout>
+
         <ProgressBar
             android:id="@+id/loading"
             android:layout_width="wrap_content"
