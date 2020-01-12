@@ -12,14 +12,14 @@
             android:id="@+id/nav_scan"
             android:icon="@drawable/ic_menu_scan"
             android:title="@string/menu_scan" />
-        <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="@string/menu_slideshow" />
-        <item
-            android:id="@+id/nav_tools"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="@string/menu_tools" />
+<!--        <item-->
+<!--            android:id="@+id/nav_slideshow"-->
+<!--            android:icon="@drawable/ic_menu_slideshow"-->
+<!--            android:title="@string/menu_slideshow" />-->
+<!--        <item-->
+<!--            android:id="@+id/nav_tools"-->
+<!--            android:icon="@drawable/ic_menu_manage"-->
+<!--            android:title="@string/menu_tools" />-->
         <item
             android:id="@+id/nav_logout"
             android:icon="@drawable/ic_menu_logout"
@@ -28,14 +28,14 @@
 
     <item android:title="Communicate">
         <menu>
-            <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_camera"
-                android:title="@string/PLACEHOLDER" />
-            <item
-                android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_camera"
-                android:title="@string/PLACEHOLDER" />
+<!--            <item-->
+<!--                android:id="@+id/nav_share"-->
+<!--                android:icon="@drawable/ic_menu_camera"-->
+<!--                android:title="@string/PLACEHOLDER" />-->
+<!--            <item-->
+<!--                android:id="@+id/nav_send"-->
+<!--                android:icon="@drawable/ic_menu_camera"-->
+<!--                android:title="@string/PLACEHOLDER" />-->
         </menu>
     </item>
 

@@ -24,8 +24,6 @@ private const val API_KEY_USERNAME = "name"
 class LoginDataSource {
     private val client = OkHttpClient();
 
-    //TODO: make async
-
     fun login(data: LoginData, liveData: MutableLiveData<Result<LoggedInUserView>>) {
         val request = Utils.buildAPI(data.apiBackend, "users/${data.userID}", data.apiToken).build()
         client.newCall(request).enqueue(object : Callback {
