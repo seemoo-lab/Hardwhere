@@ -6,6 +6,9 @@ import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.Log
+import android.view.Gravity
+import android.widget.Toast
+import androidx.annotation.StringRes
 import com.heinecke.aron.LARS.data.model.Asset
 import okhttp3.Request
 import retrofit2.Response
@@ -47,6 +50,12 @@ class Utils {
             if(model != null) displayAsset.model = model
         }
 
+        fun displayToastUp(context: Context, @StringRes text: Int, duration: Int) {
+            val toast = Toast.makeText(context, text, duration)
+            toast.setGravity(Gravity.TOP or Gravity.CENTER_HORIZONTAL, 0,0)
+            toast.show()
+        }
+
         fun <T1: Any, T2: Any, R: Any> safeLet(p1: T1?, p2: T2?, block: (T1, T2)->R?): R? {
             return if (p1 != null && p2 != null) block(p1, p2) else null
         }
@@ -69,7 +78,12 @@ class Utils {
         }
 
         fun buildAPI(endpoint: String, path: String, apiToken: String): Request.Builder {
-            val url = makeApiURL(stripEndpint(endpoint), path)
+            val url = makeApiURL(
+                stripEndpint(
+                    endpoint
+                ),
+                path
+            )
             Log.d(this::class.java.name, "URL: $url")
             return Request.Builder()
                 .url(url)

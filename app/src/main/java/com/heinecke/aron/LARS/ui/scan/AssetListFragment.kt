@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.heinecke.aron.LARS.R
+import com.heinecke.aron.LARS.Utils
 import com.heinecke.aron.LARS.data.model.Asset
 import com.heinecke.aron.LARS.ui.APIFragment
 import com.heinecke.aron.LARS.ui.editor.asset.EditorFragment
@@ -175,6 +176,7 @@ class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListInteract
                 scanViewModel.scanList.value!!.addAll(it)
                 viewAdapter.notifyDataSetChanged()
             }) {
+                Utils.displayToastUp(context!!,R.string.error_fetch_update,Toast.LENGTH_LONG)
                 Log.w(this@AssetListFragment::class.java.name, "Error: $it")
             }
     }

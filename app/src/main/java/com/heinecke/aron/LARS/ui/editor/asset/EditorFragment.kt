@@ -108,11 +108,7 @@ class EditorFragment : APIFragment() {
         tagET.isFocusable = !multiEdit
         if (multiEdit) {
             tagET.setOnClickListener {
-                Toast.makeText(
-                    requireContext(),
-                    R.string.toast_no_tag_multiedit,
-                    Toast.LENGTH_SHORT
-                ).show()
+                Utils.displayToastUp(requireContext(),R.string.toast_no_tag_multiedit,Toast.LENGTH_SHORT)
             }
         }
 

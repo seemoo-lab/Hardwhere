@@ -175,11 +175,7 @@ class AssetSearchFragment : APIFragment(),
                 if (this.isSuccessful) {
                     viewModel.searchFetchData.value = this.body()!!.rows
                 } else {
-                    Toast.makeText(
-                        context,
-                        R.string.error_fetch_selectable,
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Utils.displayToastUp(context,R.string.error_fetch_selectable,Toast.LENGTH_LONG)
                 }
             } ?: Utils.logResponseVerbose(this::class.java, response)
         }

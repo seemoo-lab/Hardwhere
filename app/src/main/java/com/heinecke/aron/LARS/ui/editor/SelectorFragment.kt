@@ -194,7 +194,7 @@ class SelectorFragment : APIFragment(),
             viewModel.decLoading()
             if(!call!!.isCanceled) {
                 Log.w(this::class.java.name, "$t")
-                Toast.makeText(context, R.string.error_fetch_selectable, Toast.LENGTH_SHORT).show()
+                Utils.displayToastUp(context,R.string.error_fetch_selectable,Toast.LENGTH_SHORT)
             } else {
                 Log.w(this::class.java.name,"Canceled request")
             }
@@ -212,11 +212,7 @@ class SelectorFragment : APIFragment(),
                     Log.d(this::class.java.name, "Body: $elements")
                     adapter.replaceElements(elements)
                 } else {
-                    Toast.makeText(
-                        context,
-                        R.string.error_fetch_selectable,
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Utils.displayToastUp(context,R.string.error_fetch_selectable,Toast.LENGTH_SHORT)
                 }
             } ?: Utils.logResponseVerbose(this::class.java, response)
         }

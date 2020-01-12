@@ -59,8 +59,7 @@ class ScannerFragment : APIFragment() {
                         this.forEach { item -> Log.d(this::class.java.name, "Item: $item") }
                         val id = Integer.valueOf(this[1])
                         if (viewModel.scanList.value!!.any { asset: Asset -> asset.id == id }) {
-                            Toast.makeText(context, R.string.duplicate_scan, Toast.LENGTH_SHORT)
-                                .show()
+                            Utils.displayToastUp(context!!,R.string.duplicate_scan,Toast.LENGTH_SHORT)
                         } else {
                             viewModel.incLoading()
                             api.getAsset(id).enqueue(object : Callback<Asset> {
