@@ -92,10 +92,10 @@ data class Asset(
             abstract fun contains(asset: Asset, input: String): Boolean
 
             protected fun <T: Selectable> contains(sel: T?, input: String): Boolean {
-                return sel?.name?.contains(input) ?: false
+                return sel?.name?.contains(input, ignoreCase = true) ?: false
             }
             protected fun contains(sel: String?, input: String): Boolean {
-                return sel?.contains(input) ?: false
+                return sel?.contains(input, ignoreCase = true) ?: false
             }
         }
     }
