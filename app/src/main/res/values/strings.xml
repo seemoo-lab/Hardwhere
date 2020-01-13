@@ -39,9 +39,8 @@
     <string name="menu_home">Home</string>
     <string name="menu_scan">Multi-Scan</string>
     <string name="menu_slideshow">Slideshow</string>
-    <string name="menu_tools">Tools</string>
     <string name="menu_logout">Logout</string>
-
+    <string name="menu_dev">Test</string>
 
     <string name="PLACEHOLDER">PLACEHOLDER</string>
     <string name="failure_userinfo">Unable to retrieve user data!</string>

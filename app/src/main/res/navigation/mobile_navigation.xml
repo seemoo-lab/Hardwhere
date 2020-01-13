@@ -27,9 +27,9 @@
     </fragment>
 
     <fragment
-        android:id="@+id/nav_tools"
+        android:id="@+id/nav_dev"
         android:name="com.heinecke.aron.LARS.ui.tools.ToolsFragment"
-        android:label="@string/menu_tools"
+        android:label="@string/menu_dev"
         tools:layout="@layout/fragment_tools" />
     <fragment
         android:id="@+id/editorFragment"
