@@ -125,6 +125,15 @@ class Utils {
             }
         }
 
+        fun hideKeyboardContext(
+            context: Context,
+            view: View
+        ) {
+            val imm =
+                context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
+        }
+
         @JvmField
         val DEFAULT_LOAD_AMOUNT = 50
 

@@ -102,7 +102,7 @@ class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListInteract
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         scanHint = view.findViewById(R.id.scan_hint)
-
+        Utils.hideKeyboardContext(context!!, view)
         val fab: FloatingActionButton = view.findViewById(R.id.fab)
         fab.setOnClickListener { _ ->
             val id = ScannerFragment.newInstance()

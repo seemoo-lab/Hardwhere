@@ -11,6 +11,7 @@ import com.google.zxing.ResultPoint
 import com.google.zxing.client.android.BeepManager
 import com.heinecke.aron.LARS.R
 import com.heinecke.aron.LARS.Utils
+import com.heinecke.aron.LARS.Utils.Companion.hideKeyboardContext
 import com.heinecke.aron.LARS.data.model.Asset
 import com.heinecke.aron.LARS.ui.APIFragment
 import com.journeyapps.barcodescanner.BarcodeCallback
@@ -42,6 +43,7 @@ class ScannerFragment : APIFragment() {
     ): View? {
         val rootView: View = inflater.inflate(R.layout.fragment_scanner, container, false)
         barcodeView = rootView.findViewById(R.id.barcode_scanner)
+        hideKeyboardContext(context!!,rootView)
         val api = getAPI()
         barcodeView.decodeContinuous(object : BarcodeCallback {
             override fun barcodeResult(result: BarcodeResult?) {
