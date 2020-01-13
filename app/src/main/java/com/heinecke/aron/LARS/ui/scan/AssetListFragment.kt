@@ -160,8 +160,11 @@ class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListInteract
         //TODO: check what happens when an item is gone, we probably fail all items then?
         // pretty bad on auto-fetch after timeout
         val client = getAPI()
-        scanViewModel.incLoading()
-        val requests: List<Observable<Asset>> = scanViewModel.scanList.value!!.map {
+        val list = scanViewModel.scanList.value!!
+        // otherwise no callback -> no dec
+        if(list.isNotEmpty())
+            scanViewModel.incLoading()
+        val requests: List<Observable<Asset>> = list.map {
             client.getAssetObservable(it.id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
