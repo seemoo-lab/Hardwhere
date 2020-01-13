@@ -203,5 +203,7 @@ class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListInteract
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder?, direction: Int, position: Int) {
         viewAdapter.removeItem(position)
+        if(viewAdapter.itemCount == 0)
+            updateHint()
     }
 }
