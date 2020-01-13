@@ -76,10 +76,8 @@ class Utils {
 
         fun playErrorBeep() {
             val toneG = ToneGenerator(AudioManager.STREAM_MUSIC, 100)
-//            toneG.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 200)
-//            toneG.startTone(ToneGenerator.TONE_CDMA_MED_L, 200)
-//            toneG.startTone(ToneGenerator.TONE_CDMA_CONFIRM, 200)
-            toneG.startTone(ToneGenerator.TONE_CDMA_LOW_PBX_L, 200)
+            toneG.startTone(ToneGenerator.TONE_CDMA_SOFT_ERROR_LITE, 200)
+//            toneG.startTone(ToneGenerator.TONE_CDMA_LOW_PBX_L, 200)
         }
 
         private fun stripEndpint(endpoint: String): String {
