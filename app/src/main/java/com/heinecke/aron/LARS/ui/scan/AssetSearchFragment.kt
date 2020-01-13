@@ -45,11 +45,6 @@ class AssetSearchFragment : APIFragment(),
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProviders.of(requireActivity())[ScanViewModel::class.java]
         savedInstanceState?.run {
-            viewModel.scanList.value!!.addAll(
-                this.getParcelableArrayList(
-                    S_DATA
-                )!!
-            )
             viewModel.searchString.value = getString(S_SEARCH_STRING)
         }
         adapter = AssetRecyclerViewAdapter(this, arrayListOf())
@@ -99,7 +94,6 @@ class AssetSearchFragment : APIFragment(),
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putParcelableArrayList(S_DATA, viewModel.searchFetchData.value)
         outState.putString(S_SEARCH_STRING, viewModel.searchString.value)
     }
 
@@ -125,7 +119,6 @@ class AssetSearchFragment : APIFragment(),
     }
 
     companion object {
-        const val S_DATA: String = "data"
         const val S_SEARCH_STRING: String = "search_input"
 
         /**
