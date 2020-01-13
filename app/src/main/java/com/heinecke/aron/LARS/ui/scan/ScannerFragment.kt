@@ -53,7 +53,6 @@ class ScannerFragment : APIFragment() {
                     }
                     lastText = result.text
 
-                    beepManager.playBeepSound()
                     Utils.vibrate(context!!,100)
 
                     Log.d(this::class.java.name, "Scanned: $result")
@@ -62,7 +61,9 @@ class ScannerFragment : APIFragment() {
                         val id = Integer.valueOf(this[1])
                         if (viewModel.scanList.value!!.any { asset: Asset -> asset.id == id }) {
                             Utils.displayToastUp(context!!,R.string.duplicate_scan,Toast.LENGTH_SHORT)
+                            Utils.playErrorBeep()
                         } else {
+                            beepManager.playBeepSound()
                             viewModel.incLoading()
                             api.getAsset(id).enqueue(object : Callback<Asset> {
                                 override fun onFailure(call: Call<Asset>?, t: Throwable?) {

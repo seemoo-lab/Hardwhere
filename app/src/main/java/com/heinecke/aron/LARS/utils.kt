@@ -3,6 +3,8 @@ package com.heinecke.aron.LARS
 import android.app.Activity
 import android.content.Context
 import android.content.Context.VIBRATOR_SERVICE
+import android.media.AudioManager
+import android.media.ToneGenerator
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
@@ -72,11 +74,19 @@ class Utils {
             return if (p1 != null && p2 != null && p3 != null && p4 != null && p5 != null) block(p1, p2, p3, p4, p5) else null
         }
 
-        fun stripEndpint(endpoint: String): String {
+        fun playErrorBeep() {
+            val toneG = ToneGenerator(AudioManager.STREAM_MUSIC, 100)
+//            toneG.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 200)
+//            toneG.startTone(ToneGenerator.TONE_CDMA_MED_L, 200)
+//            toneG.startTone(ToneGenerator.TONE_CDMA_CONFIRM, 200)
+            toneG.startTone(ToneGenerator.TONE_CDMA_LOW_PBX_L, 200)
+        }
+
+        private fun stripEndpint(endpoint: String): String {
             return endpoint.trim().trimEnd('/')
         }
 
-        fun makeApiURL(endpoint: String, path: String): String {
+        private fun makeApiURL(endpoint: String, path: String): String {
             return "$endpoint/api/v1/$path"
         }
 
