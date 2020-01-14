@@ -33,11 +33,8 @@ class AssetRecyclerViewAdapter(
     inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view), RecyclerItemTouchHelper.SwipeViewHolder {
         //get view reference
         var modelName: TextView = view.findViewById(R.id.modelName)
-        var locationName: TextView = view.findViewById(R.id.locationName)
-        var assetName: TextView = view.findViewById(R.id.assetName)
         var assetTag: TextView = view.findViewById(R.id.assetTag)
         var viewForeground: LinearLayout = view.findViewById(R.id.view_foreground)
-        var viewBackground: RelativeLayout = view.findViewById(R.id.view_background)
         override fun viewForeground(): View = viewForeground
     }
 
@@ -61,8 +58,6 @@ class AssetRecyclerViewAdapter(
         //set values
         val asset = assetList[position]
         holder.modelName.text = asset.model?.name ?: "<no model>"
-        holder.assetName.text = asset.name ?: "<no name>"
-        holder.locationName.text = asset.rtd_location?.name ?: "<no location>"
         holder.assetTag.text = asset.asset_tag ?: "<no tag>"
 
         with(holder.view) {
