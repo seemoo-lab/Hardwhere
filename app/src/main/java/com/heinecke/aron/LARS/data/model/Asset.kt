@@ -47,9 +47,10 @@ data class Asset(
                 null,
                 null,
                 if (multiAsset) ID_MULTI_ASSET else ID_NEW_ASSET,
-                "",
-                "",
-                ""
+                null,
+                null,
+                // has to be null, to allow patch-asset creation for multi-update, where the tag isn't set
+                null
             )
         }
 
@@ -113,7 +114,9 @@ data class Asset(
         this.name?.run { base.addProperty("name", this) }
         @Suppress("UNNECESSARY_SAFE_CALL")
         this.notes?.run { base.addProperty("notes", this) }
-        this.asset_tag?.run { base.addProperty("asset_tag", this) }
+        if(!this.isMultiAsset()) {
+            this.asset_tag?.run { base.addProperty("asset_tag", this) }
+        }
         this.name?.run { base.addProperty("name", this) }
 
         return base

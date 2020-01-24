@@ -18,7 +18,7 @@ class APIClient {
 
         fun getClient(baseUrl: String, token: String): Retrofit {
             val interceptor = HttpLoggingInterceptor()
-            interceptor.level = HttpLoggingInterceptor.Level.NONE
+            interceptor.level = HttpLoggingInterceptor.Level.BODY
 
             val builder =
                 OkHttpClient.Builder().addInterceptor {
@@ -29,12 +29,14 @@ class APIClient {
                         .build()
                     it.proceed(newRequest)
                 }
-            if (SIMULATE_SLOW_NETWORK && BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG) {
                 builder.addInterceptor(interceptor)
-                    .addInterceptor {
+                if(SIMULATE_SLOW_NETWORK) {
+                    builder.addInterceptor {
                         Thread.sleep(4000)
                         it.proceed(it.request())
                     }
+                }
             }
             val client: OkHttpClient = builder.build()
 
