@@ -59,4 +59,5 @@
     <string name="no_filter">No Filter</string>
     <string name="remove_list_entry">Remove</string>
     <string name="error_fetch_update">Unable to update data!</string>
+    <string name="editor_switch_update">Update</string>
 </resources>
