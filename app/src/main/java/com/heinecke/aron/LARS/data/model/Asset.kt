@@ -106,18 +106,19 @@ data class Asset(
      * the fields that are non-null.
      */
     fun createPatch(): JsonObject {
+        val multiEdit = this.isMultiAsset()
         val base = JsonObject()
         this.model?.run { base.addProperty("model_id", this.id) }
         this.category?.run { base.addProperty("category", this.id) }
         this.rtd_location?.run { base.addProperty("rtd_location_id", this.id) }
         @Suppress("UNNECESSARY_SAFE_CALL")
-        this.name?.run { base.addProperty("name", this) }
+        this.name?.run { if(!this.isBlank() || !multiEdit) base.addProperty("name", this) }
         @Suppress("UNNECESSARY_SAFE_CALL")
-        this.notes?.run { base.addProperty("notes", this) }
-        if(!this.isMultiAsset()) {
+        this.notes?.run { if(!this.isBlank() || !multiEdit) base.addProperty("notes", this) }
+        if(!multiEdit) {
             this.asset_tag?.run { base.addProperty("asset_tag", this) }
         }
-        this.name?.run { base.addProperty("name", this) }
+        this.name?.run { if(!this.isBlank() || !multiEdit) base.addProperty("name", this) }
 
         return base
     }
