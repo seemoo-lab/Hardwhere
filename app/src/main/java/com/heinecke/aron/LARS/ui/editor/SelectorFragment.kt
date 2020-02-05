@@ -103,16 +103,16 @@ class SelectorFragment : APIFragment(),
     }
 
     private fun updateData(data: String?) {
-        viewModel.lastNetworkCall?.cancel()
-        viewModel.incLoading()
+        viewModel.cancelNetworkCall()
         val api = getAPI()
+        viewModel.incLoading()
         val call = if (data != null && data.isNotBlank()) {
             api.searchSelectable(selectType.getTypeName(), data)
         } else {
             api.getSelectablePage(selectType.getTypeName(), DEFAULT_LOAD_AMOUNT, 0)
         }
 
-        viewModel.lastNetworkCall = call
+        viewModel.setNetworkCall(call)
         call.enqueue(SearchResultCallback(requireContext(), selectType, adapter, viewModel))
     }
 
@@ -192,8 +192,8 @@ class SelectorFragment : APIFragment(),
         val viewModel: SelectorViewModel
     ) : Callback<SearchResults<JsonElement>> {
         override fun onFailure(call: Call<SearchResults<JsonElement>>?, t: Throwable?) {
-            viewModel.decLoading()
             if(!call!!.isCanceled) {
+                viewModel.decLoading()
                 Log.w(this::class.java.name, "$t")
                 Utils.displayToastUp(context,R.string.error_fetch_selectable,Toast.LENGTH_SHORT)
             } else {

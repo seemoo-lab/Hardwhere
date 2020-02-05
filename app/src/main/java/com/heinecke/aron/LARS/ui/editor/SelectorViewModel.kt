@@ -12,7 +12,7 @@ class SelectorViewModel : ViewModel() {
     internal val resolving = MutableLiveData(0)
     internal val data: MutableLiveData<ArrayList<Selectable>> = MutableLiveData(ArrayList())
     internal val searchString: MutableLiveData<String> = MutableLiveData("")
-    internal var lastNetworkCall: Call<SearchResults<JsonElement>>? = null
+    private var lastNetworkCall: Call<SearchResults<JsonElement>>? = null
     /**
      * Storage for last type to allow cross-select persistence
      */
@@ -22,6 +22,18 @@ class SelectorViewModel : ViewModel() {
      */
     val selected: MutableLiveData<SelectorFragment.SelectorData?> =
         MutableLiveData()
+
+    fun cancelNetworkCall() {
+        lastNetworkCall?.run {
+            cancel()
+            decLoading()
+        }
+    }
+
+    fun setNetworkCall(call: Call<SearchResults<JsonElement>>) {
+        cancelNetworkCall()
+        lastNetworkCall = call
+    }
 
     fun setSelected(item: SelectorFragment.SelectorData) {
         selected.value = item
