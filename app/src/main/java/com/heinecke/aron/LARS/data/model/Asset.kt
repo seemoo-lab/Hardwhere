@@ -58,6 +58,19 @@ data class Asset(
         val ID_MULTI_ASSET = -1
         @JvmField
         val ID_NEW_ASSET = 0
+        @JvmField
+        val FIELD_NOTES = "notes"
+        @JvmField
+        val FIELD_TAG = "asset_tag"
+        @JvmField
+        val FIELD_NAME = "name"
+        @JvmField
+        val FIELD_MODEL_ID = "model_id"
+        @JvmField
+        val FIELD_CATEGORY_ID = "category"
+        @JvmField
+        val FIELD_RTD_LOCATION_ID = "rtd_location_id"
+
 
         /**
          * Helper enum for asset search filtering by field.
@@ -108,17 +121,16 @@ data class Asset(
     fun createPatch(): JsonObject {
         val multiEdit = this.isMultiAsset()
         val base = JsonObject()
-        this.model?.run { base.addProperty("model_id", this.id) }
-        this.category?.run { base.addProperty("category", this.id) }
-        this.rtd_location?.run { base.addProperty("rtd_location_id", this.id) }
+        this.model?.run { base.addProperty(FIELD_MODEL_ID, this.id) }
+        this.category?.run { base.addProperty(FIELD_CATEGORY_ID, this.id) }
+        this.rtd_location?.run { base.addProperty(FIELD_RTD_LOCATION_ID, this.id) }
         @Suppress("UNNECESSARY_SAFE_CALL")
-        this.name?.run { if(!this.isBlank() || !multiEdit) base.addProperty("name", this) }
+        this.name?.run { if(!this.isBlank() || !multiEdit) base.addProperty(FIELD_NAME, this) }
         @Suppress("UNNECESSARY_SAFE_CALL")
-        this.notes?.run { if(!this.isBlank() || !multiEdit) base.addProperty("notes", this) }
+        this.notes?.run { if(!this.isBlank() || !multiEdit) base.addProperty(FIELD_NOTES, this) }
         if(!multiEdit) {
-            this.asset_tag?.run { base.addProperty("asset_tag", this) }
+            this.asset_tag?.run { base.addProperty(FIELD_TAG, this) }
         }
-        this.name?.run { if(!this.isBlank() || !multiEdit) base.addProperty("name", this) }
 
         return base
     }
