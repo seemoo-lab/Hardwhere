@@ -4,10 +4,12 @@ import android.os.Bundle
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.gson.JsonElement
 import com.heinecke.aron.LARS.Utils.Companion.safeLet
 import com.heinecke.aron.LARS.data.model.Asset
 import com.heinecke.aron.LARS.data.model.Asset.Companion.AssetFilter
 import com.heinecke.aron.LARS.data.model.SearchResults
+import com.heinecke.aron.LARS.ui.editor.SelectorFragment
 import retrofit2.Call
 
 /**
@@ -51,7 +53,19 @@ class ScanViewModel : ViewModel() {
             searchFiltered.value = updateFilteredAssets()
         }
     }
-    internal var lastNetworkCall: Call<SearchResults<Asset>>? = null
+    private var lastNetworkCall: Call<SearchResults<Asset>>? = null
+
+    fun cancelNetworkCall() {
+        lastNetworkCall?.run {
+            cancel()
+            decLoading()
+        }
+    }
+
+    fun setNetworkCall(call: Call<SearchResults<Asset>>) {
+        cancelNetworkCall()
+        lastNetworkCall = call
+    }
 
     internal fun incLoading() {
         resolving.run {

@@ -70,12 +70,14 @@ class AssetSearchFragment : APIFragment(),
 
     private fun updateData(data: String?) {
         viewModel.run {
-            lastNetworkCall?.cancel()
+            cancelNetworkCall()
             val api = getAPI()
             if (data != null && data.isNotBlank()) {
                 incLoading()
-                lastNetworkCall = api.searchAsset(data)
-                lastNetworkCall!!.enqueue(SearchResultCallback(requireContext(),adapter, this))
+                val call =
+                api.searchAsset(data)
+                setNetworkCall(call)
+                call.enqueue(SearchResultCallback(requireContext(),adapter, this))
             } else {
                 adapter.clearItems()
             }
