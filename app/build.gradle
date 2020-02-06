@@ -6,6 +6,15 @@ apply plugin: 'kotlin-android-extensions'
 
 apply plugin: 'androidx.navigation.safeargs.kotlin'
 
+def getGitHash = { ->
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'rev-parse', '--short', 'HEAD'
+        standardOutput = stdout
+    }
+    return stdout.toString().trim()
+}
+
 android {
     compileSdkVersion 28
     defaultConfig {
@@ -15,6 +24,7 @@ android {
         versionCode 1
         versionName "0.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField "String", "GitHash", "\"${getGitHash()}\""
     }
     kotlinOptions {
         jvmTarget = "1.8"
@@ -27,6 +37,16 @@ android {
     }
     compileOptions {
         targetCompatibility = 1.8
+    }
+    signingConfigs {
+        buildTypes {
+            debug {
+                buildConfigField "java.util.Date", "BUILD_TIME", "new java.util.Date(" + System.currentTimeMillis() + "L)"
+            }
+            release {
+                buildConfigField "java.util.Date", "BUILD_TIME", "new java.util.Date(" + System.currentTimeMillis() + "L)"
+            }
+        }
     }
 }
 
