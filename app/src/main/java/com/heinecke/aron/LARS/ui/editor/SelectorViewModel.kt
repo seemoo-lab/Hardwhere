@@ -26,7 +26,6 @@ class SelectorViewModel : ViewModel() {
     fun cancelNetworkCall() {
         lastNetworkCall?.run {
             cancel()
-            decLoading()
         }
     }
 
@@ -64,7 +63,10 @@ class SelectorViewModel : ViewModel() {
 
     internal fun decLoading() {
         resolving.run {
-            value = value!! - 1
+            value = if(value!! > 0)
+                value!! - 1
+            else
+                0
         }
     }
 }

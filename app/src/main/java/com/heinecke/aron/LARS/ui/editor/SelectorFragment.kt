@@ -192,8 +192,8 @@ class SelectorFragment : APIFragment(),
         val viewModel: SelectorViewModel
     ) : Callback<SearchResults<JsonElement>> {
         override fun onFailure(call: Call<SearchResults<JsonElement>>?, t: Throwable?) {
+            viewModel.decLoading()
             if(!call!!.isCanceled) {
-                viewModel.decLoading()
                 Log.w(this::class.java.name, "$t")
                 Utils.displayToastUp(context,R.string.error_fetch_selectable,Toast.LENGTH_SHORT)
             } else {

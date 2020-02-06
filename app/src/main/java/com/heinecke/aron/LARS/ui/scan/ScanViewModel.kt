@@ -1,6 +1,7 @@
 package com.heinecke.aron.LARS.ui.scan
 
 import android.os.Bundle
+import android.util.Log
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -58,7 +59,6 @@ class ScanViewModel : ViewModel() {
     fun cancelNetworkCall() {
         lastNetworkCall?.run {
             cancel()
-            decLoading()
         }
     }
 
@@ -99,7 +99,11 @@ class ScanViewModel : ViewModel() {
 
     internal fun decLoading() {
         resolving.run {
-            value = value!! - 1
+            value = if(value!! > 0)
+                value!! - 1
+            else
+                0
+            Log.d(this@ScanViewModel::class.java.name,"Loading: $value")
         }
     }
 }
