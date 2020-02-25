@@ -14,6 +14,7 @@ import com.heinecke.aron.LARS.Utils
 import com.heinecke.aron.LARS.data.model.Asset
 import com.heinecke.aron.LARS.data.model.Selectable
 import com.heinecke.aron.LARS.ui.APIFragment
+import com.heinecke.aron.LARS.ui.editor.AssetTextView
 import com.heinecke.aron.LARS.ui.editor.SelectorFragment
 import com.heinecke.aron.LARS.ui.editor.SelectorViewModel
 
@@ -23,9 +24,9 @@ import com.heinecke.aron.LARS.ui.editor.SelectorViewModel
 class EditorFragment : APIFragment() {
     lateinit var editorViewModel: EditorViewModel
     lateinit var selectorViewModel: SelectorViewModel
-    private lateinit var commentET: EditText
+    private lateinit var commentET: AssetTextView
     private lateinit var tagET: EditText
-    private lateinit var nameET: EditText
+    private lateinit var nameET: AssetTextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,9 +68,9 @@ class EditorFragment : APIFragment() {
             R.id.finishEdit -> {
                 Log.d(this::class.java.name, "finishing editor")
                 with(editorViewModel.asset.value!!) {
-                    notes = commentET.text.toString()
+                    notes = commentET.getValue()
                     asset_tag = tagET.text.toString()
-                    name = nameET.text.toString()
+                    name = nameET.getValue()
                 }
                 editorViewModel.updateAssets(getAPI())
                 true

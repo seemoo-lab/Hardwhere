@@ -11,16 +11,21 @@
         android:layout_marginEnd="8dp"
         android:orientation="vertical">
 
-        <com.google.android.material.textfield.TextInputLayout
+        <com.heinecke.aron.LARS.ui.editor.AssetTextView
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:id="@+id/assetName"
+            app:label="@string/hint_asset_name"/>
+<!--        <com.google.android.material.textfield.TextInputLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent">-->
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/assetName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/hint_asset_name" />
-        </com.google.android.material.textfield.TextInputLayout>
+<!--            <com.google.android.material.textfield.TextInputEditText-->
+<!--                android:id="@+id/assetName"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:hint="@string/hint_asset_name" />-->
+<!--        </com.google.android.material.textfield.TextInputLayout>-->
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
@@ -72,22 +77,32 @@
                 android:inputType="textNoSuggestions" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+<!--        <com.google.android.material.textfield.TextInputLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent">-->
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/commentEditor"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="top|start"
-                android:hint="@string/hint_note"
-                android:importantForAutofill="no"
-                android:inputType="textMultiLine"
-                android:lines="4"
-                android:minLines="6"
-                android:scrollbars="vertical" />
-        </com.google.android.material.textfield.TextInputLayout>
+<!--            <com.google.android.material.textfield.TextInputEditText-->
+<!--                android:id="@+id/commentEditor"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:gravity="top|start"-->
+<!--                android:hint="@string/hint_note"-->
+<!--                android:importantForAutofill="no"-->
+<!--                android:inputType="textMultiLine"-->
+<!--                android:lines="4"-->
+<!--                android:minLines="6"-->
+<!--                android:scrollbars="vertical" />-->
+<!--        </com.google.android.material.textfield.TextInputLayout>-->
+        <com.heinecke.aron.LARS.ui.editor.AssetTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/commentEditor"
+            app:label="@string/hint_note"
+            android:importantForAutofill="no"
+            android:inputType="textMultiLine"
+            android:lines="4"
+            android:minLines="6"
+            />
 
         <ProgressBar
             android:id="@+id/loading"

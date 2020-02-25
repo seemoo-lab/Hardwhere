@@ -23,18 +23,18 @@
     <EditText
         android:id="@+id/asset_text_view_text"
         android:layout_width="0dp"
-        android:layout_height="59dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:ems="10"
         android:gravity="start|top"
+        android:importantForAutofill="no"
         android:inputType="textMultiLine"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/asset_text_view_label"
-        app:layout_constraintTop_toBottomOf="@+id/asset_text_view_switch"
-        android:importantForAutofill="no" />
+        app:layout_constraintTop_toBottomOf="@+id/asset_text_view_switch" />
 
     <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/asset_text_view_switch"

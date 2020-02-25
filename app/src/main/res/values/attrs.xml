@@ -2,5 +2,10 @@
 <resources>
     <declare-styleable name="AssetTextView">
         <attr name="label" format="string"/>
+        <attr name="update" format="boolean"/>
+        <attr name="android:lines" format="integer"/>
+        <attr name="android:minLines" format="integer"/>
+        <attr name="android:importantForAutofill" format="boolean"/>
+        <attr name="android:inputType" format="flags"/>
     </declare-styleable>
 </resources>
