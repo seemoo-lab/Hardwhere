@@ -7,7 +7,7 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.heinecke.aron.LARS.R
 
-class AssetTextView(context: Context, attrs: AttributeSet) : ConstraintLayout(context, attrs) {
+class AssetTextView(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : ConstraintLayout(context, attrs, defStyleAttr) {
     init {
         View.inflate(context, R.layout.asset_text_view_text, this)
 

@@ -20,6 +20,7 @@ import com.heinecke.aron.LARS.data.model.Asset
 import com.heinecke.aron.LARS.ui.APIFragment
 import com.heinecke.aron.LARS.ui.editor.asset.EditorFragment
 import com.heinecke.aron.LARS.ui.editor.asset.EditorViewModel
+import com.heinecke.aron.LARS.ui.editor.asset.NewEditorFragment
 import com.heinecke.aron.LARS.ui.lib.RecyclerItemTouchHelper
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -197,7 +198,13 @@ class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListInteract
     }
 
     override fun onListItemClicked(item: Asset) {
-        Toast.makeText(context, "TODO: Info",Toast.LENGTH_SHORT).show()
+//        Toast.makeText(context, "TODO: Info",Toast.LENGTH_SHORT).show()
+        val transaction = requireFragmentManager().beginTransaction()
+        val fragment = NewEditorFragment()
+        transaction.addToBackStack("test editor")
+        transaction.replace(R.id.nav_host_fragment,fragment,"test editor")
+        transaction.commit()
+
 //        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
