@@ -25,7 +25,7 @@ class EditorFragment : APIFragment() {
     lateinit var editorViewModel: EditorViewModel
     lateinit var selectorViewModel: SelectorViewModel
     private lateinit var commentET: AssetTextView
-    private lateinit var tagET: EditText
+    private lateinit var tagET: AssetTextView
     private lateinit var nameET: AssetTextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,7 +69,7 @@ class EditorFragment : APIFragment() {
                 Log.d(this::class.java.name, "finishing editor")
                 with(editorViewModel.asset.value!!) {
                     notes = commentET.getValue()
-                    asset_tag = tagET.text.toString()
+                    asset_tag = tagET.getValue()
                     name = nameET.getValue()
                 }
                 editorViewModel.updateAssets(getAPI())
@@ -106,7 +106,8 @@ class EditorFragment : APIFragment() {
         ) { editorViewModel.asset.value!!.category }
 
         val multiEdit = editorViewModel.multiEditAssets.value!!.size > 1
-        tagET.isFocusable = !multiEdit
+//        tagET.isFocusable = !multiEdit
+        tagET.isEnabled = !multiEdit
         if (multiEdit) {
             tagET.setOnClickListener {
                 Utils.displayToastUp(requireContext(),R.string.toast_no_tag_multiedit,Toast.LENGTH_SHORT)

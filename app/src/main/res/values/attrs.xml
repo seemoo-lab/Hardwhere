@@ -6,6 +6,7 @@
         <attr name="android:lines" format="integer"/>
         <attr name="android:minLines" format="integer"/>
         <attr name="android:importantForAutofill" format="boolean"/>
+        <attr name="android:enabled" format="boolean"/>
         <attr name="android:inputType" format="flags"/>
     </declare-styleable>
 </resources>
