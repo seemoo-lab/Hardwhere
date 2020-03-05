@@ -14,7 +14,7 @@ import com.heinecke.aron.LARS.Utils
 import com.heinecke.aron.LARS.data.model.Asset
 import com.heinecke.aron.LARS.data.model.Selectable
 import com.heinecke.aron.LARS.ui.APIFragment
-import com.heinecke.aron.LARS.ui.editor.AssetTextView
+import com.heinecke.aron.LARS.ui.editor.AssetAttributeView
 import com.heinecke.aron.LARS.ui.editor.SelectorFragment
 import com.heinecke.aron.LARS.ui.editor.SelectorViewModel
 
@@ -24,9 +24,9 @@ import com.heinecke.aron.LARS.ui.editor.SelectorViewModel
 class EditorFragment : APIFragment() {
     lateinit var editorViewModel: EditorViewModel
     lateinit var selectorViewModel: SelectorViewModel
-    private lateinit var commentET: AssetTextView
-    private lateinit var tagET: AssetTextView
-    private lateinit var nameET: AssetTextView
+    private lateinit var commentET: AssetAttributeView
+    private lateinit var tagET: AssetAttributeView
+    private lateinit var nameET: AssetAttributeView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +37,7 @@ class EditorFragment : APIFragment() {
                     PARAM_ASSETS
                 )
                 with(editorViewModel.multiEditAssets.value!!) {
+                    Log.d(this::class.java.name,"First run, setting values..")
                     if (size == 1) {
                         editorViewModel.setEditorAsset(this[0])
                     } else {
@@ -47,6 +48,17 @@ class EditorFragment : APIFragment() {
                     }
                 }
             }
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt("asd",1)
+        // store text fields back
+        editorViewModel.asset.value!!.run {
+            this.name = nameET.getText().toString()
+            this.notes = commentET.getText().toString()
+            Log.d(this::class.java.name,"Storing: $this")
         }
     }
 
@@ -81,13 +93,21 @@ class EditorFragment : APIFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val location: EditText = view.findViewById(R.id.locationPicker)
+        val location: AssetAttributeView = view.findViewById(R.id.locationPicker)
         val model: EditText = view.findViewById(R.id.modelPicker)
         val category: EditText = view.findViewById(R.id.categoryPicker)
         commentET = view.findViewById(R.id.commentEditor)
-        tagET = view.findViewById(R.id.assetTag)
         nameET = view.findViewById(R.id.assetName)
+        tagET = view.findViewById(R.id.assetTag)
+
+
         val loading: ProgressBar = view.findViewById(R.id.loading)
+
+        // workaround android bug: if navigated away, no onSaveInstanceState is called
+        // this happens due to a misbehavior in the navigation component
+        commentET.setTextChangedListener {text -> editorViewModel.asset.value?.notes = text }
+        tagET.setTextChangedListener {text -> editorViewModel.asset.value?.asset_tag = text }
+        nameET.setTextChangedListener {text -> editorViewModel.asset.value?.name = text }
 
         setupSelectable(
             location,
@@ -116,7 +136,6 @@ class EditorFragment : APIFragment() {
 
         selectorViewModel = ViewModelProviders.of(requireActivity())[SelectorViewModel::class.java]
         selectorViewModel.selected.observe(viewLifecycleOwner, Observer {
-            Log.d(this@EditorFragment::class.java.name, "Selected: $it")
             it?.run {
                 val currentVal = editorViewModel.asset.value!!
                 when (it.inputID) {
@@ -132,10 +151,21 @@ class EditorFragment : APIFragment() {
             }
         })
 
-        editorViewModel.asset.observe(viewLifecycleOwner, Observer { it ->
-            Log.d(this::class.java.name, "Asset update $it")
+        // first handle origin, then current
+        editorViewModel.assetOrigin.observe(viewLifecycleOwner, Observer { it ->
             it?.run {
-                location.setText(this.rtd_location?.name ?: "")
+                location.setDefaultText(this.rtd_location?.name)
+//                model.setText(this.model?.name ?: "")
+//                category.setText(this.category?.name ?: "")
+                commentET.setDefaultText(this.notes)
+                tagET.setDefaultText(this.asset_tag)
+                this@EditorFragment.nameET.setDefaultText(this.name)
+            }
+        })
+
+        editorViewModel.asset.observe(viewLifecycleOwner, Observer { it ->
+            it?.run {
+                location.setText(this.rtd_location?.name)
                 model.setText(this.model?.name ?: "")
                 category.setText(this.category?.name ?: "")
                 commentET.setText(this.notes)
@@ -145,7 +175,6 @@ class EditorFragment : APIFragment() {
         })
 
         editorViewModel.loading.observe(this, Observer {
-            Log.d(this@EditorFragment::class.java.name, "Loading-Update: $it")
             loading.visibility = if (it == null) View.INVISIBLE else View.INVISIBLE
             if (it != null) {
                 if (it.success != null) {
@@ -162,11 +191,24 @@ class EditorFragment : APIFragment() {
     }
 
     private fun <T : Selectable> setupSelectable(
+        et: AssetAttributeView, type: Selectable.SelectableType,
+        returnCode: Int, v: () -> T?
+    ) {
+        et.setEditorOnclickListener(View.OnClickListener {
+            val (id, args) = SelectorFragment.newInstancePair(
+                v(),
+                returnCode,
+                type
+            )
+            findNavController().navigate(id, args)
+        })
+    }
+
+    private fun <T : Selectable> setupSelectable(
         et: EditText, type: Selectable.SelectableType,
         returnCode: Int, v: () -> T?
     ) {
         et.setOnClickListener {
-            Log.d(this::class.java.name, "$type clicked")
             val (id, args) = SelectorFragment.newInstancePair(
                 v(),
                 returnCode,

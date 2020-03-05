@@ -7,40 +7,43 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/asset_text_view_label"
+        android:id="@+id/asset_attribute_view_label"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:saveEnabled="false"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:labelFor="@id/asset_text_view_text"
+        android:labelFor="@id/asset_attribute_view_text"
         android:text="@string/PLACEHOLDER"
-        app:layout_constraintBottom_toBottomOf="@+id/asset_text_view_switch"
-        app:layout_constraintEnd_toStartOf="@+id/asset_text_view_switch"
+        app:layout_constraintBottom_toBottomOf="@+id/asset_attribute_view_switch"
+        app:layout_constraintEnd_toStartOf="@+id/asset_attribute_view_switch"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/asset_text_view_text"
+        android:id="@+id/asset_attribute_view_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:ems="10"
+        android:saveEnabled="false"
         android:gravity="start|top"
         android:importantForAutofill="no"
         android:inputType="textMultiLine"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/asset_text_view_label"
-        app:layout_constraintTop_toBottomOf="@+id/asset_text_view_switch" />
+        app:layout_constraintStart_toStartOf="@+id/asset_attribute_view_label"
+        app:layout_constraintTop_toBottomOf="@+id/asset_attribute_view_switch" />
 
     <androidx.appcompat.widget.SwitchCompat
-        android:id="@+id/asset_text_view_switch"
+        android:id="@+id/asset_attribute_view_switch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:saveEnabled="false"
         android:layout_marginEnd="8dp"
         android:text="@string/editor_switch_update"
         app:layout_constraintEnd_toEndOf="parent"

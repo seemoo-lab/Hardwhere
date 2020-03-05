@@ -11,7 +11,7 @@
         android:layout_marginEnd="8dp"
         android:orientation="vertical">
 
-        <com.heinecke.aron.LARS.ui.editor.AssetTextView
+        <com.heinecke.aron.LARS.ui.editor.AssetAttributeView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/assetName"
@@ -27,7 +27,7 @@
 <!--                android:hint="@string/hint_asset_name" />-->
 <!--        </com.google.android.material.textfield.TextInputLayout>-->
 
-        <com.heinecke.aron.LARS.ui.editor.AssetTextView
+        <com.heinecke.aron.LARS.ui.editor.AssetAttributeView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/assetTag"
@@ -43,18 +43,24 @@
 <!--                android:hint="@string/hint_asset_tag" />-->
 <!--        </com.google.android.material.textfield.TextInputLayout>-->
 
-        <com.google.android.material.textfield.TextInputLayout
+        <com.heinecke.aron.LARS.ui.editor.AssetAttributeView
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:id="@+id/locationPicker"
+            android:focusable="false"
+            app:label="@string/hint_location"/>
+<!--        <com.google.android.material.textfield.TextInputLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent">-->
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/locationPicker"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:focusable="false"
-                android:hint="@string/hint_location"
-                android:inputType="textNoSuggestions" />
-        </com.google.android.material.textfield.TextInputLayout>
+<!--            <com.google.android.material.textfield.TextInputEditText-->
+<!--                android:id="@+id/locationPicker"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:focusable="false"-->
+<!--                android:hint="@string/hint_location"-->
+<!--                android:inputType="textNoSuggestions" />-->
+<!--        </com.google.android.material.textfield.TextInputLayout>-->
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
@@ -98,7 +104,7 @@
 <!--                android:minLines="6"-->
 <!--                android:scrollbars="vertical" />-->
 <!--        </com.google.android.material.textfield.TextInputLayout>-->
-        <com.heinecke.aron.LARS.ui.editor.AssetTextView
+        <com.heinecke.aron.LARS.ui.editor.AssetAttributeView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/commentEditor"

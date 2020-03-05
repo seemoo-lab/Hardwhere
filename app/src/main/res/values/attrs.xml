@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="AssetTextView">
+    <declare-styleable name="AssetAttributeView">
         <attr name="label" format="string"/>
         <attr name="update" format="boolean"/>
         <attr name="android:lines" format="integer"/>
@@ -8,5 +8,6 @@
         <attr name="android:importantForAutofill" format="boolean"/>
         <attr name="android:enabled" format="boolean"/>
         <attr name="android:inputType" format="flags"/>
+        <attr name="android:focusable" format="flags"/>
     </declare-styleable>
 </resources>

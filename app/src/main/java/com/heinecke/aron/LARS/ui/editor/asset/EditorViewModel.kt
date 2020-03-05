@@ -18,6 +18,12 @@ class EditorViewModel : ViewModel() {
     private val assetMutable: MutableLiveData<Asset> = MutableLiveData()
     internal var asset: LiveData<Asset> = assetMutable
     /**
+     * Asset containing the original values. Allows detecting the original value on rotation and
+     * reset functionality.
+     */
+    private var assetOriginMutable: MutableLiveData<Asset> = MutableLiveData()
+    internal var assetOrigin: LiveData<Asset> = assetOriginMutable
+    /**
      * Assets passed on multi-edit to update
      */
     val multiEditAssets: MutableLiveData<ArrayList<Asset>> = MutableLiveData()
@@ -28,8 +34,13 @@ class EditorViewModel : ViewModel() {
      */
     val editingFinished: MutableLiveData<Any?> = MutableLiveData(null)
 
+    /**
+     * Sets the asset to use in editor and as original value
+     */
     fun setEditorAsset(asset: Asset) {
+        Log.d(this::class.java.name,"Setting editor asset & default")
         assetMutable.value = asset
+        assetOriginMutable.value = assetMutable.value!!.copy()
     }
 
     fun updateAssets(client: APIInterface) {
