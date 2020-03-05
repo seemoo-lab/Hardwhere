@@ -15,11 +15,9 @@ import java.lang.reflect.Type
 class APIClient {
     companion object {
         private const val SIMULATE_SLOW_NETWORK: Boolean = false
+        private const val DISPLAY_FULL_LOG: Boolean = false
 
         fun getClient(baseUrl: String, token: String): Retrofit {
-            val interceptor = HttpLoggingInterceptor()
-            interceptor.level = HttpLoggingInterceptor.Level.BODY
-
             val builder =
                 OkHttpClient.Builder().addInterceptor {
                     val newRequest: Request = it.request().newBuilder()
@@ -30,7 +28,13 @@ class APIClient {
                     it.proceed(newRequest)
                 }
             if (BuildConfig.DEBUG) {
+                val interceptor = HttpLoggingInterceptor()
+                if(DISPLAY_FULL_LOG)
+                    interceptor.level = HttpLoggingInterceptor.Level.BODY
+                else
+                    interceptor.level = HttpLoggingInterceptor.Level.BASIC
                 builder.addInterceptor(interceptor)
+
                 if(SIMULATE_SLOW_NETWORK) {
                     builder.addInterceptor {
                         Thread.sleep(4000)
