@@ -93,7 +93,8 @@ class AssetAttributeView(context: Context, attrs: AttributeSet? = null, defStyle
     }
 
     override fun onSaveInstanceState(): Parcelable? {
-        Log.d(this::class.java.name,"onSaveInstanceState")
+        // TODO: honor save-state attribute, we probably don't need to store anything here
+        // due to our workaround with the navigation component
         val bundle = Bundle()
         bundle.putBoolean(S_UPDATE,isUpdate())
         bundle.putString(S_ORIGIN,originValue)
@@ -104,6 +105,7 @@ class AssetAttributeView(context: Context, attrs: AttributeSet? = null, defStyle
     }
 
     override fun onRestoreInstanceState(state: Parcelable?) {
+        // TODO: see onSaveInstanceState
         var viewState = state
         if (viewState is Bundle) {
             setDefaultText(viewState.getString(S_ORIGIN))
