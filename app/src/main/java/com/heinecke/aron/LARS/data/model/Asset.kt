@@ -87,7 +87,7 @@ data class Asset(
             Category(R.string.hint_category) {
                 override fun contains(asset: Asset, input: String): Boolean = contains(asset.category,input)
             },
-            Location(R.string.hint_location) {
+            Location(R.string.hint_default_location) {
                 override fun contains(asset: Asset, input: String): Boolean = contains(asset.rtd_location,input)
             },
             Name(R.string.hint_asset_name) {

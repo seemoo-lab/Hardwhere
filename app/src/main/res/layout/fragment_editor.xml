@@ -44,11 +44,11 @@
 <!--        </com.google.android.material.textfield.TextInputLayout>-->
 
         <com.heinecke.aron.LARS.ui.editor.AssetAttributeView
+            android:id="@+id/locationPicker"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/locationPicker"
             android:focusable="false"
-            app:label="@string/hint_location"/>
+            app:label="@string/hint_default_location" />
 <!--        <com.google.android.material.textfield.TextInputLayout-->
 <!--            android:layout_width="match_parent"-->
 <!--            android:layout_height="match_parent">-->
