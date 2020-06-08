@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.annotation.CallSuper
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.heinecke.aron.LARS.MainViewModel
 import com.heinecke.aron.LARS.data.APIClient
 import com.heinecke.aron.LARS.data.APIInterface
@@ -22,7 +22,7 @@ abstract class APIFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         mainViewModel = activity?.run {
-            ViewModelProviders.of(this)[MainViewModel::class.java]
+            ViewModelProvider(this)[MainViewModel::class.java]
         } ?: throw Exception("Requires Activity!")
 
         mainViewModel.loginData.observe(this, Observer {

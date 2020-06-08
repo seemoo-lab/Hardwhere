@@ -7,7 +7,7 @@ import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.heinecke.aron.LARS.R
 import com.heinecke.aron.LARS.Utils
@@ -30,9 +30,9 @@ class EditorFragment : APIFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        editorViewModel = ViewModelProviders.of(requireActivity())[EditorViewModel::class.java]
+        editorViewModel = ViewModelProvider(requireActivity())[EditorViewModel::class.java]
         if (savedInstanceState == null) {
-            arguments!!.run {
+            requireArguments().run {
                 editorViewModel.multiEditAssets.value = this.getParcelableArrayList(
                     PARAM_ASSETS
                 )
@@ -134,7 +134,7 @@ class EditorFragment : APIFragment() {
             }
         }
 
-        selectorViewModel = ViewModelProviders.of(requireActivity())[SelectorViewModel::class.java]
+        selectorViewModel = ViewModelProvider(requireActivity())[SelectorViewModel::class.java]
         selectorViewModel.selected.observe(viewLifecycleOwner, Observer {
             it?.run {
                 val currentVal = editorViewModel.asset.value!!
@@ -174,7 +174,7 @@ class EditorFragment : APIFragment() {
             }
         })
 
-        editorViewModel.loading.observe(this, Observer {
+        editorViewModel.loading.observe(viewLifecycleOwner, Observer {
             loading.visibility = if (it == null) View.INVISIBLE else View.INVISIBLE
             if (it != null) {
                 if (it.success != null) {

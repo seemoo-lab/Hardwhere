@@ -7,7 +7,7 @@ import android.view.*
 import android.widget.SearchView
 import android.widget.Toast
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -38,12 +38,12 @@ class AssetSearchFragment : APIFragment(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProviders.of(requireActivity())[ScanViewModel::class.java]
+        viewModel = ViewModelProvider(requireActivity())[ScanViewModel::class.java]
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel = ViewModelProviders.of(requireActivity())[ScanViewModel::class.java]
+        viewModel = ViewModelProvider(requireActivity())[ScanViewModel::class.java]
         savedInstanceState?.run {
             viewModel.searchString.value = getString(S_SEARCH_STRING)
         }
@@ -138,7 +138,7 @@ class AssetSearchFragment : APIFragment(),
             Toast.makeText(context, R.string.duplicate_manual, Toast.LENGTH_SHORT).show()
         } else {
             viewModel.scanList.value!!.add(item)
-            hideKeyboard(activity!!)
+            hideKeyboard(requireActivity())
             findNavController().popBackStack()
         }
     }

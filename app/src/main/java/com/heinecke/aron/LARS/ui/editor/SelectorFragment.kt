@@ -7,7 +7,7 @@ import android.view.*
 import android.widget.SearchView
 import android.widget.Toast
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -61,7 +61,7 @@ class SelectorFragment : APIFragment(),
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel = ViewModelProviders.of(requireActivity())[SelectorViewModel::class.java]
+        viewModel = ViewModelProvider(requireActivity())[SelectorViewModel::class.java]
         savedInstanceState?.run {
             if(getString(ARG_TYPE) == selectType.getTypeName())
                 viewModel.data.value!!.addAll(
@@ -171,7 +171,7 @@ class SelectorFragment : APIFragment(),
     override fun onListItemClicked(item: Selectable) {
         Log.d(this@SelectorFragment::class.java.name, "Selected: $item")
         viewModel.setSelected(SelectorData(item, returnCode))
-        Utils.hideKeyboard(activity!!)
+        Utils.hideKeyboard(requireActivity())
         findNavController().popBackStack()
     }
 

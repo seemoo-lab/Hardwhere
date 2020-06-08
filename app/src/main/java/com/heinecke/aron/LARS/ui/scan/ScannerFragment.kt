@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.google.zxing.ResultPoint
 import com.google.zxing.client.android.BeepManager
 import com.heinecke.aron.LARS.R
@@ -34,7 +34,7 @@ class ScannerFragment : APIFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         beepManager = BeepManager(requireActivity())
-        viewModel = ViewModelProviders.of(requireActivity())[ScanViewModel::class.java]
+        viewModel = ViewModelProvider(requireActivity())[ScanViewModel::class.java]
     }
 
     override fun onCreateView(

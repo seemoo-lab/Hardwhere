@@ -15,7 +15,7 @@ import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.textfield.TextInputEditText
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
@@ -42,7 +42,7 @@ class LoginActivity : AppCompatActivity() {
         val loading = findViewById<ProgressBar>(R.id.loading)
         val scanLogin = findViewById<Button>(R.id.scanLogin)
 
-        loginViewModel = ViewModelProviders.of(this)[LoginViewModel::class.java]
+        loginViewModel = ViewModelProvider(this)[LoginViewModel::class.java]
 
         loginViewModel.loginFormState.observe(this@LoginActivity, Observer {
             val loginState = it ?: return@Observer

@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.heinecke.aron.LARS.R
 import com.heinecke.aron.LARS.data.model.Asset.Companion.AssetFilter
@@ -22,7 +22,7 @@ class AssetFilterBTFragment : BottomSheetDialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? { // Inflate the layout for this fragment
-        val viewModel: ScanViewModel = ViewModelProviders.of(requireActivity())[ScanViewModel::class.java]
+        val viewModel: ScanViewModel = ViewModelProvider(requireActivity())[ScanViewModel::class.java]
 
         val view = inflater.inflate(R.layout.fragment_asset_filter, container, false)
         val layout: LinearLayout = view.findViewById(R.id.asset_filter_layout)

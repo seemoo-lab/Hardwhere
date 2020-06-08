@@ -12,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity() {
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-        mainViewModel = ViewModelProviders.of(this)[MainViewModel::class.java]
+        mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
         savedInstanceState?.run {
             mainViewModel.userData.value = this.getParcelable(S_USERDATA)
             mainViewModel.loginData.value = this.getParcelable(S_LOGINDATA)

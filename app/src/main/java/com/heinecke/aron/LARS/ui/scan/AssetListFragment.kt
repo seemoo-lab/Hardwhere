@@ -7,7 +7,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -44,9 +44,9 @@ class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListInteract
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         scanViewModel =
-            ViewModelProviders.of(requireActivity())[ScanViewModel::class.java]
+            ViewModelProvider(requireActivity())[ScanViewModel::class.java]
         editorViewModel =
-            ViewModelProviders.of(requireActivity())[EditorViewModel::class.java]
+            ViewModelProvider(requireActivity())[EditorViewModel::class.java]
     }
 
     override fun onResume() {
@@ -102,7 +102,7 @@ class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListInteract
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         scanHint = view.findViewById(R.id.scan_hint)
-        Utils.hideKeyboardContext(context!!, view)
+        Utils.hideKeyboardContext(requireContext(), view)
         val fab: FloatingActionButton = view.findViewById(R.id.fab)
         fab.setOnClickListener { _ ->
             val id = ScannerFragment.newInstance()
@@ -126,7 +126,7 @@ class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListInteract
             RecyclerItemTouchHelper(this, ItemTouchHelper.LEFT)
         ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerView)
 
-        scanViewModel.resolving.observe(this, Observer {
+        scanViewModel.resolving.observe(viewLifecycleOwner, Observer {
             progressBar.visibility = if (it > 0) View.VISIBLE else View.GONE
             updateHint()
         })
@@ -142,7 +142,7 @@ class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListInteract
         })
 
         // react to updates when editor finished
-        editorViewModel.editingFinished.observe(this, Observer {
+        editorViewModel.editingFinished.observe(viewLifecycleOwner, Observer {
             if (it != null) {
                 Log.d(this@AssetListFragment::class.java.name, "EditedAssets")
                 updateAssets()
@@ -191,7 +191,7 @@ class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListInteract
                 }
             }) {
                 scanViewModel.decLoading()
-                Utils.displayToastUp(context!!,R.string.error_fetch_update,Toast.LENGTH_LONG)
+                Utils.displayToastUp(requireContext(),R.string.error_fetch_update,Toast.LENGTH_LONG)
                 Log.w(this@AssetListFragment::class.java.name, "Error: $it")
             }
     }
