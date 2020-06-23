@@ -119,11 +119,17 @@ class EditorFragment : APIFragment() {
             Selectable.SelectableType.Model,
             R.id.modelPicker
         ) { editorViewModel.asset.value!!.model }
-        setupSelectable(
-            category,
-            Selectable.SelectableType.Category,
-            R.id.categoryPicker
-        ) { editorViewModel.asset.value!!.category }
+
+        // disable category, can't be edited on asset, model attribute
+        category.isFocusableInTouchMode = false
+        category.isLongClickable = false
+        category.setOnClickListener(View.OnClickListener {
+            Toast.makeText(
+                requireContext(),
+                R.string.asset_category_uneditable,
+                Toast.LENGTH_LONG
+            ).show()
+        })
 
         val multiEdit = editorViewModel.multiEditAssets.value!!.size > 1
 //        tagET.isFocusable = !multiEdit

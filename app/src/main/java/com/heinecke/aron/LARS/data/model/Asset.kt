@@ -67,8 +67,6 @@ data class Asset(
         @JvmField
         val FIELD_MODEL_ID = "model_id"
         @JvmField
-        val FIELD_CATEGORY_ID = "category"
-        @JvmField
         val FIELD_RTD_LOCATION_ID = "rtd_location_id"
 
 
@@ -122,7 +120,6 @@ data class Asset(
         val multiEdit = this.isMultiAsset()
         val base = JsonObject()
         this.model?.run { base.addProperty(FIELD_MODEL_ID, this.id) }
-        this.category?.run { base.addProperty(FIELD_CATEGORY_ID, this.id) }
         this.rtd_location?.run { base.addProperty(FIELD_RTD_LOCATION_ID, this.id) }
         @Suppress("UNNECESSARY_SAFE_CALL")
         this.name?.run { if(!this.isBlank() || !multiEdit) base.addProperty(FIELD_NAME, this) }
