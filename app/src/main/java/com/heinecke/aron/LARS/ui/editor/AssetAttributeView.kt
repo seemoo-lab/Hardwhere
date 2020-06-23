@@ -25,6 +25,7 @@ class AssetAttributeView(context: Context, attrs: AttributeSet? = null, defStyle
     private var originValue: String? = null
     private var oldColors: Int
     private var textChangedListener: ((text: String) -> Unit)? = null
+    private var onEditorClickListener: View.OnClickListener? = null
     init {
         LayoutInflater.from(context).inflate(R.layout.asset_attribute_view_text, this, true)
         asset_attribute_view_label.id = View.generateViewId()
@@ -47,11 +48,21 @@ class AssetAttributeView(context: Context, attrs: AttributeSet? = null, defStyle
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             asset_attribute_view_text.focusable = focusable
-        } else if(focusable == View.NOT_FOCUSABLE){  // try to work around old android versions
-            asset_attribute_view_text.inputType = 0
+            Log.d(this::class.java.name,"Focusable (${asset_attribute_view_text.focusable})")
+        } else {  // try to work around old android versions
+            Log.d(this::class.java.name,"Using workaround for focusable")
+            // workaround:
+            // can't set focusable=false in xml, can't re-enable focus, old API
+            // but without we get a double-focus (two clicks for onClick to trigger)
+            asset_attribute_view_text.onFocusChangeListener = OnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) {
+                    onEditorClickListener?.run {
+                        this.onClick(asset_attribute_view_text)
+                    }
+                }
+            }
+            asset_attribute_view_text.inputType = if(focusable == View.NOT_FOCUSABLE) 0 else InputType.TYPE_CLASS_TEXT
         }
-        asset_attribute_view_text.setLines(attributes.getInt(R.styleable.AssetAttributeView_android_lines,1))
-        asset_attribute_view_text.minLines = attributes.getInt(R.styleable.AssetAttributeView_android_minLines,1)
         asset_attribute_view_text.addTextChangedListener(object:TextWatcher{
             override fun afterTextChanged(s: Editable?) {
                 updateChangedState()
@@ -62,7 +73,6 @@ class AssetAttributeView(context: Context, attrs: AttributeSet? = null, defStyle
         })
 
         setUpdate(attributes.getBoolean(R.styleable.AssetAttributeView_update,true))
-//        toggleSwitch.setOnCheckedChangeListener { _, b -> editor.isEnabled = b }
         attributes.recycle()
     }
 
@@ -127,6 +137,7 @@ class AssetAttributeView(context: Context, attrs: AttributeSet? = null, defStyle
      * Set onclickListener for editor
      */
     fun setEditorOnclickListener(listener: View.OnClickListener) {
+        onEditorClickListener = listener
         asset_attribute_view_text.setOnClickListener(listener)
     }
     fun isUpdate() = asset_attribute_view_switch.isChecked && this.isEnabled
