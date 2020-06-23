@@ -214,6 +214,8 @@ class EditorFragment : APIFragment() {
         et: EditText, type: Selectable.SelectableType,
         returnCode: Int, v: () -> T?
     ) {
+        et.isFocusableInTouchMode = false
+        et.isLongClickable = false
         et.setOnClickListener {
             val (id, args) = SelectorFragment.newInstancePair(
                 v(),

@@ -28,7 +28,7 @@ class AssetAttributeView(context: Context, attrs: AttributeSet? = null, defStyle
     init {
         LayoutInflater.from(context).inflate(R.layout.asset_attribute_view_text, this, true)
         asset_attribute_view_label.id = View.generateViewId()
-        asset_attribute_view_label.id = View.generateViewId()
+        asset_attribute_view_text.id = View.generateViewId()
         asset_attribute_view_switch.id = View.generateViewId()
 
         val attributes = context.obtainStyledAttributes(attrs, R.styleable.AssetAttributeView)
