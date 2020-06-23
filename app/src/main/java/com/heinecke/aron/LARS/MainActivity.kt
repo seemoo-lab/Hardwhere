@@ -30,6 +30,7 @@ import com.heinecke.aron.LARS.data.APIInterface
 import com.heinecke.aron.LARS.data.model.Selectable.User
 import com.heinecke.aron.LARS.data.model.UserData
 import com.heinecke.aron.LARS.ui.login.LoginActivity
+import io.sentry.core.Sentry
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -43,6 +44,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Sentry.setTag("commit", BuildConfig.GitHash)
+        Sentry.setTag("buildtype", BuildConfig.BUILD_TYPE)
 
         checkLogin()
 

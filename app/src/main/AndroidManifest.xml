@@ -13,6 +13,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <meta-data android:name="io.sentry.dsn" android:value="https://71b2a1e48f3c445eb48b5eeca6cde17a@sentry.maass.xyz/14" />
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
