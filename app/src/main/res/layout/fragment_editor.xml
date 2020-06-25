@@ -62,19 +62,12 @@
 <!--                android:inputType="textNoSuggestions" />-->
 <!--        </com.google.android.material.textfield.TextInputLayout>-->
 
-        <com.google.android.material.textfield.TextInputLayout
+        <de.tu_darmstadt.seemoo.LARS.ui.editor.AssetAttributeView
+            android:id="@+id/modelPicker"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:boxBackgroundColor="@color/fix_textinputlayout_background">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/modelPicker"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:focusable="false"
-                android:hint="@string/hint_model"
-                android:inputType="textNoSuggestions" />
-        </com.google.android.material.textfield.TextInputLayout>
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            app:label="@string/hint_model" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"

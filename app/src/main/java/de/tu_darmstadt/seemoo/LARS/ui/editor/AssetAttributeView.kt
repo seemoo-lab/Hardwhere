@@ -11,6 +11,7 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.CompoundButton
 import android.widget.TextView
 import androidx.appcompat.widget.SwitchCompat
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -22,15 +23,22 @@ class AssetAttributeView(context: Context, attrs: AttributeSet? = null, defStyle
     constructor(context: Context, attrs: AttributeSet? = null) : this(context,attrs,0)
     constructor(context: Context) : this(context,null,0)
 
+    // disable to prevent programmatic listener triggering
+    private var listenSwitchChange = true
     private var originValue: String? = null
     private var oldColors: Int
     private var textChangedListener: ((text: String) -> Unit)? = null
     private var onEditorClickListener: View.OnClickListener? = null
+    private var onSwitchChangedListener: ((checked: Boolean) -> Unit)? = null
     init {
         LayoutInflater.from(context).inflate(R.layout.asset_attribute_view_text, this, true)
         asset_attribute_view_label.id = View.generateViewId()
         asset_attribute_view_text.id = View.generateViewId()
         asset_attribute_view_switch.id = View.generateViewId()
+        
+        asset_attribute_view_switch.setOnCheckedChangeListener { _, isChecked ->
+            if (listenSwitchChange) onSwitchChangedListener?.invoke(isChecked)
+        }
 
         val attributes = context.obtainStyledAttributes(attrs, R.styleable.AssetAttributeView)
 
@@ -98,6 +106,13 @@ class AssetAttributeView(context: Context, attrs: AttributeSet? = null, defStyle
         setUpdate(enabled)
     }
 
+    /**
+     * Set listener for update switch change
+     */
+    fun setOnCheckedChangeListener(listener: ((checked: Boolean) -> Unit)?) {
+        onSwitchChangedListener = listener
+    }
+
     override fun isEnabled(): Boolean {
         return super.isEnabled()
     }
@@ -145,7 +160,9 @@ class AssetAttributeView(context: Context, attrs: AttributeSet? = null, defStyle
      * Set value update state for attribute editor & switch.
      */
     private fun setUpdate(update: Boolean) {
+        listenSwitchChange = false
         asset_attribute_view_switch.isChecked = update && this.isEnabled
+        listenSwitchChange = true
     }
     fun getText() = asset_attribute_view_text.text
     /**

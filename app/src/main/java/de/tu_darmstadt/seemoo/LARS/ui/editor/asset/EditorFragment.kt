@@ -94,7 +94,7 @@ class EditorFragment : APIFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val location: AssetAttributeView = view.findViewById(R.id.locationPicker)
-        val model: EditText = view.findViewById(R.id.modelPicker)
+        val model: AssetAttributeView = view.findViewById(R.id.modelPicker)
         val category: EditText = view.findViewById(R.id.categoryPicker)
         commentET = view.findViewById(R.id.commentEditor)
         nameET = view.findViewById(R.id.assetName)
@@ -103,22 +103,33 @@ class EditorFragment : APIFragment() {
 
         val loading: ProgressBar = view.findViewById(R.id.loading)
 
-        // workaround android bug: if navigated away, no onSaveInstanceState is called
+        // always store state change
+        // workaround for android bug: if navigated away, no onSaveInstanceState is called
         // this happens due to a misbehavior in the navigation component
         commentET.setTextChangedListener {text -> editorViewModel.asset.value?.notes = text }
         tagET.setTextChangedListener {text -> editorViewModel.asset.value?.asset_tag = text }
         nameET.setTextChangedListener {text -> editorViewModel.asset.value?.name = text }
+        nameET.setOnCheckedChangeListener { v -> Log.d(this::class.java.name, "$v")}
 
         setupSelectable(
             location,
             Selectable.SelectableType.Location,
-            R.id.locationPicker
-        ) { editorViewModel.asset.value!!.rtd_location }
+            R.id.locationPicker,
+            { editorViewModel.asset.value!!.rtd_location }
+        )
+        {
+            val asset = editorViewModel.asset.value!!
+            asset.rtd_location = editorViewModel.assetOrigin.value!!.rtd_location
+            editorViewModel.assetMutable.value = asset
+        }
         setupSelectable(
             model,
             Selectable.SelectableType.Model,
-            R.id.modelPicker
-        ) { editorViewModel.asset.value!!.model }
+            R.id.modelPicker,
+            { editorViewModel.asset.value!!.model }
+        ) { val asset = editorViewModel.asset.value!!
+            asset.model = editorViewModel.assetOrigin.value!!.model
+            editorViewModel.assetMutable.value = asset }
 
         // disable category, can't be edited on asset, model attribute
         category.isFocusableInTouchMode = false
@@ -153,6 +164,7 @@ class EditorFragment : APIFragment() {
                         "Unknown inputID for selector update"
                     )
                 }
+                editorViewModel.assetMutable.value = currentVal
                 selectorViewModel.resetSelected()
             }
         })
@@ -161,7 +173,7 @@ class EditorFragment : APIFragment() {
         editorViewModel.assetOrigin.observe(viewLifecycleOwner, Observer { it ->
             it?.run {
                 location.setDefaultText(this.rtd_location?.name)
-//                model.setText(this.model?.name ?: "")
+                model.setDefaultText(this.model?.name ?: "")
 //                category.setText(this.category?.name ?: "")
                 commentET.setDefaultText(this.notes)
                 tagET.setDefaultText(this.asset_tag)
@@ -196,9 +208,12 @@ class EditorFragment : APIFragment() {
         })
     }
 
+    /**
+     * reset lambda is to reset on change-uncheck
+     */
     private fun <T : Selectable> setupSelectable(
         et: AssetAttributeView, type: Selectable.SelectableType,
-        returnCode: Int, v: () -> T?
+        returnCode: Int, v: () -> T? , reset: () -> Unit
     ) {
         et.setEditorOnclickListener(View.OnClickListener {
             val (id, args) = SelectorFragment.newInstancePair(
@@ -208,6 +223,11 @@ class EditorFragment : APIFragment() {
             )
             findNavController().navigate(id, args)
         })
+        et.setOnCheckedChangeListener { checked -> if (!checked) {
+            reset()
+            Log.d(this::class.java.name,"Resetting")
+        }
+        }
     }
 
     private fun <T : Selectable> setupSelectable(

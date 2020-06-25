@@ -15,7 +15,7 @@ class EditorViewModel : ViewModel() {
     /**
      * Asset used to display and edit-base
      */
-    private val assetMutable: MutableLiveData<Asset> = MutableLiveData()
+    internal val assetMutable: MutableLiveData<Asset> = MutableLiveData()
     internal var asset: LiveData<Asset> = assetMutable
     /**
      * Asset containing the original values. Allows detecting the original value on rotation and
