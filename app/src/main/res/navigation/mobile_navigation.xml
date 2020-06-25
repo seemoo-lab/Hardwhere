@@ -7,13 +7,13 @@
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="com.heinecke.aron.LARS.ui.home.HomeFragment"
+        android:name="de.tu_darmstadt.seemoo.LARS.ui.home.HomeFragment"
         android:label="@string/menu_home"
         tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/nav_scan"
-        android:name="com.heinecke.aron.LARS.ui.scan.AssetListFragment"
+        android:name="de.tu_darmstadt.seemoo.LARS.ui.scan.AssetListFragment"
         android:label="@string/menu_scan" >
         <action
             android:id="@+id/action_nav_scan_to_editorFragment"
@@ -28,12 +28,12 @@
 
     <fragment
         android:id="@+id/nav_dev"
-        android:name="com.heinecke.aron.LARS.ui.tools.ToolsFragment"
+        android:name="de.tu_darmstadt.seemoo.LARS.ui.tools.ToolsFragment"
         android:label="@string/menu_dev"
         tools:layout="@layout/fragment_tools" />
     <fragment
         android:id="@+id/editorFragment"
-        android:name="com.heinecke.aron.LARS.ui.editor.asset.EditorFragment"
+        android:name="de.tu_darmstadt.seemoo.LARS.ui.editor.asset.EditorFragment"
         android:label="@string/title_editor_asset" >
         <action
             android:id="@+id/action_editorFragment_to_selectorFragment"
@@ -45,7 +45,7 @@
     </fragment>
     <fragment
         android:id="@+id/selector_fragment"
-        android:name="com.heinecke.aron.LARS.ui.editor.SelectorFragment"
+        android:name="de.tu_darmstadt.seemoo.LARS.ui.editor.SelectorFragment"
         android:label="fragment_selector_list"
         tools:layout="@layout/fragment_selector_list" >
         <action
@@ -54,7 +54,7 @@
     </fragment>
     <fragment
         android:id="@+id/scannerFragment"
-        android:name="com.heinecke.aron.LARS.ui.scan.ScannerFragment"
+        android:name="de.tu_darmstadt.seemoo.LARS.ui.scan.ScannerFragment"
         android:label="@string/title_scanner" >
         <action
             android:id="@+id/action_scannerFragment_to_nav_scan2"
@@ -66,7 +66,7 @@
     </fragment>
     <fragment
         android:id="@+id/asset_search_fragment"
-        android:name="com.heinecke.aron.LARS.ui.scan.AssetSearchFragment"
+        android:name="de.tu_darmstadt.seemoo.LARS.ui.scan.AssetSearchFragment"
         android:label="AssetSearchFragment" />
 
 </navigation>

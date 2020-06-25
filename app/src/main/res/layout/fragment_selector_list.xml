@@ -7,12 +7,12 @@
     android:layout_height="match_parent">
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/list"
-        android:name="com.heinecke.aron.LARS.ui.editor.SelectorFragment"
+        android:name="de.tu_darmstadt.seemoo.LARS.ui.editor.SelectorFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         app:layoutManager="LinearLayoutManager"
-        tools:context="com.heinecke.aron.LARS.ui.editor.SelectorFragment"
+        tools:context="de.tu_darmstadt.seemoo.LARS.ui.editor.SelectorFragment"
         tools:listitem="@layout/fragment_selector" />
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
