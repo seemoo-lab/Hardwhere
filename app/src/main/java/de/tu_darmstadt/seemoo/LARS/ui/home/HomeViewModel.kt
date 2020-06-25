@@ -8,7 +8,7 @@ import de.tu_darmstadt.seemoo.LARS.BuildConfig
 class HomeViewModel : ViewModel() {
 
     private val _text = MutableLiveData<String>().apply {
-        value = "Build: ${BuildConfig.BUILD_TIME} \nCommit: ${BuildConfig.GitHash}"
+        value = "Large Accessories Retrieval System\nBuild: ${BuildConfig.BUILD_TIME} \nCommit: ${BuildConfig.GitHash}"
     }
     val text: LiveData<String> = _text
 }

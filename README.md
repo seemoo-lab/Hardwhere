@@ -1,3 +1,3 @@
 # LARS
 
-Large Acessories Retrieval System
+Large Accessories Retrieval System
