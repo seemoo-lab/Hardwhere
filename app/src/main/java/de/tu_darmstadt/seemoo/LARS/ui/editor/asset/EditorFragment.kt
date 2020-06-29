@@ -106,10 +106,15 @@ class EditorFragment : APIFragment() {
         // always store state change
         // workaround for android bug: if navigated away, no onSaveInstanceState is called
         // this happens due to a misbehavior in the navigation component
-        commentET.setTextChangedListener {text -> editorViewModel.asset.value?.notes = text }
-        tagET.setTextChangedListener {text -> editorViewModel.asset.value?.asset_tag = text }
-        nameET.setTextChangedListener {text -> editorViewModel.asset.value?.name = text }
-        nameET.setOnCheckedChangeListener { v -> Log.d(this::class.java.name, "$v")}
+        setupTextfield(commentET,{t -> editorViewModel.asset.value?.notes = t}) {
+            a,o -> a.notes = o.notes
+        }
+        setupTextfield(tagET,{t -> editorViewModel.asset.value?.asset_tag = t}) {
+                a,o -> a.asset_tag = o.asset_tag
+        }
+        setupTextfield(nameET,{t -> editorViewModel.asset.value?.name = t}) {
+                a,o -> a.name = o.name
+        }
 
         setupSelectable(
             location,
@@ -206,6 +211,24 @@ class EditorFragment : APIFragment() {
                 }
             }
         })
+    }
+
+    /**
+     * Setup text field with reset functions.
+     * [setVal] receives a value on text change to update the internal value.
+     * [reset] is called when update is unchecked, to reset the value
+     */
+    private fun setupTextfield(
+        et: AssetAttributeView, setVal: (t: String) -> Unit, reset: (a: Asset, orig: Asset) -> Unit
+    ) {
+        et.setTextChangedListener { text -> setVal.invoke(text) }
+        et.setOnCheckedChangeListener { c ->
+            if (!c) {
+                val asset = editorViewModel.asset.value!!
+                reset.invoke(asset, editorViewModel.assetOrigin.value!!)
+                editorViewModel.assetMutable.value = asset
+            }
+        }
     }
 
     /**
