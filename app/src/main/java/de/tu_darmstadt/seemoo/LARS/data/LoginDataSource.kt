@@ -8,6 +8,7 @@ import de.tu_darmstadt.seemoo.LARS.InvalidResponseException
 import de.tu_darmstadt.seemoo.LARS.InvalidUserIDException
 import de.tu_darmstadt.seemoo.LARS.UnauthorizedException
 import de.tu_darmstadt.seemoo.LARS.Utils
+import de.tu_darmstadt.seemoo.LARS.data.APIClient.Companion.getHttpBase
 import de.tu_darmstadt.seemoo.LARS.data.model.LoginData
 import de.tu_darmstadt.seemoo.LARS.ui.login.LoggedInUserView
 import okhttp3.Call
@@ -22,11 +23,9 @@ private const val API_KEY_USERNAME = "name"
  * Class that handles authentication w/ login credentials and retrieves user information.
  */
 class LoginDataSource {
-    private val client = OkHttpClient();
-
     fun login(data: LoginData, liveData: MutableLiveData<Result<LoggedInUserView>>) {
         val request = Utils.buildAPI(data.apiBackend, "users/${data.userID}", data.apiToken).build()
-        client.newCall(request).enqueue(object : Callback {
+        getHttpBase(data.apiToken).newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 Log.w(this@LoginDataSource::class.java.name, "onFailure $e")
                 liveData.postValue(Result.Error(e))

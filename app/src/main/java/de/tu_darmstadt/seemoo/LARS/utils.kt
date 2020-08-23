@@ -14,6 +14,7 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.annotation.StringRes
+import de.tu_darmstadt.seemoo.LARS.data.APIClient.Companion.getHttpBase
 import de.tu_darmstadt.seemoo.LARS.data.model.Asset
 import okhttp3.Request
 import retrofit2.Response
@@ -98,9 +99,6 @@ class Utils {
             Log.d(this::class.java.name, "URL: $url")
             return Request.Builder()
                 .url(url)
-                .addHeader("Authorization", "Bearer $apiToken")
-                .addHeader("Accept", "application/json")
-                .addHeader("Content-Type", "application/json")
         }
 
         fun <T, C> logResponseVerbose(cl: Class<C>, resp: Response<T>?) {
