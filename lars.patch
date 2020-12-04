@@ -1,9 +1,9 @@
 diff --git a/app/Http/Controllers/LARSController.php b/app/Http/Controllers/LARSController.php
 new file mode 100644
-index 000000000..a23e210ed
+index 000000000..a5dec2bd5
 --- /dev/null
 +++ b/app/Http/Controllers/LARSController.php
-@@ -0,0 +1,59 @@
+@@ -0,0 +1,63 @@
 +<?php
 +
 +namespace App\Http\Controllers;
@@ -17,7 +17,7 @@ index 000000000..a23e210ed
 + * This class controls all actions related to qr codes for assets
 + * the Snipe-IT Asset Management application.
 + *
-+ * @version v0.1
++ * @version v0.2
 + * @author Aron Heinecke
 + */
 +class LARSController extends Controller
@@ -41,10 +41,14 @@ index 000000000..a23e210ed
 +    {
 +        $id = Auth::id();
 +        $user = Auth::user();
++        $user->tokens->each(function($token, $key) {
++            if ($token->name == 'LARS-App') {
++                $token->delete();
++            }
++        });
 +        $token = $user->createToken('LARS-App')->accessToken;
 +        $url = \App::make('url')->to('/');
 +        
-+        //return response()->json(["uid" => $id, "url" => $url, "token" => $token ]);
 +        return json_encode(["uid" => $id, "url" => $url, "token" => $token ]);
 +    }
 +    
@@ -64,23 +68,23 @@ index 000000000..a23e210ed
 +    }
 +}
 diff --git a/resources/views/layouts/default.blade.php b/resources/views/layouts/default.blade.php
-index 196b085bb..75fb95266 100644
+index 28c2bddb9..36923ccf6 100644
 --- a/resources/views/layouts/default.blade.php
 +++ b/resources/views/layouts/default.blade.php
-@@ -343,6 +343,11 @@
+@@ -353,6 +353,11 @@
+                              <i class="fa fa-user-secret fa-fw" aria-hidden="true"></i> Manage API Keys
                           </a>
                       </li>
-                      @endcan
 +                     <li>
 +                         <a href="{{ route('user.lars') }}">
 +                             <i class="fa fa-user-secret fa-fw"></i> LARS App Login
 +                         </a>
 +                     </li>
+                      @endcan
                       <li class="divider"></li>
                       <li>
-                          <a href="{{ url('/logout') }}">
 diff --git a/routes/web.php b/routes/web.php
-index aa9631475..a238ae6aa 100644
+index aa9631475..9cc6d3c3c 100644
 --- a/routes/web.php
 +++ b/routes/web.php
 @@ -245,6 +245,8 @@ Route::group([ 'prefix' => 'account', 'middleware' => ['auth']], function () {
