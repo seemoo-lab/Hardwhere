@@ -53,7 +53,6 @@ class EditorFragment : APIFragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putInt("asd",1)
         // store text fields back
         editorViewModel.asset.value!!.run {
             this.name = nameET.getText().toString()
