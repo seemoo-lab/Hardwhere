@@ -191,18 +191,33 @@ class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListInteract
                 }
             }) {
                 scanViewModel.decLoading()
-                Utils.displayToastUp(requireContext(),R.string.error_fetch_update,Toast.LENGTH_LONG)
+                Utils.displayToastUp(
+                    requireContext(),
+                    R.string.error_fetch_update,
+                    Toast.LENGTH_LONG
+                )
                 Log.w(this@AssetListFragment::class.java.name, "Error: $it")
             }
     }
 
     override fun onListItemClicked(item: Asset) {
-        Toast.makeText(context, "TODO: Info",Toast.LENGTH_SHORT).show()
+//        Toast.makeText(context, "TODO: Info", Toast.LENGTH_SHORT).show()
 //        val transaction = requireFragmentManager().beginTransaction()
 //        val fragment = NewEditorFragment()
 //        transaction.addToBackStack("test editor")
 //        transaction.replace(R.id.nav_host_fragment,fragment,"test editor")
 //        transaction.commit()
+        // TODO: update infoAsset in viewmodel for AssetInfoBTFragment
+
+        scanViewModel.infoAsset.value = item
+
+        val infoPhotoBottomDialogFragment: AssetInfoBTFragment =
+            AssetInfoBTFragment.newInstance()
+        infoPhotoBottomDialogFragment.show(
+            parentFragmentManager,
+            "AssetInfoBTFragment"
+        )
+
 
 //        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }

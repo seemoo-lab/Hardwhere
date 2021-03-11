@@ -20,7 +20,9 @@ data class Asset(
     var name: String?, var notes: String?,
     var asset_tag: String?,
     @Transient
-    val selected: Boolean = false
+    val selected: Boolean = false,
+    /** Custom fields **/
+    var additional: HashMap<String,String>?
 ) : Parcelable {
 
     override fun equals(other: Any?): Boolean {
@@ -50,6 +52,8 @@ data class Asset(
                 null,
                 null,
                 // has to be null, to allow patch-asset creation for multi-update, where the tag isn't set
+                null,
+                false,
                 null
             )
         }

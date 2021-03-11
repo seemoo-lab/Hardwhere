@@ -3,6 +3,7 @@
     <declare-styleable name="AssetAttributeView">
         <attr name="label" format="string"/>
         <attr name="update" format="boolean"/>
+        <attr name="editable" format="boolean"/>
         <attr name="android:lines" format="integer"/>
         <attr name="android:minLines" format="integer"/>
         <attr name="android:importantForAutofill" format="boolean"/>

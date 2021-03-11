@@ -43,7 +43,7 @@ class ScannerFragment : APIFragment() {
     ): View? {
         val rootView: View = inflater.inflate(R.layout.fragment_scanner, container, false)
         barcodeView = rootView.findViewById(R.id.barcode_scanner)
-        hideKeyboardContext(context!!,rootView)
+        hideKeyboardContext(requireContext(),rootView)
         val api = getAPI()
         barcodeView.decodeContinuous(object : BarcodeCallback {
             override fun barcodeResult(result: BarcodeResult?) {
