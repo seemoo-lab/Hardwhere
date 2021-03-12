@@ -22,7 +22,7 @@ data class Asset(
     @Transient
     val selected: Boolean = false,
     /** Custom fields **/
-    var additional: HashMap<String,String>?
+    var custom_fields: HashMap<String,CustomField>?
 ) : Parcelable {
 
     override fun equals(other: Any?): Boolean {

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.lifecycle.Observer
@@ -12,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import de.tu_darmstadt.seemoo.LARS.R
 import de.tu_darmstadt.seemoo.LARS.Utils
 import de.tu_darmstadt.seemoo.LARS.data.model.Asset
+import de.tu_darmstadt.seemoo.LARS.data.model.CustomField
 import de.tu_darmstadt.seemoo.LARS.data.model.Selectable
 import de.tu_darmstadt.seemoo.LARS.ui.APIFragment
 import de.tu_darmstadt.seemoo.LARS.ui.editor.AssetAttributeView
@@ -27,6 +29,7 @@ class EditorFragment : APIFragment() {
     private lateinit var commentET: AssetAttributeView
     private lateinit var tagET: AssetAttributeView
     private lateinit var nameET: AssetAttributeView
+    private lateinit var containerCustomAttribs: LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,6 +98,7 @@ class EditorFragment : APIFragment() {
         val location: AssetAttributeView = view.findViewById(R.id.locationPicker)
         val model: AssetAttributeView = view.findViewById(R.id.modelPicker)
         val category: EditText = view.findViewById(R.id.categoryPicker)
+        containerCustomAttribs = view.findViewById(R.id.frag_editor_attrib_container)
         commentET = view.findViewById(R.id.commentEditor)
         nameET = view.findViewById(R.id.assetName)
         tagET = view.findViewById(R.id.assetTag)
@@ -182,6 +186,7 @@ class EditorFragment : APIFragment() {
                 commentET.setDefaultText(this.notes)
                 tagET.setDefaultText(this.asset_tag)
                 this@EditorFragment.nameET.setDefaultText(this.name)
+                this.custom_fields?.run { setupCustomFields(this) }
             }
         })
 
@@ -193,6 +198,7 @@ class EditorFragment : APIFragment() {
                 commentET.setText(this.notes)
                 tagET.setText(this.asset_tag)
                 this@EditorFragment.nameET.setText(this.name)
+                this.custom_fields?.run { setupCustomFields(this) }
             }
         })
 
@@ -210,6 +216,22 @@ class EditorFragment : APIFragment() {
                 }
             }
         })
+    }
+
+    private fun setupCustomFields(fields: HashMap<String, CustomField>) {
+        val inflater = layoutInflater
+        containerCustomAttribs.removeAllViews()
+        for (attrib in fields) {
+            val view = AssetAttributeView(requireContext())
+            containerCustomAttribs.addView(view)
+            view.tag = attrib.value.field
+            view.setText(attrib.value.value)
+            view.setLabel(attrib.key)
+            view.setDefaultText(attrib.value.value)
+            view.setOnCheckedChangeListener {  }
+//            val view: View = inflater.inflate(R.layout.asset_attribute_view_text,null)
+//            val view.findViewById(R.layout.asset)
+        }
     }
 
     /**

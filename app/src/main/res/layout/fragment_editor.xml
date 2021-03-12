@@ -109,6 +109,13 @@
             android:minLines="6"
             />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:id="@+id/frag_editor_attrib_container"
+            android:orientation="vertical" />
+
         <ProgressBar
             android:id="@+id/loading"
             android:layout_width="wrap_content"

@@ -132,6 +132,11 @@ class AssetAttributeView(context: Context, attrs: AttributeSet? = null, defStyle
         onSwitchChangedListener = listener
     }
 
+    fun setLabel(label: String) {
+        asset_attribute_view_label.text = label
+        asset_attribute_view_text.hint = label
+    }
+
     override fun isEnabled(): Boolean {
         return super.isEnabled()
     }
