@@ -43,6 +43,25 @@ class EditorViewModel : ViewModel() {
         assetOriginMutable.value = assetMutable.value!!.copy()
     }
 
+    /**
+     * Check if only a single model is currently to be edited, used for custom fields
+     */
+    fun isSingleModel(): Boolean {
+        multiEditAssets.value?.run {
+            if (this.size == 1) {
+                return true
+            }
+            var model = this[0].model
+
+            for (elem in this) {
+                if (elem.model != model)
+                    return false
+            }
+            return true
+        }
+        return true
+    }
+
     fun updateAssets(client: APIInterface) {
         loading.value =
             Loading()

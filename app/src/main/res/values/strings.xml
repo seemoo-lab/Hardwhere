@@ -35,6 +35,7 @@
     <string name="hint_asset_tag">Unique Asset Tag</string>
     <string name="hint_asset_name">Asset Name</string>
     <string name="error_fetch_selectable">Can\'t fetch data!</string>
+    <string name="info_multiple_models_editing">Custom attributes can only be edited per-model.</string>
 
     <string name="menu_home">Home</string>
     <string name="menu_scan">Multi-Scan</string>
