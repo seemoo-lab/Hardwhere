@@ -29,6 +29,11 @@ class EditorFragment : APIFragment() {
     private lateinit var containerCustomAttribs: LinearLayout
     private lateinit var infoMultipleModelTV: TextView
 
+    /**
+     * Custom fields element storage to prevent re-creation on every change call
+     */
+    private var customFields: HashMap<String,AssetAttributeView> = HashMap()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         editorViewModel = ViewModelProvider(requireActivity())[EditorViewModel::class.java]
@@ -185,7 +190,7 @@ class EditorFragment : APIFragment() {
                 commentET.setDefaultText(this.notes)
                 tagET.setDefaultText(this.asset_tag)
                 this@EditorFragment.nameET.setDefaultText(this.name)
-                this.custom_fields?.run { setupCustomFields(this) }
+                this.custom_fields?.run { updateCustomFields(this,true) }
             }
         })
 
@@ -197,7 +202,7 @@ class EditorFragment : APIFragment() {
                 commentET.setText(this.notes)
                 tagET.setText(this.asset_tag)
                 this@EditorFragment.nameET.setText(this.name)
-                this.custom_fields?.run { setupCustomFields(this) }
+                this.custom_fields?.run { updateCustomFields(this,false) }
             }
         })
 
@@ -217,24 +222,46 @@ class EditorFragment : APIFragment() {
         })
     }
 
-    private fun setupCustomFields(fields: HashMap<String, CustomField>) {
+    /**
+     * Update custom fields with specified fields. Sets current value of default depending on [updateDefault]
+     */
+    private fun updateCustomFields(fields: HashMap<String, CustomField>, updateDefault: Boolean) {
         val inflater = layoutInflater
-        containerCustomAttribs.removeAllViews()
-        val singleModel = editorViewModel.isSingleModel()
-        infoMultipleModelTV.visibility = if(singleModel) View.GONE else View.VISIBLE
-        if (singleModel) {
-            for (attrib in fields) {
+        customFields = customFields.filterTo(HashMap()) {
+            (key, view) -> fields[key]?.run {
+                if(updateDefault)
+                    view.setDefaultText(this.value)
+                else
+                    view.setText(this.value)
+                true
+            } ?: run {
+                containerCustomAttribs.removeView(view)
+                false
+            }
+        }
+        for (attrib in fields) {
+            if (!customFields.containsKey(attrib.key)) {
                 val view = AssetAttributeView(requireContext())
                 containerCustomAttribs.addView(view)
                 view.tag = attrib.value.field
                 view.setText(attrib.value.value)
                 view.setLabel(attrib.key)
                 view.setDefaultText(attrib.value.value)
-                view.setOnCheckedChangeListener {  }
-//            val view: View = inflater.inflate(R.layout.asset_attribute_view_text,null)
-//            val view.findViewById(R.layout.asset)
+                setupTextfield(view,{t -> run{
+                    if (editorViewModel.asset.value?.custom_fields == null) {
+                        editorViewModel.asset.value?.custom_fields = HashMap()
+                    }
+                    editorViewModel.asset.value?.custom_fields?.put(attrib.key,attrib.value.copy(value = t))
+                }
+                }) {
+                        a,o ->
+                    o.custom_fields!!.get(attrib.key)!!.let { a.custom_fields!!.put(attrib.key, it) }
+                }
+                customFields.put(attrib.key,view)
             }
         }
+        val singleModel = editorViewModel.isSingleModel()
+        infoMultipleModelTV.visibility = if(singleModel) View.GONE else View.VISIBLE
     }
 
     /**

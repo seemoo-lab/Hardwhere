@@ -120,7 +120,7 @@ data class Asset(
      * Create an asset patch for updating assets. The resulting JsonObject only contains
      * the fields that are non-null.
      */
-    fun createPatch(): JsonObject {
+    fun createPatch(custom_fields: Boolean): JsonObject {
         val multiEdit = this.isMultiAsset()
         val base = JsonObject()
         this.model?.run { base.addProperty(FIELD_MODEL_ID, this.id) }
@@ -131,6 +131,14 @@ data class Asset(
         this.notes?.run { if(!this.isBlank() || !multiEdit) base.addProperty(FIELD_NOTES, this) }
         if(!multiEdit) {
             this.asset_tag?.run { base.addProperty(FIELD_TAG, this) }
+        }
+        if(custom_fields) {
+            this.custom_fields?.run {
+                for (attrib in this) {
+                    if (attrib.value.value != null)
+                        base.addProperty(attrib.value.field,attrib.value.value)
+                }
+            }
         }
 
         return base

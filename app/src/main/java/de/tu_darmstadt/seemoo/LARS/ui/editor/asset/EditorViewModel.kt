@@ -68,7 +68,7 @@ class EditorViewModel : ViewModel() {
 
         val requests: MutableList<Observable<Result<Asset>>> = mutableListOf()
         val singleAsset = asset.value!!
-        val patchData = singleAsset.createPatch()
+        val patchData = singleAsset.createPatch(isSingleModel())
         if (!singleAsset.isMultiAsset()) {
             requests.add(
                 client.updateAsset(singleAsset.id, patchData)
