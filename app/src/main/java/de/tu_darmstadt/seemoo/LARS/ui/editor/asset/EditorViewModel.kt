@@ -6,9 +6,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import de.tu_darmstadt.seemoo.LARS.data.APIInterface
 import de.tu_darmstadt.seemoo.LARS.data.model.Asset
+import de.tu_darmstadt.seemoo.LARS.data.model.CustomField
 import de.tu_darmstadt.seemoo.LARS.data.model.Result
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
+import java.util.function.Predicate
 
 
 class EditorViewModel : ViewModel() {
@@ -60,6 +62,27 @@ class EditorViewModel : ViewModel() {
             return true
         }
         return true
+    }
+
+    /**
+     * Returns a list of custom attributes that all match
+     */
+    fun customAttributes(): HashSet<String> {
+        multiEditAssets.value?.run {
+            if (this.size > 0) {
+                var keys: HashSet<String>? = null
+                // TODO: check if non-set custom attribs are always set of have to be retrieved by model
+                for (asset in this) {
+                    if (keys == null)
+                        keys = asset.custom_fields?.keys?.toHashSet()
+                    else
+                        asset.custom_fields?.run { keys.removeIf{t -> !this.containsKey(t)} }
+
+                }
+                return keys?: HashSet()
+            }
+        }
+        return HashSet()
     }
 
     fun updateAssets(client: APIInterface) {
