@@ -3,6 +3,7 @@ package de.tu_darmstadt.seemoo.LARS.ui.editor.asset
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import de.tu_darmstadt.seemoo.LARS.data.APIInterface
 import de.tu_darmstadt.seemoo.LARS.data.model.Asset
@@ -36,6 +37,11 @@ class EditorViewModel : ViewModel() {
      */
     val editingFinished: MutableLiveData<Any?> = MutableLiveData(null)
 
+    val customtomAttributeFields: LiveData<HashSet<String>>
+        get() = Transformations.map(multiEditAssets) { assets ->
+            customAttributes(assets)
+        }
+
     /**
      * Sets the asset to use in editor and as original value
      */
@@ -67,20 +73,18 @@ class EditorViewModel : ViewModel() {
     /**
      * Returns a list of custom attributes that all match
      */
-    fun customAttributes(): HashSet<String> {
-        multiEditAssets.value?.run {
-            if (this.size > 0) {
-                var keys: HashSet<String>? = null
-                // TODO: check if non-set custom attribs are always set of have to be retrieved by model
-                for (asset in this) {
-                    if (keys == null)
-                        keys = asset.custom_fields?.keys?.toHashSet()
-                    else
-                        asset.custom_fields?.run { keys.removeIf{t -> !this.containsKey(t)} }
+    private fun customAttributes(assets: ArrayList<Asset>): HashSet<String> {
+        if (assets.size > 0) {
+            var keys: HashSet<String>? = null
+            // TODO: check if non-set custom attribs are always set of have to be retrieved by model
+            for (asset in assets) {
+                if (keys == null)
+                    keys = asset.custom_fields?.keys?.toHashSet()
+                else
+                    asset.custom_fields?.run { keys.removeIf{t -> !this.containsKey(t)} }
 
-                }
-                return keys?: HashSet()
             }
+            return keys?: HashSet()
         }
         return HashSet()
     }

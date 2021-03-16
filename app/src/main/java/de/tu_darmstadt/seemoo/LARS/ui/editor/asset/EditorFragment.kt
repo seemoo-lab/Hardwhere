@@ -190,11 +190,11 @@ class EditorFragment : APIFragment() {
                 commentET.setDefaultText(this.notes)
                 tagET.setDefaultText(this.asset_tag)
                 this@EditorFragment.nameET.setDefaultText(this.name)
-                this.custom_fields?.run { updateCustomFields(this,true) }
+                this.custom_fields?.run { updateCustomFields(this, update = true,updateDefault = true) }
             }
         })
 
-        editorViewModel.asset.observe(viewLifecycleOwner, Observer { it ->
+        editorViewModel.asset.observe(viewLifecycleOwner, Observer {
             it?.run {
                 location.setText(this.rtd_location?.name)
                 model.setText(this.model?.name ?: "")
@@ -202,7 +202,15 @@ class EditorFragment : APIFragment() {
                 commentET.setText(this.notes)
                 tagET.setText(this.asset_tag)
                 this@EditorFragment.nameET.setText(this.name)
-                this.custom_fields?.run { updateCustomFields(this,false) }
+                this.custom_fields?.run { updateCustomFields(this, update = true, updateDefault = false) }
+            }
+        })
+
+        editorViewModel.customtomAttributeFields.observe(viewLifecycleOwner, {
+            it?.run {
+                if(editorViewModel.asset.value!!.custom_fields != null)
+                    updateCustomFields(editorViewModel.asset.value!!.custom_fields!!, false, false)
+
             }
         })
 
@@ -225,13 +233,18 @@ class EditorFragment : APIFragment() {
     /**
      * Update custom fields with specified fields. Sets current value of default depending on [updateDefault]
      */
-    private fun updateCustomFields(fields: HashMap<String, CustomField>, updateDefault: Boolean) {
+    private fun updateCustomFields(fields: HashMap<String, CustomField>, update: Boolean, updateDefault: Boolean) {
+        Log.d(this::class.java.name, "updateCustomFields called $update $updateDefault")
         val inflater = layoutInflater
+        editorViewModel.customtomAttributeFields.value?.run {
+            fields.keys.removeIf{k -> !this.contains(k)}
+        }
+
         customFields = customFields.filterTo(HashMap()) {
             (key, view) -> fields[key]?.run {
                 if(updateDefault)
                     view.setDefaultText(this.value)
-                else
+                else if(update)
                     view.setText(this.value)
                 true
             } ?: run {
@@ -261,6 +274,7 @@ class EditorFragment : APIFragment() {
             }
         }
         val singleModel = editorViewModel.isSingleModel()
+        Log.d(this::class.java.name, "Single Model: $singleModel")
         infoMultipleModelTV.visibility = if(singleModel) View.GONE else View.VISIBLE
     }
 
