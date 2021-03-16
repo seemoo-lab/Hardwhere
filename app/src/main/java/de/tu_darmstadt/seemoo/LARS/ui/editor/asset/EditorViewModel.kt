@@ -37,10 +37,9 @@ class EditorViewModel : ViewModel() {
      */
     val editingFinished: MutableLiveData<Any?> = MutableLiveData(null)
 
-    val customtomAttributeFields: LiveData<HashSet<String>>
-        get() = Transformations.map(multiEditAssets) { assets ->
-            customAttributes(assets)
-        }
+    val customtomAttributeFields: LiveData<HashSet<String>> = Transformations.map(multiEditAssets) { assets ->
+        customAttributes(assets)
+    }
 
     /**
      * Sets the asset to use in editor and as original value

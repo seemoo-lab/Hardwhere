@@ -21,6 +21,10 @@
             android:icon="@drawable/ic_menu_manage"
             android:title="@string/menu_dev" />
         <item
+            android:id="@+id/nav_about"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="@string/menu_about" />
+        <item
             android:id="@+id/nav_logout"
             android:icon="@drawable/ic_menu_logout"
             android:title="@string/menu_logout" />
