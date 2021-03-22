@@ -7,9 +7,9 @@
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="de.tu_darmstadt.seemoo.LARS.ui.home.HomeFragment"
+        android:name="de.tu_darmstadt.seemoo.LARS.ui.lenting.LentingFragment"
         android:label="@string/menu_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_lenting" />
     <fragment
         android:id="@+id/nav_about"
         android:name="de.tu_darmstadt.seemoo.LARS.ui.about.AboutFragment"

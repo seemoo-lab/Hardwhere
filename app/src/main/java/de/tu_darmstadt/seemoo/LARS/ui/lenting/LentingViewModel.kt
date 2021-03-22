@@ -1,11 +1,11 @@
-package de.tu_darmstadt.seemoo.LARS.ui.home
+package de.tu_darmstadt.seemoo.LARS.ui.lenting
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import de.tu_darmstadt.seemoo.LARS.BuildConfig
 
-class HomeViewModel : ViewModel() {
+class LentingViewModel : ViewModel() {
 
     private val _text = MutableLiveData<String>().apply {
         value = "Large Accessories Retrieval System\nBuild: ${BuildConfig.BUILD_TIME} \nCommit: ${BuildConfig.GitHash}"

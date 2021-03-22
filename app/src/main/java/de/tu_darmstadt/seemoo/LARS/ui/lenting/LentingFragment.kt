@@ -1,4 +1,4 @@
-package de.tu_darmstadt.seemoo.LARS.ui.home
+package de.tu_darmstadt.seemoo.LARS.ui.lenting
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,20 +10,20 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import de.tu_darmstadt.seemoo.LARS.R
 
-class HomeFragment : Fragment() {
+class LentingFragment : Fragment() {
 
-    private lateinit var homeViewModel: HomeViewModel
+    private lateinit var lentingViewModel: LentingViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        homeViewModel =
-            ViewModelProvider(requireActivity()).get(HomeViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_home, container, false)
+        lentingViewModel =
+            ViewModelProvider(requireActivity()).get(LentingViewModel::class.java)
+        val root = inflater.inflate(R.layout.fragment_lenting, container, false)
         val textView: TextView = root.findViewById(R.id.text_home)
-        homeViewModel.text.observe(viewLifecycleOwner, Observer {
+        lentingViewModel.text.observe(viewLifecycleOwner, Observer {
             textView.text = it
         })
         return root
