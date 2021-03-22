@@ -13,3 +13,8 @@
 .externalNativeBuild
 .cxx
 *.json
+
+
+# Added by cargo
+
+/target

@@ -1,0 +1,17 @@
+[package]
+name = "LARS-backend"
+version = "0.1.0"
+authors = ["Aron Heinecke <aron.heinecke@t-online.de>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+#sqlx = { version = "0.5", features = [ "runtime-actix-native-tls" ] }
+mysql_async = "0.27"
+actix-web = "3"
+serde = {version = "1", features = ["derive"] }
+log = "0.4"
+env_logger = "0.8"
+toml = "0.5"
+stable-eyre = "0.2"
