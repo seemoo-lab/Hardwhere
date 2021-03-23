@@ -13,6 +13,7 @@ pub struct Cfg {
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Main {
+    pub snipeit_url: String,
     pub listen_ip: String,
     pub listen_port: u16,
     pub admin_user: String,
