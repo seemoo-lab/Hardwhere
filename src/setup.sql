@@ -5,11 +5,11 @@ CREATE TABLE `version` (
 CREATE TABLE `lent` (
     `user` int NOT NULL,
     `asset` int NOT NULL PRIMARY KEY,
-    KEY(`user`),
+    KEY `user` (`user`)
 );
 
 CREATE TABLE `log` (
-    `time` TIMESTAMP NOT,
+    `time` TIMESTAMP NOT NULL,
     `msg` text NOT NULL,
-    KEY(`time`) (`time`)
+    KEY `time` (`time`)
 );

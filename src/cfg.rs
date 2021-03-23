@@ -31,7 +31,11 @@ pub struct DB {
 impl Cfg {
     pub fn load() -> Result<Self> {
         let file = read_to_string("config.toml")?;
-        let cfg: Self = toml::from_str(&file)?;
+        let mut cfg: Self = toml::from_str(&file)?;
+        let trimmed = cfg.main.snipeit_url.trim_end_matches('/');
+        if trimmed != cfg.main.snipeit_url {
+            cfg.main.snipeit_url = trimmed.to_string();
+        }
         Ok(cfg)
     }
 }

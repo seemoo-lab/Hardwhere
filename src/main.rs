@@ -6,14 +6,22 @@ use prelude::*;
 
 mod cfg;
 mod authentication;
-mod api_snipeit;
+mod snipeit;
 mod api;
+mod types;
 
 const DB_VERSION: &str = "0.1";
 
 #[actix_web::main]
 async fn main() -> Result<()> {
-    env_logger::init();
+    let mut builder = env_logger::Builder::new();
+    builder.filter_level(LevelFilter::Warn);
+    #[cfg(debug_assertions)]
+    builder.filter_module(env!("CARGO_CRATE_NAME"), LevelFilter::Trace);
+    #[cfg(not(debug_assertions))]
+    builder.filter_module(env!("CARGO_CRATE_NAME"), LevelFilter::Info);
+    builder.parse_env("RUST_LOG");
+    builder.init();
 
     let config = cfg::Cfg::load()?;
     let bind = format!("{}:{}",config.main.listen_ip,config.main.listen_port);
@@ -28,12 +36,15 @@ async fn main() -> Result<()> {
     setup_db(&db).await?;
     let config_main = web::Data::new(config.main);
     let db_c = db.clone();
+    info!("Listening on {}",bind);
     HttpServer::new(move || {
         App::new()
-            //.app_data(web::Data::new(config.main))
-            .app_data(db_c.clone())
+            .app_data(config_main.clone())
+            .data(db_c.clone())
             .data(ClientBuilder::new().header(ACCEPT,"application/json").header(CONTENT_TYPE,"application/json").finish())
-            .service(web::resource("/api/lent").route(web::get().to(api::lent_by)))
+            .service(web::resource("/api/checkedout").route(web::get().to(api::lent_list)))
+            .service(web::resource("/api/checkout").route(web::post().to(api::lent_asset)))
+            .service(web::resource("/api/checkin").route(web::post().to(api::return_asset)))
     })
         .bind(&bind)?
         .run()
@@ -46,14 +57,24 @@ async fn main() -> Result<()> {
 async fn setup_db(pool: &Pool) -> Result<()> {
     let setup = include_str!("setup.sql");
     let mut conn = pool.get_conn().await?;
-    let version: Option<String> = conn.query_first("SELECT * FROM `version`").await?;
+    let tables: Vec<String> = conn.query_map("SHOW TABLES", |v|v).await?;
+    let version: Option<String> = match tables.contains(&String::from("version")) {
+        true => conn.query_first("SELECT `version` FROM `version`").await?,
+        false => None
+    };
     if let Some(v) = version {
+        debug!("DB found, version {}",v);
         // TODO for upgrades
     } else {
+        info!("setting up DB");
         for table in setup.split(";") {
-            conn.exec_drop(table, ()).await?;
+            let table = table.trim();
+            if !table.is_empty() {
+                conn.exec_drop(table, ()).await?;
+            }
         }
-        conn.exec_drop("INSERT INTO `version` VALUES(?)",(DB_VERSION,)).await?;
+        trace!("Setting DB version");
+        conn.exec_drop("INSERT INTO `version` (`version`) VALUES(?)",(DB_VERSION,)).await?;
     }
     Ok(())
 }

@@ -1,23 +1,34 @@
 
-use actix_web::{HttpResponse, ResponseError, client::SendRequestError};
+
+use actix_web::{HttpResponse, ResponseError, client::{ClientResponse, JsonPayloadError, SendRequestError}};
 pub use log::*;
 use thiserror::Error;
 #[derive(Error, Debug)]
 pub enum Error {
-    #[error("IO error")]
+    #[error("IO error {0}")]
     Io(#[from] std::io::Error),
-    #[error("Internal framework error")]
+    #[error("Internal framework error {0}")]
     Actix(#[from] actix_web::error::Error),
-    #[error("DB error")]
+    #[error("DB error {0}")]
     DB(#[from] mysql_async::Error),
-    #[error("Config error")]
+    #[error("Config error {0}")]
     Config(#[from] toml::de::Error),
     #[error("Request invalid, missing valid authorization")]
     MissingAuthorization,
     #[error("Invalid login token")]
     InvalidAuthorization,
-    #[error("Failed to send snipeit API cmd")]
-    ClientError(#[from] SendRequestError)
+    #[error("Failed to send snipeit API cmd {0}")]
+    ClientError(#[from] SendRequestError),
+    #[error("Invalid snipeit response {0:?}")]
+    Snipeit(String),
+    #[error("Can't parse response from snipeit {0}")]
+    SnipeitJsonResponse(#[from] JsonPayloadError),
+    #[error("Invalid payload, expected {expected:?} for {key} got {found:?}")]
+    SnipeitPayloadError{
+        key: &'static str,
+        expected: serde_json::Value,
+        found: Option<serde_json::Value>,
+    }
 }
 
 impl ResponseError for Error {
