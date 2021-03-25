@@ -63,7 +63,7 @@ class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListInteract
         savedInstanceState: Bundle?
     ): View? {
         setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.fragment_scan, container, false)
+        return inflater.inflate(R.layout.fragment_asset_list, container, false)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -117,7 +117,7 @@ class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListInteract
         }
         viewAdapter = AssetRecyclerViewAdapter(this, scanViewModel.scanList.value!!)
 
-        recyclerView = view.findViewById<RecyclerView>(R.id.frag_scan_recycler).apply {
+        recyclerView = view.findViewById<RecyclerView>(R.id.checkedout_recycler).apply {
             layoutManager = viewManager
             adapter = viewAdapter
         }

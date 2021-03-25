@@ -21,6 +21,7 @@ data class Asset(
     var asset_tag: String?,
     @Transient
     val selected: Boolean = false,
+    val assigned_to: AssignUser?,
     /** Custom fields **/
     var custom_fields: HashMap<String,CustomField>?
 ) : Parcelable {
@@ -54,7 +55,8 @@ data class Asset(
                 // has to be null, to allow patch-asset creation for multi-update, where the tag isn't set
                 null,
                 false,
-                null
+                null,
+                null,
             )
         }
 
