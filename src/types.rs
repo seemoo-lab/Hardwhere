@@ -7,6 +7,45 @@ pub type UID = i32;
 pub type AssetId = i32;
 
 #[derive(Deserialize, Debug)]
+pub struct AssetList {
+    pub total: i32,
+    pub rows: Vec<Asset>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Asset {
+    pub id: AssetId,
+    pub name: String,
+    pub asset_tag: String,
+    pub model: AssetModel,
+    #[serde(default)]
+    pub assigned_to: Option<Assignee>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct AssetModel {
+    pub id: i32,
+    pub name: String
+}
+
+/// Asset assigned_to enum
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(untagged)]
+pub enum Assignee {
+    User(AssigneeUser),
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+/// Asset assigned_to of type user
+pub struct AssigneeUser {
+    pub id: UID,
+    pub username: String,
+    pub name: String,
+    pub first_name: String,
+    pub last_name: String,
+}
+
+#[derive(Deserialize, Debug)]
 pub struct User {
     pub id: UID,
     pub first_name: String,

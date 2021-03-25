@@ -13,6 +13,8 @@ pub struct Cfg {
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Main {
+    /// Used to crawling the state and refreshing the DB, NOT for user checkouts
+    pub snipeit_system_token: String,
     pub snipeit_url: String,
     pub listen_ip: String,
     pub listen_port: u16,

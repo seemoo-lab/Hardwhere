@@ -9,6 +9,7 @@ mod authentication;
 mod snipeit;
 mod api;
 mod types;
+mod indexer;
 
 const DB_VERSION: &str = "0.1";
 
@@ -37,6 +38,10 @@ async fn main() -> Result<()> {
     let config_main = web::Data::new(config.main);
     let db_c = db.clone();
     info!("Listening on {}",bind);
+    if let Err(e) = indexer::refresh_index(&config_main, db.clone()).await {
+        error!("Failed to index: {}",e);
+        return Err(e);
+    }
     HttpServer::new(move || {
         App::new()
             .app_data(config_main.clone())

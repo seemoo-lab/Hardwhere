@@ -1,7 +1,12 @@
 [main]
+# System token that is not used for checkout but crawling for DB refreshes
+snipeit_system_token = "ASDF"
+# URL of snipeit
 snipeit_url = "https://inventory.seemoo.tu-darmstadt.de"
+
 listen_ip = "127.0.0.1"
 listen_port = 8000
+
 admin_user = ""
 admin_password = ""
 

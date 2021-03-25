@@ -9,11 +9,21 @@ use crate::{cfg::Main, prelude::*};
 
 pub async fn lent_list(db: Data<Pool>, client: Data<Client>, cfg: web::Data<Main>, req: HttpRequest) -> Result<HttpResponse> {
     let token = snipeit::token(&req)?;
-    let user = snipeit::user(token,&client, &cfg.snipeit_url).await?;
+    let user = snipeit::user(token.clone(),&client, &cfg.snipeit_url).await?;
     trace!("User: {:?}",user);
     let mut conn = db.get_conn().await?;
-    let lents: Vec<u32> = conn.exec_map("SELECT `asset` FROM `lent` WHERE `user` = ?", (user.id,), |asset|asset).await?;
-    Ok(HttpResponse::Ok().json(lents))
+    let lents: Vec<i32> = conn.exec_map("SELECT `asset` FROM `lent` WHERE `user` = ?", (user.id,), |asset|asset).await?;
+
+    let mut assets = Vec::new();
+    // TODO: cache results
+    for id in lents {
+        match snipeit::asset(id, token.clone(), &client, &cfg.snipeit_url).await {
+            Ok(v) => assets.push(v),
+            Err(e) => warn!("Skipping asset retrieval {}: {}",id,e),
+        }
+    }
+
+    Ok(HttpResponse::Ok().json(assets))
 }
 
 pub async fn lent_asset(data: web::Json<CheckoutRequest>, db: Data<Pool>, client: Data<Client>, cfg: web::Data<Main>, req: HttpRequest) -> Result<HttpResponse> {

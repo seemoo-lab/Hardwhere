@@ -9,6 +9,27 @@ use crate::types::*;
 
 const ASSIGNED_TO: &str = "assigned_to";
 
+/// Get Assets unconditionally, start from offset to limit (if API limits allow this)
+pub async fn assets(offset: i32, limit: i32, token: HeaderValue, client: &Client, snipeit_url: &str) -> Result<AssetList> {
+    let mut res = client.get(format!("{}/api/v1/hardware?offset={}&limit={}",snipeit_url,offset,limit))
+        .header(AUTHORIZATION,token)
+        .send().await?;
+    verify_status(&res)?;
+    let data: AssetList = res.json().limit(1024*1024).await?;
+    Ok(data)
+}
+
+/// Get Asset by ID
+pub async fn asset(id: AssetId, token: HeaderValue, client: &Client, snipeit_url: &str) -> Result<Asset> {
+    let mut res = client.get(format!("{}/api/v1/hardware/{}",snipeit_url,id))
+        .header(AUTHORIZATION,token)
+        .send().await?;
+    verify_status(&res)?;
+    let data: Asset = res.json().await?;
+    Ok(data)
+}
+
+/// Get own user from API token
 pub async fn user(token: HeaderValue, client: &Client, snipeit_url: &str) -> Result<User> {
     // https://github.com/snipe/snipe-it/issues/7626#issuecomment-702354445
     let mut res = client.get(format!("{}/api/v1/users/me",snipeit_url))
@@ -20,6 +41,7 @@ pub async fn user(token: HeaderValue, client: &Client, snipeit_url: &str) -> Res
     Ok(user)
 }
 
+/// Get token from request
 pub fn token(request: &HttpRequest) -> Result<HeaderValue> {
     let token = match request.headers().get(AUTHORIZATION) {
         Some(v) => v,
@@ -28,6 +50,7 @@ pub fn token(request: &HttpRequest) -> Result<HeaderValue> {
     Ok(token.clone())
 }
 
+/// Checkout asset to user
 pub async fn checkout(asset: AssetId, user: UID, token: HeaderValue, client: &Client, snipeit_url: &str) -> Result<()> {
     let mut response = client.post(format!("{}/api/v1/hardware/{}/checkout",snipeit_url,asset))
         .header(AUTHORIZATION,token)
@@ -43,6 +66,7 @@ pub async fn checkout(asset: AssetId, user: UID, token: HeaderValue, client: &Cl
     Ok(())
 }
 
+/// Checkin/return asset unconditionally
 pub async fn checkin(asset: AssetId, token: HeaderValue, client: &Client, snipeit_url: &str) -> Result<()> {
     let mut response = client.post(format!("{}/api/v1/hardware/{}/checkin",snipeit_url,asset))
         .header(AUTHORIZATION,token)
