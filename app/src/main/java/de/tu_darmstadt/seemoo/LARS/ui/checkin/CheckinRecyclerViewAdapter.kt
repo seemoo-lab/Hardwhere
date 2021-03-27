@@ -19,8 +19,9 @@ class CheckinRecyclerViewAdapter(
 )         :
     RecyclerView.Adapter<CheckinRecyclerViewAdapter.ViewHolder>() {
 
-    private var selectionMode: Boolean = false
-    private var checked: Int = 0
+    private val selected: ArrayList<Asset> = ArrayList()
+
+    fun selectionMode(): Boolean = selected.size > 0
 
     // holder class to hold reference
     inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view), RecyclerItemTouchHelper.SwipeViewHolder {
@@ -31,6 +32,11 @@ class CheckinRecyclerViewAdapter(
         var viewForeground: ConstraintLayout = view.findViewById(R.id.view_foreground)
         var checkbox: CheckBox = view.findViewById(R.id.recycler_checkBox)
         override fun viewForeground(): View = viewForeground
+    }
+
+    init {
+        selected.addAll(assetList.filter { it.selected })
+        mListener?.onSelectionModeChange(selectionMode())
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -44,13 +50,22 @@ class CheckinRecyclerViewAdapter(
         )
     }
 
+    fun clearSelection() {
+        for (asset in selected) {
+            asset.selected = false
+        }
+        selected.clear()
+        notifyDataSetChanged()
+    }
+
     fun getItemAt(id: Int): Asset {
         return assetList[id]
     }
 
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        //set values
+        //cache
+        val selectionMode = selectionMode()
         val asset = assetList[position]
         holder.modelName.text = asset.model?.name ?: "<no model>"
         holder.assetTag.text = asset.asset_tag ?: "<no tag>"
@@ -64,16 +79,15 @@ class CheckinRecyclerViewAdapter(
                 if (selectionMode) {
                     asset.selected = !asset.selected
                     if (asset.selected) {
-                        checked += 1
+                        selected.add(asset)
                     } else {
-                        checked -= 1
+                        selected.remove(asset)
                     }
-                    if (checked > 0) {
+                    if (selectionMode()) {
                         this@CheckinRecyclerViewAdapter.notifyItemChanged(position)
                     } else {
-                        selectionMode = false
                         notifyDataSetChanged()
-                        mListener?.onSelectionModeChange(selectionMode)
+                        mListener?.onSelectionModeChange(selectionMode())
                     }
                 } else {
                     mListener?.onListItemClicked(asset)
@@ -82,10 +96,9 @@ class CheckinRecyclerViewAdapter(
             setOnLongClickListener {
                 if (!selectionMode){
                     Log.d(this@CheckinRecyclerViewAdapter::class.java.name, "In selection mode")
-                    selectionMode = true
-                    mListener?.onSelectionModeChange(selectionMode)
                     asset.selected = true
-                    checked = 1
+                    selected.add(asset)
+                    mListener?.onSelectionModeChange(selectionMode())
                     notifyDataSetChanged()
                 }
                 true
@@ -105,6 +118,8 @@ class CheckinRecyclerViewAdapter(
     override fun getItemCount(): Int {
         return assetList.size
     }
+
+    fun selected(): Int = selected.size
 
     // update your data
     fun updateData(scanResult: ArrayList<Asset>) {

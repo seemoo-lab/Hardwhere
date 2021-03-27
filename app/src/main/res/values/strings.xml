@@ -63,4 +63,5 @@
     <string name="asset_category_uneditable">Categories depend on the model.</string>
     <string name="menu_about">About</string>
     <string name="scan_action_button_description">Scan QR code of asset</string>
+    <string name="menu_checkin_assets">Checkin Assets</string>
 </resources>

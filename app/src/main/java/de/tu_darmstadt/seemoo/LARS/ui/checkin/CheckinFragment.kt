@@ -17,13 +17,13 @@ import de.tu_darmstadt.seemoo.LARS.ui.info.AssetInfoBTFragment
 
 class CheckinFragment : APIFragment(), CheckinRecyclerViewAdapter.OnListInteractionListener {
 
-    private lateinit var recyclerViewAdapter: CheckinRecyclerViewAdapter
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var progressBar: ProgressBar
     private lateinit var checkinViewModel: CheckinViewModel
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: CheckinRecyclerViewAdapter
     private lateinit var scanButton: FloatingActionButton
+    private var mActionMode: ActionMode? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,7 +48,7 @@ class CheckinFragment : APIFragment(), CheckinRecyclerViewAdapter.OnListInteract
         super.onViewCreated(view, savedInstanceState)
 
         checkinViewModel.loading.observe(viewLifecycleOwner, Observer {
-            progressBar.visibility = if (it ) View.VISIBLE else View.GONE
+            progressBar.visibility = if (it) View.VISIBLE else View.GONE
         })
 
         viewAdapter = CheckinRecyclerViewAdapter(this, checkinViewModel.checkedOutAsset.value!!)
@@ -65,16 +65,18 @@ class CheckinFragment : APIFragment(), CheckinRecyclerViewAdapter.OnListInteract
         checkinViewModel.checkedOutAsset.observe(viewLifecycleOwner, Observer {
             it?.run {
                 viewAdapter.notifyDataSetChanged()
-                Log.d(this::class.java.name,"List update ${it.size}");
+                Log.d(this::class.java.name, "List update ${it.size}");
             }
         })
 
         checkinViewModel.error.observe(viewLifecycleOwner, Observer {
-            it?.run { Toast.makeText(
-                requireContext(),
-                it,
-                Toast.LENGTH_LONG
-            ).show() }
+            it?.run {
+                Toast.makeText(
+                    requireContext(),
+                    it,
+                    Toast.LENGTH_LONG
+                ).show()
+            }
         })
 
         checkinViewModel.loadData(getAPI())
@@ -99,14 +101,46 @@ class CheckinFragment : APIFragment(), CheckinRecyclerViewAdapter.OnListInteract
     }
 
     override fun onListItemClicked(item: Asset) {
-        AssetInfoBTFragment.newInstance(item).show(parentFragmentManager,"CheckinAssetInfoBTFragment")
+        AssetInfoBTFragment.newInstance(item).show(
+            parentFragmentManager,
+            "CheckinAssetInfoBTFragment"
+        )
     }
 
     override fun onSelectionModeChange(selectionMode: Boolean) {
         if (selectionMode) {
-            // TODO
+            mActionMode = requireActivity().startActionMode(CheckinActionMode())
         } else {
-            // TODO
+            mActionMode?.finish()
         }
+    }
+    inner class CheckinActionMode : ActionMode.Callback {
+        override fun onCreateActionMode(mode: ActionMode?, menu: Menu?): Boolean {
+            mode!!.menuInflater.inflate(R.menu.checkin_selection, menu)
+            return true
+        }
+
+        override fun onPrepareActionMode(mode: ActionMode?, menu: Menu?): Boolean {
+            return false
+        }
+
+        override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
+            return when (item.itemId) {
+                R.id.checkin_do_checkin -> {
+                    // retrieve selected items and delete them out
+                    // TODO: checkin items
+                    mode.finish() // Action picked, so close the CAB
+                    true
+                }
+                else -> false
+            }
+        }
+
+        override fun onDestroyActionMode(mode: ActionMode?) {
+            // remove selection
+            viewAdapter.clearSelection()
+            mActionMode = null
+        }
+
     }
 }
