@@ -20,10 +20,13 @@ import de.tu_darmstadt.seemoo.LARS.data.model.Asset
 import de.tu_darmstadt.seemoo.LARS.ui.APIFragment
 import de.tu_darmstadt.seemoo.LARS.ui.editor.asset.EditorFragment
 import de.tu_darmstadt.seemoo.LARS.ui.editor.asset.EditorViewModel
+import de.tu_darmstadt.seemoo.LARS.ui.info.AssetInfoBTFragment
+import de.tu_darmstadt.seemoo.LARS.ui.info.InfoBTViewModel
 import de.tu_darmstadt.seemoo.LARS.ui.lib.RecyclerItemTouchHelper
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import java.util.zip.InflaterOutputStream
 
 
 /**
@@ -201,25 +204,7 @@ class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListInteract
     }
 
     override fun onListItemClicked(item: Asset) {
-//        Toast.makeText(context, "TODO: Info", Toast.LENGTH_SHORT).show()
-//        val transaction = requireFragmentManager().beginTransaction()
-//        val fragment = NewEditorFragment()
-//        transaction.addToBackStack("test editor")
-//        transaction.replace(R.id.nav_host_fragment,fragment,"test editor")
-//        transaction.commit()
-        // TODO: update infoAsset in viewmodel for AssetInfoBTFragment
-
-        scanViewModel.infoAsset.value = item
-
-        val infoPhotoBottomDialogFragment: AssetInfoBTFragment =
-            AssetInfoBTFragment.newInstance()
-        infoPhotoBottomDialogFragment.show(
-            parentFragmentManager,
-            "AssetInfoBTFragment"
-        )
-
-
-//        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        AssetInfoBTFragment.newInstance(item).show(parentFragmentManager,"ListAssetInfoBTFragment")
     }
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder?, direction: Int, position: Int) {

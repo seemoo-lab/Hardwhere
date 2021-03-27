@@ -13,6 +13,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import de.tu_darmstadt.seemoo.LARS.R
 import de.tu_darmstadt.seemoo.LARS.data.model.Asset
 import de.tu_darmstadt.seemoo.LARS.ui.APIFragment
+import de.tu_darmstadt.seemoo.LARS.ui.info.AssetInfoBTFragment
 
 class CheckinFragment : APIFragment(), CheckinRecyclerViewAdapter.OnListInteractionListener {
 
@@ -98,7 +99,7 @@ class CheckinFragment : APIFragment(), CheckinRecyclerViewAdapter.OnListInteract
     }
 
     override fun onListItemClicked(item: Asset) {
-        //TODO("Not yet implemented")
+        AssetInfoBTFragment.newInstance(item).show(parentFragmentManager,"CheckinAssetInfoBTFragment")
     }
 
     override fun onSelectionModeChange(selectionMode: Boolean) {

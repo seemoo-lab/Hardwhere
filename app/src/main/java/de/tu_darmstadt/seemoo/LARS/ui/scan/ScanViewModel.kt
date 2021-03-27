@@ -26,14 +26,10 @@ class ScanViewModel : ViewModel() {
      */
     internal val scanList: MutableLiveData<ArrayList<Asset>> = MutableLiveData(ArrayList())
 
-    /**
-     * Asset to show AssetInfoBTFragment for
-     */
-    internal val infoAsset: MutableLiveData<Asset?> = MutableLiveData()
+
     internal val assetPattern: Regex = Regex("^http.*/([0-9]+)$")
     @JvmField val S_SCAN_LIST: String = "scan_list"
     @JvmField val S_UPDATE_TIME: String = "update_time"
-    @JvmField val S_INFO_ASSET: String = "info_asset"
     /**
      * Last time assets got updated
      */
@@ -94,7 +90,6 @@ class ScanViewModel : ViewModel() {
     internal fun saveViewModelState(outState: Bundle) {
         outState.putParcelableArrayList(S_SCAN_LIST, scanList.value)
         outState.putLong(S_UPDATE_TIME,lastUpdate())
-        outState.putParcelable(S_INFO_ASSET,infoAsset.value)
     }
     internal fun restoreViewModelState(state: Bundle) {
         val scanList = scanList.value!!
@@ -103,8 +98,6 @@ class ScanViewModel : ViewModel() {
             scanList.addAll(state.getParcelableArrayList(S_SCAN_LIST)!!)
             lastUpdate = state.getLong(S_UPDATE_TIME)
         }
-        if (infoAsset.value == null)
-            infoAsset.value = state.getParcelable(S_INFO_ASSET)
     }
     internal fun updateLastUpdated() {
         lastUpdate = System.currentTimeMillis()

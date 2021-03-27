@@ -1,38 +1,37 @@
-package de.tu_darmstadt.seemoo.LARS.ui.scan
+package de.tu_darmstadt.seemoo.LARS.ui.info
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.LinearLayout
-import android.widget.TextView
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import de.tu_darmstadt.seemoo.LARS.R
 import de.tu_darmstadt.seemoo.LARS.data.model.Asset
 import de.tu_darmstadt.seemoo.LARS.ui.editor.AssetAttributeView
+import de.tu_darmstadt.seemoo.LARS.ui.scan.ScanViewModel
 
 class AssetInfoBTFragment : BottomSheetDialogFragment() {
-    private lateinit var scanViewModel: ScanViewModel
+    private lateinit var infoBTViewModel: InfoBTViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        scanViewModel =
-            ViewModelProvider(requireActivity())[ScanViewModel::class.java]
+        infoBTViewModel =
+            ViewModelProvider(requireActivity())[InfoBTViewModel::class.java]
+        if (savedInstanceState == null) {
+            requireArguments().run {
+                infoBTViewModel.infoAsset.value = this.getParcelable(PARAM_ASSET)
+            }
+        }
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? { // Inflate the layout for this fragment
-        val viewModel: ScanViewModel = ViewModelProvider(requireActivity())[ScanViewModel::class.java]
-
-        val view = inflater.inflate(R.layout.fragment_asset_info, container, false)
-
-        return view
+    ): View? {
+        return inflater.inflate(R.layout.fragment_asset_info, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -44,7 +43,11 @@ class AssetInfoBTFragment : BottomSheetDialogFragment() {
         val nameET: AssetAttributeView = view.findViewById(R.id.assetName)
         val tagET: AssetAttributeView = view.findViewById(R.id.assetTag)
 
-        scanViewModel.infoAsset.observe(viewLifecycleOwner, Observer { it ->
+        savedInstanceState?.run {
+            infoBTViewModel.restoreViewModelState(this)
+        }
+
+        infoBTViewModel.infoAsset.observe(viewLifecycleOwner, Observer { it ->
             it?.run {
                 location.setText(this.rtd_location?.name)
                 model.setText(this.model?.name ?: "")
@@ -56,9 +59,20 @@ class AssetInfoBTFragment : BottomSheetDialogFragment() {
         })
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        infoBTViewModel.saveViewModelState(outState)
+    }
+
     companion object {
-        fun newInstance(): AssetInfoBTFragment {
-            return AssetInfoBTFragment()
+        fun newInstance(asset: Asset): AssetInfoBTFragment {
+            val bundle = Bundle()
+            val fragment = AssetInfoBTFragment()
+            bundle.putParcelable(PARAM_ASSET,asset)
+            fragment.arguments = bundle
+            return fragment
         }
+
+        private const val PARAM_ASSET = "asset"
     }
 }
