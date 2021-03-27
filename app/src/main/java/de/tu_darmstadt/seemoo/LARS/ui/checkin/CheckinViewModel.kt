@@ -1,11 +1,9 @@
-package de.tu_darmstadt.seemoo.LARS.ui.checkout
+package de.tu_darmstadt.seemoo.LARS.ui.checkin
 
-import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import de.tu_darmstadt.seemoo.LARS.BuildConfig
-import de.tu_darmstadt.seemoo.LARS.R
 import de.tu_darmstadt.seemoo.LARS.Utils
 import de.tu_darmstadt.seemoo.LARS.data.APIInterface
 import de.tu_darmstadt.seemoo.LARS.data.model.Asset
@@ -13,7 +11,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class CheckoutViewModel : ViewModel() {
+class CheckinViewModel : ViewModel() {
 
     private val _text = MutableLiveData<String>().apply {
         value = "Large Accessories Retrieval System\nBuild: ${BuildConfig.BUILD_TIME} \nCommit: ${BuildConfig.GitHash}"
@@ -43,7 +41,7 @@ class CheckoutViewModel : ViewModel() {
                 }
                 if(log)
                     Utils.logResponseVerbose(
-                        this@CheckoutViewModel::class.java,
+                        this@CheckinViewModel::class.java,
                         response
                     )
                 _loading.value = false

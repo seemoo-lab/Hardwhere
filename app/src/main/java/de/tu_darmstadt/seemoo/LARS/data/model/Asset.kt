@@ -20,7 +20,7 @@ data class Asset(
     var name: String?, var notes: String?,
     var asset_tag: String?,
     @Transient
-    val selected: Boolean = false,
+    var selected: Boolean = false,
     val assigned_to: AssignUser?,
     /** Custom fields **/
     var custom_fields: HashMap<String,CustomField>?

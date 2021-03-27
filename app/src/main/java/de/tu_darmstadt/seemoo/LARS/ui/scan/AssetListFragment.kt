@@ -90,7 +90,7 @@ class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListInteract
                 updateHint()
                 true
             }
-            R.id.manual -> {
+            R.id.scan_manually -> {
                 findNavController().navigate(AssetSearchFragment.newInstanceID())
                 true
             }

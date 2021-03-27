@@ -1,32 +1,26 @@
-package de.tu_darmstadt.seemoo.LARS.ui.checkout
+package de.tu_darmstadt.seemoo.LARS.ui.checkin
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
+import android.widget.CheckBox
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import de.tu_darmstadt.seemoo.LARS.R
 import de.tu_darmstadt.seemoo.LARS.data.model.Asset
 import de.tu_darmstadt.seemoo.LARS.ui.lib.RecyclerItemTouchHelper
 
-class AssetRecyclerViewAdapter(
+class CheckinRecyclerViewAdapter(
     private val mListener: OnListInteractionListener?,
     private val assetList: ArrayList<Asset>
 )         :
-    RecyclerView.Adapter<AssetRecyclerViewAdapter.ViewHolder>() {
+    RecyclerView.Adapter<CheckinRecyclerViewAdapter.ViewHolder>() {
 
-    private val mOnClickListener: View.OnClickListener
-
-    init {
-        mOnClickListener = View.OnClickListener { v ->
-            val item = v.tag as Asset
-            // Notify the active callbacks interface (the activity, if the fragment is attached to
-            // one) that an item has been selected.
-            mListener?.onListItemClicked(item)
-        }
-    }
+    private var selectionMode: Boolean = false
+    private var checked: Int = 0
 
     // holder class to hold reference
     inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view), RecyclerItemTouchHelper.SwipeViewHolder {
@@ -34,7 +28,8 @@ class AssetRecyclerViewAdapter(
         var modelName: TextView = view.findViewById(R.id.modelName)
         var assetTag: TextView = view.findViewById(R.id.assetTag)
         var checkoutStatus: TextView = view.findViewById(R.id.checkoutStatus)
-        var viewForeground: LinearLayout = view.findViewById(R.id.view_foreground)
+        var viewForeground: ConstraintLayout = view.findViewById(R.id.view_foreground)
+        var checkbox: CheckBox = view.findViewById(R.id.recycler_checkBox)
         override fun viewForeground(): View = viewForeground
     }
 
@@ -60,10 +55,41 @@ class AssetRecyclerViewAdapter(
         holder.modelName.text = asset.model?.name ?: "<no model>"
         holder.assetTag.text = asset.asset_tag ?: "<no tag>"
         holder.checkoutStatus.text = asset.assigned_to?.name ?: "<no assigner!>"
+        holder.checkbox.isChecked = asset.selected
+        holder.checkbox.visibility = if (selectionMode) View.VISIBLE else View.INVISIBLE
 
         with(holder.view) {
             tag = asset
-            setOnClickListener(mOnClickListener)
+            setOnClickListener {
+                if (selectionMode) {
+                    asset.selected = !asset.selected
+                    if (asset.selected) {
+                        checked += 1
+                    } else {
+                        checked -= 1
+                    }
+                    if (checked > 0) {
+                        this@CheckinRecyclerViewAdapter.notifyItemChanged(position)
+                    } else {
+                        selectionMode = false
+                        notifyDataSetChanged()
+                        mListener?.onSelectionModeChange(selectionMode)
+                    }
+                } else {
+                    mListener?.onListItemClicked(asset)
+                }
+            }
+            setOnLongClickListener {
+                if (!selectionMode){
+                    Log.d(this@CheckinRecyclerViewAdapter::class.java.name, "In selection mode")
+                    selectionMode = true
+                    mListener?.onSelectionModeChange(selectionMode)
+                    asset.selected = true
+                    checked = 1
+                    notifyDataSetChanged()
+                }
+                true
+            }
         }
     }
 
@@ -109,6 +135,6 @@ class AssetRecyclerViewAdapter(
      */
     interface OnListInteractionListener {
         fun onListItemClicked(item: Asset)
-//        fun onListItemSwiped(item: Asset)
+        fun onSelectionModeChange(selectionMode: Boolean)
     }
 }
