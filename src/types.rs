@@ -131,7 +131,7 @@ impl AssetCheckout {
 }
 
 /// Snipeit request success response
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct SnipeitResult {
     pub status: SUCCESS_STATUS,
     pub messages: String,
@@ -148,6 +148,14 @@ impl SnipeitResult {
             SUCCESS_STATUS::error => Err(crate::prelude::Error::Snipeit(format!("{:?}",self))),
         }
     }
+
+    pub fn success() -> Self {       
+        Self {
+            status: SUCCESS_STATUS::success,
+            messages: "".to_string(),
+            payload: None,
+        }
+    }
 }
 
 #[derive(Deserialize, Debug)]
@@ -157,7 +165,8 @@ pub enum SnipeItMessage {
     Single(String)
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
+#[allow(non_camel_case_types)]
 pub enum SUCCESS_STATUS {
     success,
     error

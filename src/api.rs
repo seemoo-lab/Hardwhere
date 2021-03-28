@@ -33,7 +33,7 @@ pub async fn lent_asset(data: web::Json<CheckoutRequest>, db: Data<Pool>, client
     snipeit::checkout(data.asset, data.user, token, &client, &cfg.snipeit_url).await?;
     let mut conn = db.get_conn().await?;
     conn.exec_drop("INSERT INTO `lent` (`user`,`asset`) VALUES(?,?) ON DUPLICATE KEY UPDATE `user`=VALUES(`user`)", (user.id,data.asset)).await?;
-    Ok(HttpResponse::Ok().finish())
+    Ok(HttpResponse::Ok().json(SnipeitResult::success()))
 }
 
 pub async fn return_asset(data: web::Json<CheckinRequest>, db: Data<Pool>, client: Data<Client>, cfg: web::Data<Main>, req: HttpRequest) -> Result<HttpResponse> {
@@ -43,5 +43,5 @@ pub async fn return_asset(data: web::Json<CheckinRequest>, db: Data<Pool>, clien
     snipeit::checkin(data.asset, token, &client, &cfg.snipeit_url).await?;
     let mut conn = db.get_conn().await?;
     conn.exec_drop("DELETE FROM `lent` WHERE `asset` = ?", (data.asset,)).await?;
-    Ok(HttpResponse::Ok().finish())
+    Ok(HttpResponse::Ok().json(SnipeitResult::success()))
 }
