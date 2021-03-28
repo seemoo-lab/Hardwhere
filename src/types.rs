@@ -7,6 +7,59 @@ pub type UID = i32;
 pub type AssetId = i32;
 
 #[derive(Deserialize, Debug)]
+pub struct ActivityList {
+    pub total: usize,
+    pub rows: Vec<Activity>,
+}
+
+/// Activity Report
+#[derive(Deserialize, Debug)]
+pub struct Activity {
+    /// Activity/Report ID, not asset/item
+    pub id: i32,
+    /// Person that made this change
+    pub admin: ActivityAdmin,
+    /// Change type
+    pub action_type: ActionType,
+    /// Item that got changed
+    pub item: ActivityItem,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct ActivityAdmin {
+    pub id: UID,
+    pub name: String,
+    pub first_name: String,
+    pub last_name: String,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct ActivityItem {
+    pub id: AssetId,
+    pub r#type: ItemType,
+}
+
+#[derive(Deserialize, Debug)]
+pub enum ItemType {
+    #[serde(rename = "asset")]
+    Asset,
+    #[serde(rename = "user")]
+    User
+}
+
+#[derive(Deserialize, Debug, Eq, PartialEq)]
+pub enum ActionType {
+    #[serde(rename = "aktualisieren")]
+    Update,
+    #[serde(rename = "herausgeben")]
+    Checkout,
+    #[serde(rename = "hinzufügen")]
+    Add,
+    #[serde(rename = "zurücknehmen von")]
+    Checkin,
+}
+
+#[derive(Deserialize, Debug)]
 pub struct AssetList {
     pub total: i32,
     pub rows: Vec<Asset>,

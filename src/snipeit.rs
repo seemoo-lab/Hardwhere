@@ -9,6 +9,22 @@ use crate::types::*;
 
 const ASSIGNED_TO: &str = "assigned_to";
 
+/// Asset activity
+pub async fn activity(item: AssetId, token: HeaderValue, client: &Client, snipeit_url: &str) -> Result<Vec<Activity>> {
+    // snipeit API docs are invalid, we need URL parms, not body json stuff..
+
+    // example
+    // https://inventory.seemoo.tu-darmstadt.de/api/v1/reports/activity?item_id=990&item_type=asset
+    // https://inventory.seemoo.tu-darmstadt.de/api/v1/reports/activity?item_id=869&item_type=asset
+    // https://inventory.seemoo.tu-darmstadt.de/api/v1/reports/activity?item_id=905&item_type=asset
+    let mut res = client.get(format!("{}/api/v1/reports/activity?item_type=asset&item_id={}",snipeit_url,item))
+        .header(AUTHORIZATION,token)
+        .send().await?;
+    verify_status(&res)?;
+    let data: ActivityList = res.json().limit(1024*1024).await?;
+    Ok(data.rows)
+}
+
 /// Get Assets unconditionally, start from offset to limit (if API limits allow this)
 pub async fn assets(offset: i32, limit: i32, token: HeaderValue, client: &Client, snipeit_url: &str) -> Result<AssetList> {
     let mut res = client.get(format!("{}/api/v1/hardware?offset={}&limit={}",snipeit_url,offset,limit))

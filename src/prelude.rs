@@ -3,6 +3,8 @@
 use actix_web::{HttpResponse, ResponseError, client::{ClientResponse, JsonPayloadError, SendRequestError}};
 pub use log::*;
 use thiserror::Error;
+
+use crate::types::AssetId;
 #[derive(Error, Debug)]
 pub enum Error {
     #[error("IO error {0}")]
@@ -28,7 +30,9 @@ pub enum Error {
         key: &'static str,
         expected: serde_json::Value,
         found: Option<serde_json::Value>,
-    }
+    },
+    #[error("No correct checkout activity found in the logs for {0}")]
+    NoCheckoutActivity(AssetId)
 }
 
 impl ResponseError for Error {
