@@ -1,0 +1,17 @@
+[Unit]
+Description=LARS daemon
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/home/LARS/LARS-backend
+WorkingDirectory=/home/LARS/
+Nice=0
+Restart=always
+User=LARS
+Group=LARS
+
+[Install]
+WantedBy=multi-user.target
+ 
