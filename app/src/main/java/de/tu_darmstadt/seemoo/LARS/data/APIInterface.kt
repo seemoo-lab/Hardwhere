@@ -37,10 +37,10 @@ interface APIInterface {
     fun getCheckedOutAssets(): Call<ArrayList<Asset>>
 
     @POST("LARS/api/checkout")
-    fun checkout(@Body data: JsonObject): Observable<ArrayList<Asset>>
+    fun checkout(@Body data: JsonObject): Observable<Result1<Void>>
 
     @POST("LARS/api/checkin")
-    fun checkin(@Body data: JsonObject): Observable<ArrayList<Asset>>
+    fun checkin(@Body data: JsonObject): Observable<Result1<Void>>
 
     /**
      * @param data JsonElement of data to update, use makePath the Asset

@@ -46,7 +46,8 @@ class CheckinFragment : APIFragment(), CheckinRecyclerViewAdapter.OnListInteract
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        // TODO: use refresh-layout for pulldown refresh
+        // TODO: decide if we just display old data on loading failure
         checkinViewModel.loading.observe(viewLifecycleOwner, Observer {
             progressBar.visibility = if (it) View.VISIBLE else View.GONE
         })

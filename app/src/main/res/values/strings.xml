@@ -37,7 +37,7 @@
     <string name="error_fetch_selectable">Can\'t fetch data!</string>
     <string name="info_multiple_models_editing">Custom attributes can only be edited per-model.</string>
 
-    <string name="menu_home">Home</string>
+    <string name="menu_checkin">Checkin</string>
     <string name="menu_editor">Editor</string>
     <string name="menu_logout">Logout</string>
     <string name="menu_dev">Test</string>

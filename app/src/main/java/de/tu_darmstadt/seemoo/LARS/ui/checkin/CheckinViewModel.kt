@@ -1,5 +1,6 @@
 package de.tu_darmstadt.seemoo.LARS.ui.checkin
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -7,9 +8,12 @@ import de.tu_darmstadt.seemoo.LARS.BuildConfig
 import de.tu_darmstadt.seemoo.LARS.Utils
 import de.tu_darmstadt.seemoo.LARS.data.APIInterface
 import de.tu_darmstadt.seemoo.LARS.data.model.Asset
+import io.reactivex.Observable
+import io.reactivex.schedulers.Schedulers
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import de.tu_darmstadt.seemoo.LARS.data.model.Result
 
 class CheckinViewModel : ViewModel() {
 
@@ -53,5 +57,47 @@ class CheckinViewModel : ViewModel() {
             }
 
         })
+    }
+
+    fun checkin(client: APIInterface, assets: ArrayList<Asset>) {
+        _loading.value = true
+
+        val requests: MutableList<Observable<Result<Void>>> = mutableListOf()
+        requests.addAll(assets.map {
+            client.checkin()
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.newThread())
+        })
+
+        @Suppress("UNUSED_VARIABLE")
+        val ignored = Observable.zip(requests) { list ->
+            val failed = list.filter {
+                if (it is Result<*>) {
+                    if (it.status == "success") {
+                        return@filter false
+                    }
+                }
+                true
+            }
+            failed
+        }
+            .subscribe({
+                Log.d(this@CheckinViewModel::class.java.name, "Finished with $it")
+                loading.postValue(
+                    Loading(
+                        null,
+                        it.isEmpty()
+                    )
+                )
+                editingFinished.postValue(1)
+            }) {
+                Log.w(this@CheckinViewModel::class.java.name, "Error: $it")
+                loading.postValue(
+                    Loading(
+                        it,
+                        false
+                    )
+                )
+            }
     }
 }
