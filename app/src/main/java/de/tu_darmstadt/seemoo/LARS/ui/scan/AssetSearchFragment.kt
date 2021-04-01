@@ -62,7 +62,7 @@ class AssetSearchFragment : APIFragment(),
             resolving.observe(viewLifecycleOwner, Observer {
                 swipeRefreshLayout.isRefreshing = it != 0
             })
-            searchFiltered.observe(this@AssetSearchFragment, Observer {
+            searchFiltered.observe(viewLifecycleOwner, Observer {
                 adapter.replaceElements(it)
             })
         }
@@ -102,7 +102,7 @@ class AssetSearchFragment : APIFragment(),
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(item.itemId == R.id.filter) {
             val filterPopup = AssetFilterBTFragment()
-            filterPopup.show(fragmentManager!!,filterPopup.tag)
+            filterPopup.show(parentFragmentManager,filterPopup.tag)
             return true
         }
         return super.onOptionsItemSelected(item)
