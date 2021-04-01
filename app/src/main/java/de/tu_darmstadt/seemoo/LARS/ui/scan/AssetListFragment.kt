@@ -21,12 +21,10 @@ import de.tu_darmstadt.seemoo.LARS.ui.APIFragment
 import de.tu_darmstadt.seemoo.LARS.ui.editor.asset.EditorFragment
 import de.tu_darmstadt.seemoo.LARS.ui.editor.asset.EditorViewModel
 import de.tu_darmstadt.seemoo.LARS.ui.info.AssetInfoBTFragment
-import de.tu_darmstadt.seemoo.LARS.ui.info.InfoBTViewModel
 import de.tu_darmstadt.seemoo.LARS.ui.lib.RecyclerItemTouchHelper
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import java.util.zip.InflaterOutputStream
 
 
 /**
@@ -120,7 +118,7 @@ class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListInteract
         }
         viewAdapter = AssetRecyclerViewAdapter(this, scanViewModel.scanList.value!!)
 
-        recyclerView = view.findViewById<RecyclerView>(R.id.checkedout_recycler).apply {
+        recyclerView = view.findViewById<RecyclerView>(R.id.frag_asset_list_recycler).apply {
             layoutManager = viewManager
             adapter = viewAdapter
         }
