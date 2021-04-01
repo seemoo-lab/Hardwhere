@@ -17,7 +17,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/checkedout_recycler"
+        android:id="@+id/lent_recycler"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="1dp"
@@ -28,7 +28,7 @@
         app:layout_constraintTop_toBottomOf="@id/progressLoading" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/frag_checkin_scanButton"
+        android:id="@+id/frag_lent_scanButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"

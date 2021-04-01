@@ -1,4 +1,4 @@
-package de.tu_darmstadt.seemoo.LARS.ui.checkin
+package de.tu_darmstadt.seemoo.LARS.ui.lent
 
 import android.os.Bundle
 import android.util.Log
@@ -7,28 +7,34 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import de.tu_darmstadt.seemoo.LARS.R
 import de.tu_darmstadt.seemoo.LARS.data.model.Asset
+import de.tu_darmstadt.seemoo.LARS.data.model.Selectable
 import de.tu_darmstadt.seemoo.LARS.ui.APIFragment
+import de.tu_darmstadt.seemoo.LARS.ui.editor.SelectorFragment
+import de.tu_darmstadt.seemoo.LARS.ui.editor.SelectorViewModel
 import de.tu_darmstadt.seemoo.LARS.ui.info.AssetInfoBTFragment
 
-class CheckinFragment : APIFragment(), CheckinRecyclerViewAdapter.OnListInteractionListener {
+class LentFragment : APIFragment(), LentRecyclerViewAdapter.OnListInteractionListener {
 
+    private lateinit var selectorViewModel: SelectorViewModel
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var progressBar: ProgressBar
-    private lateinit var checkinViewModel: CheckinViewModel
+    private lateinit var lentViewModel: LentViewModel
     private lateinit var recyclerView: RecyclerView
-    private lateinit var viewAdapter: CheckinRecyclerViewAdapter
+    private lateinit var viewAdapter: LentRecyclerViewAdapter
     private lateinit var scanButton: FloatingActionButton
     private var mActionMode: ActionMode? = null
+    private val CODE_SELECT_USER: Int = 10001
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        checkinViewModel =
-            ViewModelProvider(requireActivity())[CheckinViewModel::class.java]
+        lentViewModel =
+            ViewModelProvider(requireActivity())[LentViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -37,10 +43,10 @@ class CheckinFragment : APIFragment(), CheckinRecyclerViewAdapter.OnListInteract
         savedInstanceState: Bundle?
     ): View? {
         setHasOptionsMenu(true)
-        val root = inflater.inflate(R.layout.fragment_checkout, container, false)
+        val root = inflater.inflate(R.layout.fragment_lent_assets, container, false)
         progressBar = root.findViewById(R.id.progressLoading)
         progressBar.isIndeterminate = true
-        scanButton = root.findViewById(R.id.frag_checkin_scanButton)
+        scanButton = root.findViewById(R.id.frag_lent_scanButton)
         return root
     }
 
@@ -48,29 +54,29 @@ class CheckinFragment : APIFragment(), CheckinRecyclerViewAdapter.OnListInteract
         super.onViewCreated(view, savedInstanceState)
         // TODO: use refresh-layout for pulldown refresh
         // TODO: decide if we just display old data on loading failure
-        checkinViewModel.loading.observe(viewLifecycleOwner, Observer {
+        lentViewModel.loading.observe(viewLifecycleOwner, Observer {
             progressBar.visibility = if (it) View.VISIBLE else View.GONE
         })
 
-        viewAdapter = CheckinRecyclerViewAdapter(this, checkinViewModel.checkedOutAsset.value!!)
+        viewAdapter = LentRecyclerViewAdapter(this, lentViewModel.checkedOutAsset.value!!)
         viewManager = LinearLayoutManager(context)
-        recyclerView = view.findViewById<RecyclerView>(R.id.checkedout_recycler).apply {
+        recyclerView = view.findViewById<RecyclerView>(R.id.lent_recycler).apply {
             layoutManager = viewManager
             adapter = viewAdapter
         }
 
         scanButton.setOnClickListener {
-            // TODO
+            displayUserSelection()
         }
 
-        checkinViewModel.checkedOutAsset.observe(viewLifecycleOwner, Observer {
+        lentViewModel.checkedOutAsset.observe(viewLifecycleOwner, Observer {
             it?.run {
                 viewAdapter.notifyDataSetChanged()
                 Log.d(this::class.java.name, "List update ${it.size}");
             }
         })
 
-        checkinViewModel.error.observe(viewLifecycleOwner, Observer {
+        lentViewModel.error.observe(viewLifecycleOwner, Observer {
             it?.run {
                 Toast.makeText(
                     requireContext(),
@@ -80,7 +86,30 @@ class CheckinFragment : APIFragment(), CheckinRecyclerViewAdapter.OnListInteract
             }
         })
 
-        checkinViewModel.loadData(getAPI())
+        selectorViewModel = ViewModelProvider(requireActivity())[SelectorViewModel::class.java]
+        selectorViewModel.selected.observe(viewLifecycleOwner, Observer {
+            it?.run {
+                when (it.inputID) {
+                    CODE_SELECT_USER -> lentViewModel.lastSelectedUser.value = it.item as Selectable.User
+                    else -> Log.w(
+                        this@LentFragment::class.java.name,
+                        "Unknown inputID for selector update"
+                    )
+                }
+                selectorViewModel.resetSelected()
+            }
+        })
+
+        lentViewModel.loadData(getAPI())
+    }
+
+    private fun displayUserSelection() {
+        val (id, args) = SelectorFragment.newInstancePair(
+            lentViewModel.lastSelectedUser.value,
+            CODE_SELECT_USER,
+            Selectable.SelectableType.User
+        )
+        findNavController().navigate(id, args)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

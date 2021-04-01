@@ -1,4 +1,4 @@
-package de.tu_darmstadt.seemoo.LARS.ui.checkin
+package de.tu_darmstadt.seemoo.LARS.ui.lent
 
 import android.annotation.SuppressLint
 import android.util.Log
@@ -13,11 +13,11 @@ import de.tu_darmstadt.seemoo.LARS.R
 import de.tu_darmstadt.seemoo.LARS.data.model.Asset
 import de.tu_darmstadt.seemoo.LARS.ui.lib.RecyclerItemTouchHelper
 
-class CheckinRecyclerViewAdapter(
+class LentRecyclerViewAdapter(
     private val mListener: OnListInteractionListener?,
     private val assetList: ArrayList<Asset>
 )         :
-    RecyclerView.Adapter<CheckinRecyclerViewAdapter.ViewHolder>() {
+    RecyclerView.Adapter<LentRecyclerViewAdapter.ViewHolder>() {
 
     private val selected: ArrayList<Asset> = ArrayList()
 
@@ -84,7 +84,7 @@ class CheckinRecyclerViewAdapter(
                         selected.remove(asset)
                     }
                     if (selectionMode()) {
-                        this@CheckinRecyclerViewAdapter.notifyItemChanged(position)
+                        this@LentRecyclerViewAdapter.notifyItemChanged(position)
                     } else {
                         notifyDataSetChanged()
                         mListener?.onSelectionModeChange(selectionMode())
@@ -95,7 +95,7 @@ class CheckinRecyclerViewAdapter(
             }
             setOnLongClickListener {
                 if (!selectionMode){
-                    Log.d(this@CheckinRecyclerViewAdapter::class.java.name, "In selection mode")
+                    Log.d(this@LentRecyclerViewAdapter::class.java.name, "In selection mode")
                     asset.selected = true
                     selected.add(asset)
                     mListener?.onSelectionModeChange(selectionMode())

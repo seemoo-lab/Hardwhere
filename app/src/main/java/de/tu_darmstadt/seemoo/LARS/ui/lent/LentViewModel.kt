@@ -1,4 +1,4 @@
-package de.tu_darmstadt.seemoo.LARS.ui.checkin
+package de.tu_darmstadt.seemoo.LARS.ui.lent
 
 import android.util.Log
 import androidx.lifecycle.LiveData
@@ -14,20 +14,26 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import de.tu_darmstadt.seemoo.LARS.data.model.Result
+import de.tu_darmstadt.seemoo.LARS.data.model.Selectable
 
-class CheckinViewModel : ViewModel() {
-
-    private val _text = MutableLiveData<String>().apply {
-        value = "Large Accessories Retrieval System\nBuild: ${BuildConfig.BUILD_TIME} \nCommit: ${BuildConfig.GitHash}"
-    }
-    val text: LiveData<String> = _text
-
+class LentViewModel : ViewModel() {
     private val _checkedOutAsssets: MutableLiveData<ArrayList<Asset>> = MutableLiveData(ArrayList())
     val checkedOutAsset: LiveData<ArrayList<Asset>> = _checkedOutAsssets
     private val _loading: MutableLiveData<Boolean> = MutableLiveData()
     val loading: LiveData<Boolean> = _loading
     private val _error: MutableLiveData<String> = MutableLiveData()
     val error: LiveData<String> = _error
+
+    /**
+     * Last selected user for lenting
+     */
+    val lastSelectedUser: MutableLiveData<Selectable.User?> = MutableLiveData(null)
+
+    /**
+     * Notifies of finished lenting
+     */
+    private val _lentFinished: MutableLiveData<Boolean> = MutableLiveData(false)
+    val lentFinished: LiveData<Boolean> = _lentFinished
 
     fun loadData(client: APIInterface) {
         _loading.value = true
@@ -45,7 +51,7 @@ class CheckinViewModel : ViewModel() {
                 }
                 if(log)
                     Utils.logResponseVerbose(
-                        this@CheckinViewModel::class.java,
+                        this@LentViewModel::class.java,
                         response
                     )
                 _loading.value = false
@@ -59,12 +65,20 @@ class CheckinViewModel : ViewModel() {
         })
     }
 
-    fun checkin(client: APIInterface, assets: ArrayList<Asset>) {
+    /**
+     * Reset loading finished
+     */
+    fun resetFinishedLoading() {
+        _lentFinished.value = false
+    }
+
+    fun checkout(client: APIInterface, assets: ArrayList<Asset>, user: Int) {
         _loading.value = true
+        _lentFinished.value = false
 
         val requests: MutableList<Observable<Result<Void>>> = mutableListOf()
         requests.addAll(assets.map {
-            client.checkin()
+            client.checkout(it.createCheckout(user))
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.newThread())
         })
@@ -82,22 +96,24 @@ class CheckinViewModel : ViewModel() {
             failed
         }
             .subscribe({
-                Log.d(this@CheckinViewModel::class.java.name, "Finished with $it")
-                loading.postValue(
-                    Loading(
-                        null,
-                        it.isEmpty()
-                    )
-                )
-                editingFinished.postValue(1)
+                Log.d(this@LentViewModel::class.java.name, "Finished with $it")
+//                loading.postValue(
+//                    Loading(
+//                        null,
+//                        it.isEmpty()
+//                    )
+//                )
+                _lentFinished.value = true
+                _loading.value = false
             }) {
-                Log.w(this@CheckinViewModel::class.java.name, "Error: $it")
-                loading.postValue(
-                    Loading(
-                        it,
-                        false
-                    )
-                )
+                Log.w(this@LentViewModel::class.java.name, "Error: $it")
+//                loading.postValue(
+//                    Loading(
+//                        it,
+//                        false
+//                    )
+//                )
+                _loading.value = false
             }
     }
 }
