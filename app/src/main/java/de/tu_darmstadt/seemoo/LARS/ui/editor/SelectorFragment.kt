@@ -152,6 +152,12 @@ class SelectorFragment : APIFragment(),
 
         /**
          * Get new pair of fragment id,args for spawn on NavController
+         *
+         * selectable stands for the preselected Selectable
+         *
+         * returnCode used for change events
+         *
+         * type is type of selectable for this returnCode and selection
          */
         @JvmStatic
         fun newInstancePair(

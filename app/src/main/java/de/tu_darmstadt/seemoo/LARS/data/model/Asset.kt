@@ -74,6 +74,10 @@ data class Asset(
         val FIELD_MODEL_ID = "model_id"
         @JvmField
         val FIELD_RTD_LOCATION_ID = "rtd_location_id"
+        @JvmField
+        val FIELD_CHECKOUT_ASSET = "asset"
+        @JvmField
+        val FIELD_CHECKOUT_USER = "user"
 
 
         /**
@@ -143,6 +147,16 @@ data class Asset(
             }
         }
 
+        return base
+    }
+
+    /**
+     * Create asset checkout JsonObject with checkout to specified user.
+     */
+    fun createCheckout(user: Int): JsonObject {
+        val base = JsonObject()
+        base.addProperty(FIELD_CHECKOUT_ASSET,this.id)
+        base.addProperty(FIELD_CHECKOUT_USER, user)
         return base
     }
 
