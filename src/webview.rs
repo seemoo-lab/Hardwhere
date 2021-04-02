@@ -50,11 +50,11 @@ pub async fn login(params: web::Form<LoginData>, hb: web::Data<Handlebars<'_>>, 
     let body = hb.render("login_successful", &data)?;
     session.set("api_key", api_token)?;
 
-    Ok(HttpResponse::Found().header("location", "/").body(body))
+    Ok(HttpResponse::Found().header("location", "/LARS/").body(body))
 }
 
 pub async fn logout(hb: web::Data<Handlebars<'_>>, session: Session) -> Result<HttpResponse> {
     session.purge();
     let body = hb.render("logout", &())?;
-    Ok(HttpResponse::Found().header("location", "/").body(body))
+    Ok(HttpResponse::Found().header("location", "/LARS/").body(body))
 }
