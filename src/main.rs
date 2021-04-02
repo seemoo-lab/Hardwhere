@@ -1,4 +1,6 @@
+use actix_session::CookieSession;
 use actix_web::{App, HttpRequest, HttpResponse, HttpServer, Responder, client::{Client, ClientBuilder}, http::header::{ACCEPT, CONTENT_TYPE}, middleware, web};
+use handlebars::Handlebars;
 use mysql_async::{Opts, OptsBuilder, Pool, prelude::*};
 
 mod prelude;
@@ -10,6 +12,7 @@ mod snipeit;
 mod api;
 mod types;
 mod indexer;
+mod webview;
 
 const DB_VERSION: &str = "0.1";
 
@@ -37,6 +40,13 @@ async fn main() -> Result<()> {
     setup_db(&db).await?;
     let config_main = web::Data::new(config.main);
     let db_c = db.clone();
+
+    let mut handlebars = Handlebars::new();
+    handlebars
+    .register_templates_directory(".html", "./static/templates")
+    .expect("Can't initialize templates!");
+    let handlebars_ref = web::Data::new(handlebars);
+
     info!("Listening on {}",bind);
     if let Err(e) = indexer::refresh_index(&config_main, db.clone()).await {
         error!("Failed to index: {}",e);
@@ -45,11 +55,22 @@ async fn main() -> Result<()> {
     HttpServer::new(move || {
         App::new()
             .app_data(config_main.clone())
+            .app_data(handlebars_ref.clone())
+            .wrap(
+                CookieSession::signed(&[0; 32])
+                    .domain("www.rust-lang.org")
+                    .name("actix_session")
+                    .path("/")
+                    .secure(true)
+                    .same_site(actix_web::cookie::SameSite::Strict)
+                    .lazy(true)
+                    .http_only(true))
             .data(db_c.clone())
             .data(ClientBuilder::new().header(ACCEPT,"application/json").header(CONTENT_TYPE,"application/json").finish())
             .service(web::resource("/api/checkedout").route(web::get().to(api::lent_list)))
             .service(web::resource("/api/checkout").route(web::post().to(api::lent_asset)))
             .service(web::resource("/api/checkin").route(web::post().to(api::return_asset)))
+            .service(web::resource("/").route(web::get().to(webview::view)))
     })
         .bind(&bind)?
         .run()
