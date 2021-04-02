@@ -20,6 +20,8 @@ pub struct Main {
     pub listen_port: u16,
     pub admin_user: String,
     pub admin_password: String,
+    pub session_encryption_key: String,
+    pub session_secure: bool,
 }
 
 #[derive(Serialize, Deserialize, Debug, Default)]

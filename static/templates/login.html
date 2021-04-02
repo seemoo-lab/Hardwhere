@@ -2,14 +2,17 @@
 <html>
 
 <head>
-    <title>{{app_name}} Login</title>
+    <title>Login</title>
 </head>
 
 <body>
     <h1>Please go to {{login_page}} to login to this service.</h1>
+
+    <p>{{error_msg}}</p>
     <p>Or enter your login token here.</p>
-    <form method="post">
-        <input type="password" name="token" />
+    <form method="post" action="/login">
+        <input type="password" name="api_key" />
+        <input type="submit" value="Login">
     </form>
 </body>
 </html>

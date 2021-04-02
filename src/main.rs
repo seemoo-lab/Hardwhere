@@ -1,5 +1,5 @@
 use actix_session::CookieSession;
-use actix_web::{App, HttpRequest, HttpResponse, HttpServer, Responder, client::{Client, ClientBuilder}, http::header::{ACCEPT, CONTENT_TYPE}, middleware, web};
+use actix_web::{App, HttpRequest, HttpResponse, HttpServer, Responder, client::{Client, ClientBuilder}, http::header::{ACCEPT, CONTENT_TYPE}, middleware::{self, Logger}, web};
 use handlebars::Handlebars;
 use mysql_async::{Opts, OptsBuilder, Pool, prelude::*};
 
@@ -38,6 +38,13 @@ async fn main() -> Result<()> {
         .into();
     let db = mysql_async::Pool::new(db_opts);
     setup_db(&db).await?;
+    let key = config.main.session_encryption_key.as_bytes();
+    let mut key = Vec::from(key);
+    if key.len() < 32 {
+        key.resize(32,0);
+        warn!("0-padding session encryption key, not long enough.")
+    }
+    let session_key: &'static [u8] = key.leak();
     let config_main = web::Data::new(config.main);
     let db_c = db.clone();
 
@@ -47,21 +54,22 @@ async fn main() -> Result<()> {
     .expect("Can't initialize templates!");
     let handlebars_ref = web::Data::new(handlebars);
 
+    
+    // if let Err(e) = indexer::refresh_index(&config_main, db.clone()).await {
+    //     error!("Failed to index: {}",e);
+    //     return Err(e);
+    // }
     info!("Listening on {}",bind);
-    if let Err(e) = indexer::refresh_index(&config_main, db.clone()).await {
-        error!("Failed to index: {}",e);
-        return Err(e);
-    }
     HttpServer::new(move || {
         App::new()
             .app_data(config_main.clone())
             .app_data(handlebars_ref.clone())
+            .wrap(Logger::default())
             .wrap(
-                CookieSession::signed(&[0; 32])
-                    .domain("www.rust-lang.org")
+                CookieSession::private(&session_key)
                     .name("actix_session")
                     .path("/")
-                    .secure(true)
+                    .secure(config_main.session_secure)
                     .same_site(actix_web::cookie::SameSite::Strict)
                     .lazy(true)
                     .http_only(true))
@@ -71,6 +79,8 @@ async fn main() -> Result<()> {
             .service(web::resource("/api/checkout").route(web::post().to(api::lent_asset)))
             .service(web::resource("/api/checkin").route(web::post().to(api::return_asset)))
             .service(web::resource("/").route(web::get().to(webview::view)))
+            .service(web::resource("/login").route(web::post().to(webview::login)))
+            .service(web::resource("/logout").route(web::get().to(webview::logout)))
     })
         .bind(&bind)?
         .run()

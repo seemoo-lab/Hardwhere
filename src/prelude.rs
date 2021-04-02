@@ -1,6 +1,7 @@
 
 
-use actix_web::{HttpResponse, ResponseError, client::{ClientResponse, JsonPayloadError, SendRequestError}};
+use actix_web::{HttpResponse, ResponseError, client::{ClientResponse, JsonPayloadError, SendRequestError}, http::header::InvalidHeaderValue};
+use handlebars::RenderError;
 pub use log::*;
 use thiserror::Error;
 
@@ -32,7 +33,11 @@ pub enum Error {
         found: Option<serde_json::Value>,
     },
     #[error("No correct checkout activity found in the logs for {0}")]
-    NoCheckoutActivity(AssetId)
+    NoCheckoutActivity(AssetId),
+    #[error("Invalid header value")]
+    InvalidHeaderValue(#[from] InvalidHeaderValue),
+    #[error("Failed to render template")]
+    RenderError(#[from] RenderError)
 }
 
 impl ResponseError for Error {

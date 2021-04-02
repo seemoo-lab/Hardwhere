@@ -1,3 +1,5 @@
+use std::time::Instant;
+
 use actix_web::{client::{Client, ClientBuilder}, http::{HeaderValue, header::{ACCEPT, CONTENT_TYPE}}};
 use mysql_async::{Pool, prelude::Queryable};
 
@@ -15,6 +17,7 @@ pub async fn refresh_index(config: &Main, db: Pool) -> Result<()>{
     let limit = 200;
     let mut checkedout = 0;
     let mut failed = 0;
+    let start = Instant::now();
     while done < total {
         trace!("Requesting assets {}-{}",done,done+limit);
         let data = snipeit::assets(done, limit, token.clone(), &client, &config.snipeit_url).await?;
@@ -38,7 +41,8 @@ pub async fn refresh_index(config: &Main, db: Pool) -> Result<()>{
             }
         }
     }
-    info!("Indexed {} assets, {} checked out. Failed {}",total,checkedout,failed);
+    let time = start.elapsed();
+    info!("Indexed {} assets, {} checked out. Failed {}. {} ms",total,checkedout,failed,time.as_millis());
     Ok(())
 }
 

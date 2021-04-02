@@ -6,6 +6,21 @@
 </head>
 
 <body>
-    <h1>Currently lent assets by {{user}}</h1>
+    <h1>Assets lent by you ({{user}})</h1>
+    <table>
+        <tr>
+            <th></th>
+            <th>Asset</th>
+            <th>Lent to</th>
+          </tr>
+        {{#each assets}}
+          <tr>
+            <td><a href="{{../url_base}}/hardware/{{id}}">Link</a></td>
+            <td>{{asset_tag}}</td>
+            <td>{{assigned_to.username}}</td>
+          </tr>
+        {{/each}}
+    </table>
+    <a href="/logout">Logout</a>
 </body>
 </html>

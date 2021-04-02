@@ -182,3 +182,8 @@ pub struct CheckoutRequest {
 pub struct CheckinRequest {
     pub asset: AssetId
 }
+
+#[derive(Deserialize)]
+pub struct LoginData {
+    pub api_key: String
+}

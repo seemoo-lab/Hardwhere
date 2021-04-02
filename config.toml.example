@@ -10,6 +10,12 @@ listen_port = 8000
 admin_user = ""
 admin_password = ""
 
+# cookie encryption key, changing invalidates all sessions
+# should be > 32 bytes,. otherwise will be 0 padded
+session_encryption_key = "42"
+# set to true to allow only HTTPS access with session cookies
+session_secure = false
+
 [db]
 ip = "127.0.0.1"
 user = "root"

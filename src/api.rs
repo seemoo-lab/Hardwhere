@@ -1,4 +1,4 @@
-use actix_web::{App, HttpRequest, HttpResponse, HttpServer, Responder, client::Client, middleware, web};
+use actix_web::{App, HttpRequest, HttpResponse, HttpServer, Responder, client::Client, http::HeaderValue, middleware, web};
 use mysql_async::{Conn, Pool};
 use mysql_async::prelude::*;
 use web::Data;
@@ -11,19 +11,25 @@ pub async fn lent_list(db: Data<Pool>, client: Data<Client>, cfg: web::Data<Main
     let token = snipeit::token(&req)?;
     let user = snipeit::user(token.clone(),&client, &cfg.snipeit_url).await?;
     trace!("User: {:?}",user);
+    
+    let assets = user_assets(user.id, db, token.clone(), &client, &cfg.snipeit_url).await?;
+
+    Ok(HttpResponse::Ok().json(assets))
+}
+
+pub async fn user_assets(user: UID, db: Data<Pool>, token: HeaderValue, client: &Client, snipeit_url: &str) -> Result<Vec<Asset>> {
     let mut conn = db.get_conn().await?;
-    let lents: Vec<i32> = conn.exec_map("SELECT `asset` FROM `lent` WHERE `user` = ?", (user.id,), |asset|asset).await?;
+    let lents: Vec<i32> = conn.exec_map("SELECT `asset` FROM `lent` WHERE `user` = ?", (user,), |asset|asset).await?;
 
     let mut assets = Vec::new();
     // TODO: cache results
     for id in lents {
-        match snipeit::asset(id, token.clone(), &client, &cfg.snipeit_url).await {
+        match snipeit::asset(id, token.clone(), &client, &snipeit_url).await {
             Ok(v) => assets.push(v),
             Err(e) => warn!("Skipping asset retrieval {}: {}",id,e),
         }
     }
-
-    Ok(HttpResponse::Ok().json(assets))
+    Ok(assets)
 }
 
 pub async fn lent_asset(data: web::Json<CheckoutRequest>, db: Data<Pool>, client: Data<Client>, cfg: web::Data<Main>, req: HttpRequest) -> Result<HttpResponse> {
