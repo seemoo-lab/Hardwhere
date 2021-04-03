@@ -18,14 +18,14 @@
 
     <fragment
         android:id="@+id/nav_scan"
-        android:name="de.tu_darmstadt.seemoo.LARS.ui.scan.AssetListFragment"
+        android:name="de.tu_darmstadt.seemoo.LARS.ui.editorlist.AssetListFragment"
         android:label="@string/menu_editor" >
         <action
             android:id="@+id/action_nav_scan_to_editorFragment"
             app:destination="@id/editorFragment" />
         <action
             android:id="@+id/action_nav_scan_to_scannerFragment"
-            app:destination="@id/scannerFragment" />
+            app:destination="@id/editorScannerFragment" />
         <action
             android:id="@+id/action_nav_scan_to_assetSearchFragment"
             app:destination="@id/asset_search_fragment" />
@@ -58,8 +58,8 @@
             app:destination="@id/editorFragment" />
     </fragment>
     <fragment
-        android:id="@+id/scannerFragment"
-        android:name="de.tu_darmstadt.seemoo.LARS.ui.scan.ScannerFragment"
+        android:id="@+id/editorScannerFragment"
+        android:name="de.tu_darmstadt.seemoo.LARS.ui.editorlist.EditorScannerFragment"
         android:label="@string/title_scanner" >
         <action
             android:id="@+id/action_scannerFragment_to_nav_scan2"
@@ -67,14 +67,14 @@
             app:popUpTo="@+id/nav_scan" />
         <action
             android:id="@+id/action_scannerFragment_self"
-            app:destination="@id/scannerFragment" />
+            app:destination="@id/editorScannerFragment" />
         <action
             android:id="@+id/action_scannerFragment_to_lentingScanListFragment"
             app:destination="@id/lentingScanListFragment" />
     </fragment>
     <fragment
         android:id="@+id/asset_search_fragment"
-        android:name="de.tu_darmstadt.seemoo.LARS.ui.scan.AssetSearchFragment"
+        android:name="de.tu_darmstadt.seemoo.LARS.ui.editorlist.AssetSearchFragment"
         android:label="AssetSearchFragment" >
         <action
             android:id="@+id/action_asset_search_fragment_to_lentingScanListFragment"
@@ -89,8 +89,16 @@
             android:id="@+id/action_lentingScanListFragment_to_asset_search_fragment"
             app:destination="@id/asset_search_fragment" />
         <action
-            android:id="@+id/action_lentingScanListFragment_to_scannerFragment"
-            app:destination="@id/scannerFragment" />
+            android:id="@+id/action_lentingScanListFragment_to_lentingScannerFragment"
+            app:destination="@id/lentingScannerFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/lentingScannerFragment"
+        android:name="de.tu_darmstadt.seemoo.LARS.ui.lent.LentingScannerFragment"
+        android:label="@string/frag_lenting_scanner_title">
+        <action
+            android:id="@+id/action_lentingScannerFragment_to_lentingScanListFragment"
+            app:destination="@id/lentingScanListFragment" />
     </fragment>
 
 </navigation>

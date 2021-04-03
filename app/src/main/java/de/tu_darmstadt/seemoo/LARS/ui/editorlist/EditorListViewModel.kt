@@ -1,23 +1,21 @@
-package de.tu_darmstadt.seemoo.LARS.ui.scan
+package de.tu_darmstadt.seemoo.LARS.ui.editorlist
 
 import android.os.Bundle
 import android.util.Log
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.google.gson.JsonElement
 import de.tu_darmstadt.seemoo.LARS.Utils.Companion.safeLet
 import de.tu_darmstadt.seemoo.LARS.data.model.Asset
 import de.tu_darmstadt.seemoo.LARS.data.model.Asset.Companion.AssetFilter
 import de.tu_darmstadt.seemoo.LARS.data.model.SearchResults
-import de.tu_darmstadt.seemoo.LARS.ui.editor.SelectorFragment
 import retrofit2.Call
 
 /**
- * ScanViewModel used by [AssetFilterBTFragment], [AssetListFragment], [ScannerFragment] &
+ * ScanViewModel used by [AssetFilterBTFragment], [AssetListFragment], [EditorScannerFragment] &
  * [AssetSearchFragment]
  */
-class ScanViewModel : ViewModel() {
+class EditorListViewModel : ViewModel() {
     internal val resolving = MutableLiveData(0)
 
     /**
@@ -27,7 +25,7 @@ class ScanViewModel : ViewModel() {
     internal val scanList: MutableLiveData<ArrayList<Asset>> = MutableLiveData(ArrayList())
 
 
-    internal val assetPattern: Regex = Regex("^http.*/([0-9]+)$")
+
     @JvmField val S_SCAN_LIST: String = "scan_list"
     @JvmField val S_UPDATE_TIME: String = "update_time"
     /**
@@ -110,7 +108,7 @@ class ScanViewModel : ViewModel() {
                 value!! - 1
             else
                 0
-            Log.d(this@ScanViewModel::class.java.name,"Loading: $value")
+            Log.d(this@EditorListViewModel::class.java.name,"Loading: $value")
         }
     }
 }

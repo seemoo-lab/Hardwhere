@@ -15,8 +15,8 @@ import de.tu_darmstadt.seemoo.LARS.data.model.Result
 class LentingViewModel: ViewModel() {
     val assetsToLent: MutableLiveData<ArrayList<Asset>> = MutableLiveData(ArrayList())
 
-    private val _loading: MutableLiveData<Boolean> = MutableLiveData(false)
-    val loading: LiveData<Boolean> = _loading
+    private val _loading: MutableLiveData<Int> = MutableLiveData(0)
+    val loading: LiveData<Int> = _loading
     /**
      * Last selected user for lenting
      */
@@ -36,7 +36,7 @@ class LentingViewModel: ViewModel() {
     }
 
     fun checkout(client: APIInterface) {
-        _loading.value = true
+        incLoading()
         _lentFinished.value = false
 
         val requests: MutableList<Observable<Result<Void>>> = mutableListOf()
@@ -66,8 +66,8 @@ class LentingViewModel: ViewModel() {
 //                        it.isEmpty()
 //                    )
 //                )
-                _lentFinished.value = true
-                _loading.value = false
+                _lentFinished.postValue(true)
+                decLoading()
             }) {
                 Log.w(this@LentingViewModel::class.java.name, "Error: $it")
 //                loading.postValue(
@@ -76,7 +76,22 @@ class LentingViewModel: ViewModel() {
 //                        false
 //                    )
 //                )
-                _loading.value = false
+                decLoading()
             }
+    }
+
+    internal fun decLoading() {
+        _loading.run {
+            value = if(value!! > 0)
+                value!! - 1
+            else
+                0
+        }
+    }
+
+    internal fun incLoading() {
+        _loading.run {
+            value = value!! + 1
+        }
     }
 }

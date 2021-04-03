@@ -1,4 +1,4 @@
-package de.tu_darmstadt.seemoo.LARS.ui.scan
+package de.tu_darmstadt.seemoo.LARS.ui.editorlist
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -14,7 +14,7 @@ import de.tu_darmstadt.seemoo.LARS.data.model.Asset.Companion.AssetFilter
 
 /**
  * Asset filter options as BottomSheetDialogFragment.
- * Uses the [ScanViewModel]
+ * Uses the [EditorListViewModel]
  */
 class AssetFilterBTFragment : BottomSheetDialogFragment() {
 
@@ -22,7 +22,7 @@ class AssetFilterBTFragment : BottomSheetDialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? { // Inflate the layout for this fragment
-        val viewModel: ScanViewModel = ViewModelProvider(requireActivity())[ScanViewModel::class.java]
+        val viewModel: EditorListViewModel = ViewModelProvider(requireActivity())[EditorListViewModel::class.java]
 
         val view = inflater.inflate(R.layout.fragment_asset_filter, container, false)
         val layout: LinearLayout = view.findViewById(R.id.asset_filter_layout)

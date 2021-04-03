@@ -17,8 +17,8 @@ import de.tu_darmstadt.seemoo.LARS.data.model.Selectable
 import de.tu_darmstadt.seemoo.LARS.ui.APIFragment
 import de.tu_darmstadt.seemoo.LARS.ui.editor.SelectorFragment
 import de.tu_darmstadt.seemoo.LARS.ui.editor.SelectorViewModel
-import de.tu_darmstadt.seemoo.LARS.ui.scan.ScanViewModel
-import de.tu_darmstadt.seemoo.LARS.ui.scan.ScannerFragment
+import de.tu_darmstadt.seemoo.LARS.ui.editorlist.EditorListViewModel
+import de.tu_darmstadt.seemoo.LARS.ui.editorlist.EditorScannerFragment
 
 /**
  * View for selecting assets that can then be lent to other users
@@ -39,6 +39,11 @@ class LentingScanListFragment: APIFragment(), LentingRecyclerViewAdapter.OnListI
         menuInfo: ContextMenu.ContextMenuInfo?
     ) {
         super.onCreateContextMenu(menu, v, menuInfo)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        lentingViewModel = ViewModelProvider(requireActivity())[LentingViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -98,9 +103,7 @@ class LentingScanListFragment: APIFragment(), LentingRecyclerViewAdapter.OnListI
             }
         })
 
-        lentingViewModel = ViewModelProvider(requireActivity())[LentingViewModel::class.java]
-        val scannerViewModel = ViewModelProvider(requireActivity())[ScanViewModel::class.java]
-        viewAdapter = LentingRecyclerViewAdapter(this, scannerViewModel.scanList.value!!)
+        viewAdapter = LentingRecyclerViewAdapter(this, lentingViewModel.assetsToLent.value!!)
         viewManager = LinearLayoutManager(context)
 
 
@@ -111,7 +114,7 @@ class LentingScanListFragment: APIFragment(), LentingRecyclerViewAdapter.OnListI
 
         lentingViewModel.loading.observe(viewLifecycleOwner, Observer {
             it?.run {
-                progressBar.visibility = if(this) View.VISIBLE else View.INVISIBLE
+                progressBar.visibility = if(this > 0) View.VISIBLE else View.GONE
             }
         })
 
@@ -120,7 +123,7 @@ class LentingScanListFragment: APIFragment(), LentingRecyclerViewAdapter.OnListI
         })
 
         lentButton.setOnClickListener {
-            val id = ScannerFragment.newInstance()
+            val id = LentingScannerFragment.newInstance()
             findNavController().navigate(id)
         }
 

@@ -11,7 +11,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import de.tu_darmstadt.seemoo.LARS.R
 import de.tu_darmstadt.seemoo.LARS.data.model.Asset
 import de.tu_darmstadt.seemoo.LARS.ui.editor.AssetAttributeView
-import de.tu_darmstadt.seemoo.LARS.ui.scan.ScanViewModel
 
 class AssetInfoBTFragment : BottomSheetDialogFragment() {
     private lateinit var infoBTViewModel: InfoBTViewModel

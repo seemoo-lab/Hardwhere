@@ -1,4 +1,4 @@
-package de.tu_darmstadt.seemoo.LARS.ui.scan
+package de.tu_darmstadt.seemoo.LARS.ui.editorlist
 
 import android.content.Context
 import android.os.Bundle
@@ -25,25 +25,25 @@ import retrofit2.Response
 
 /**
  * Asset search fragment.
- * Uses the [ScanViewModel]
+ * Uses the [EditorListViewModel]
  */
 class AssetSearchFragment : APIFragment(),
     AssetRecyclerViewAdapter.OnListInteractionListener,
     SearchView.OnQueryTextListener {
 
     // currently selected item or null
-    private lateinit var viewModel: ScanViewModel
+    private lateinit var viewModel: EditorListViewModel
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var adapter: AssetRecyclerViewAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(requireActivity())[ScanViewModel::class.java]
+        viewModel = ViewModelProvider(requireActivity())[EditorListViewModel::class.java]
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel = ViewModelProvider(requireActivity())[ScanViewModel::class.java]
+        viewModel = ViewModelProvider(requireActivity())[EditorListViewModel::class.java]
         savedInstanceState?.run {
             viewModel.searchString.value = getString(S_SEARCH_STRING)
         }
@@ -153,7 +153,7 @@ class AssetSearchFragment : APIFragment(),
         return true
     }
 
-    class SearchResultCallback(val context: Context, private val adapter: AssetRecyclerViewAdapter, private val viewModel: ScanViewModel) :
+    class SearchResultCallback(val context: Context, private val adapter: AssetRecyclerViewAdapter, private val viewModel: EditorListViewModel) :
         Callback<SearchResults<Asset>> {
         override fun onFailure(call: Call<SearchResults<Asset>>?, t: Throwable?) {
             viewModel.decLoading()

@@ -1,4 +1,4 @@
-package de.tu_darmstadt.seemoo.LARS.ui.scan
+package de.tu_darmstadt.seemoo.LARS.ui.editorlist
 
 import android.os.Bundle
 import android.util.Log
@@ -34,7 +34,7 @@ import io.reactivex.schedulers.Schedulers
 class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListInteractionListener,
     RecyclerItemTouchHelper.SwipeListener {
 
-    private lateinit var scanViewModel: ScanViewModel
+    private lateinit var editorListViewModel: EditorListViewModel
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: AssetRecyclerViewAdapter
     private lateinit var viewManager: RecyclerView.LayoutManager
@@ -44,16 +44,16 @@ class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListInteract
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        scanViewModel =
-            ViewModelProvider(requireActivity())[ScanViewModel::class.java]
+        editorListViewModel =
+            ViewModelProvider(requireActivity())[EditorListViewModel::class.java]
         editorViewModel =
             ViewModelProvider(requireActivity())[EditorViewModel::class.java]
     }
 
     override fun onResume() {
         super.onResume()
-        if(System.currentTimeMillis() - scanViewModel.lastUpdate() > ITEM_OLDAGE_MS) {
-            scanViewModel.updateLastUpdated()
+        if(System.currentTimeMillis() - editorListViewModel.lastUpdate() > ITEM_OLDAGE_MS) {
+            editorListViewModel.updateLastUpdated()
             updateAssets()
         }
     }
@@ -69,7 +69,7 @@ class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListInteract
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        scanViewModel.saveViewModelState(outState)
+        editorListViewModel.saveViewModelState(outState)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -80,13 +80,13 @@ class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListInteract
         return when (item.itemId) {
             R.id.edit -> {
                 val (id, args) = EditorFragment.newInstancePair(
-                    scanViewModel.scanList.value!!
+                    editorListViewModel.scanList.value!!
                 )
                 findNavController().navigate(id, args)
                 true
             }
             R.id.clear -> {
-                scanViewModel.scanList.value!!.clear()
+                editorListViewModel.scanList.value!!.clear()
                 viewAdapter.notifyDataSetChanged()
                 updateHint()
                 true
@@ -106,7 +106,7 @@ class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListInteract
         Utils.hideKeyboardContext(requireContext(), view)
         val fab: FloatingActionButton = view.findViewById(R.id.fab)
         fab.setOnClickListener { _ ->
-            val id = ScannerFragment.newInstance()
+            val id = EditorScannerFragment.newInstance()
             findNavController().navigate(id)
         }
         progressBar = view.findViewById(R.id.progressScanning)
@@ -114,9 +114,9 @@ class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListInteract
 
         viewManager = LinearLayoutManager(context)
         savedInstanceState?.run {
-            scanViewModel.restoreViewModelState(this)
+            editorListViewModel.restoreViewModelState(this)
         }
-        viewAdapter = AssetRecyclerViewAdapter(this, scanViewModel.scanList.value!!)
+        viewAdapter = AssetRecyclerViewAdapter(this, editorListViewModel.scanList.value!!)
 
         recyclerView = view.findViewById<RecyclerView>(R.id.frag_asset_list_recycler).apply {
             layoutManager = viewManager
@@ -127,7 +127,7 @@ class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListInteract
             RecyclerItemTouchHelper(this, ItemTouchHelper.LEFT)
         ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerView)
 
-        scanViewModel.resolving.observe(viewLifecycleOwner, Observer {
+        editorListViewModel.resolving.observe(viewLifecycleOwner, Observer {
             progressBar.visibility = if (it > 0) View.VISIBLE else View.GONE
             updateHint()
         })
@@ -154,17 +154,17 @@ class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListInteract
 
     private fun updateHint() {
         scanHint.visibility =
-            if (scanViewModel.scanList.value!!.isEmpty()) View.VISIBLE else View.GONE
+            if (editorListViewModel.scanList.value!!.isEmpty()) View.VISIBLE else View.GONE
     }
 
     private fun updateAssets() {
         //TODO: check what happens when an item is gone, we probably fail all items then?
         // pretty bad on auto-fetch after timeout
         val client = getAPI()
-        val list = scanViewModel.scanList.value!!
+        val list = editorListViewModel.scanList.value!!
         // otherwise no callback -> no dec
         if(list.isNotEmpty())
-            scanViewModel.incLoading()
+            editorListViewModel.incLoading()
         val requests: List<Observable<Asset>> = list.map {
             client.getAssetObservable(it.id)
                 .subscribeOn(Schedulers.io())
@@ -182,7 +182,7 @@ class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListInteract
             assets
         }
             .subscribe({
-                scanViewModel.run {
+                editorListViewModel.run {
                     decLoading()
                     scanList.value!!.clear()
                     scanList.value!!.addAll(it)
@@ -191,7 +191,7 @@ class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListInteract
                     Log.d(this@AssetListFragment::class.java.name, "Finished with $it")
                 }
             }) {
-                scanViewModel.decLoading()
+                editorListViewModel.decLoading()
                 Utils.displayToastUp(
                     requireContext(),
                     R.string.error_fetch_update,

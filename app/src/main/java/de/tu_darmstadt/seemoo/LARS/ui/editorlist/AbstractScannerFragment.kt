@@ -1,4 +1,4 @@
-package de.tu_darmstadt.seemoo.LARS.ui.scan
+package de.tu_darmstadt.seemoo.LARS.ui.editorlist
 
 import android.os.Bundle
 import android.util.Log
@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.lifecycle.ViewModelProvider
 import com.google.zxing.ResultPoint
 import com.google.zxing.client.android.BeepManager
 import de.tu_darmstadt.seemoo.LARS.R
@@ -23,19 +22,23 @@ import retrofit2.Response
 
 /**
  * Fragment for continuous scanning assets.
- * Uses the [ScanViewModel]
+ * Uses the [EditorListViewModel]
  */
-class ScannerFragment : APIFragment() {
+abstract class AbstractScannerFragment : APIFragment() {
     private var lastText: String? = null
     private lateinit var barcodeView: DecoratedBarcodeView
     private lateinit var beepManager: BeepManager
-    private lateinit var viewModel: ScanViewModel
+    private val assetPattern: Regex = Regex("^http.*/([0-9]+)$")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         beepManager = BeepManager(requireActivity())
-        viewModel = ViewModelProvider(requireActivity())[ScanViewModel::class.java]
     }
+
+    abstract fun addToList(asset: Asset)
+    abstract fun decreaseLoading()
+    abstract fun increaseLoading()
+    abstract fun assetList() : ArrayList<Asset>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -56,15 +59,16 @@ class ScannerFragment : APIFragment() {
                     Utils.vibrate(context!!,100)
 
                     Log.d(this::class.java.name, "Scanned: $result")
-                    viewModel.assetPattern.find(lastText!!, 0)?.groupValues?.run {
+                    assetPattern.find(lastText!!, 0)?.groupValues?.run {
                         this.forEach { item -> Log.d(this::class.java.name, "Item: $item") }
                         val id = Integer.valueOf(this[1])
-                        if (viewModel.scanList.value!!.any { asset: Asset -> asset.id == id }) {
+                        if (assetList().any { asset: Asset -> asset.id == id }) {
                             Utils.displayToastUp(context!!,R.string.duplicate_scan,Toast.LENGTH_SHORT)
                             Utils.playErrorBeep()
                         } else {
                             beepManager.playBeepSound()
-                            viewModel.incLoading()
+//                            viewModel.incLoading()
+                            increaseLoading()
                             api.getAsset(id).enqueue(object : Callback<Asset> {
                                 override fun onFailure(call: Call<Asset>?, t: Throwable?) {
                                     Log.e(this::class.java.name, "Error resolving $id: $t")
@@ -74,7 +78,8 @@ class ScannerFragment : APIFragment() {
                                         Toast.LENGTH_LONG
                                     )
                                         .show()
-                                    viewModel.decLoading()
+//                                    viewModel.decLoading()
+                                    decreaseLoading()
                                 }
 
                                 override fun onResponse(
@@ -83,7 +88,8 @@ class ScannerFragment : APIFragment() {
                                 ) {
                                     response?.run {
                                         if (this.isSuccessful && this.body()!!.id == id) {
-                                            viewModel.scanList.value!!.add(0, this.body()!!)
+//                                            viewModel.scanList.value!!.add(0, this.body()!!)
+                                            addToList(this.body()!!)
                                         } else {
                                             Toast.makeText(
                                                 requireContext(),
@@ -92,10 +98,11 @@ class ScannerFragment : APIFragment() {
                                             ).show()
                                         }
                                     } ?: Utils.logResponseVerbose(
-                                        this@ScannerFragment::class.java,
+                                        this@AbstractScannerFragment::class.java,
                                         response
                                     )
-                                    viewModel.decLoading()
+//                                    viewModel.decLoading()
+                                    decreaseLoading()
                                 }
                             })
                         }
@@ -135,16 +142,5 @@ class ScannerFragment : APIFragment() {
     override fun onResume() {
         super.onResume()
         barcodeView.resume()
-    }
-
-
-    companion object {
-        /**
-         * Returns a new instance pair to use on a NavController
-         */
-        @JvmStatic
-        fun newInstance(): Int {
-            return R.id.scannerFragment
-        }
     }
 }

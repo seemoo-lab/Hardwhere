@@ -27,7 +27,7 @@ import retrofit2.Response
 /**
  * A fragment representing a list of Scannable-Items that can be searched
  *
- * This is similar to [de.tu_darmstadt.seemoo.LARS.ui.scan.AssetSearchFragment] but different enough to be a re-implementation
+ * This is similar to [de.tu_darmstadt.seemoo.LARS.ui.editorlist.AssetSearchFragment] but different enough to be a re-implementation
  */
 class SelectorFragment : APIFragment(),
     SelectorRecyclerViewAdapter.OnListFragmentInteractionListener,
