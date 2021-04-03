@@ -12,12 +12,11 @@ import de.tu_darmstadt.seemoo.LARS.R
 import de.tu_darmstadt.seemoo.LARS.data.model.Asset
 import de.tu_darmstadt.seemoo.LARS.ui.lib.RecyclerItemTouchHelper
 
-class LentRecyclerViewAdapter(
+class LentingRecyclerViewAdapter(
     private val mListener: OnListInteractionListener?,
     private val assetList: ArrayList<Asset>
 )         :
-    RecyclerView.Adapter<LentRecyclerViewAdapter.ViewHolder>() {
-
+    RecyclerView.Adapter<LentingRecyclerViewAdapter.ViewHolder>() {
 
     // holder class to hold reference
     inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view), RecyclerItemTouchHelper.SwipeViewHolder {
@@ -58,7 +57,7 @@ class LentRecyclerViewAdapter(
         with(holder.view) {
             tag = asset
             setOnClickListener {
-                    mListener?.onListItemClicked(asset)
+                mListener?.onListItemClicked(asset)
             }
         }
     }

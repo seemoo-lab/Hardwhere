@@ -64,4 +64,8 @@
     <string name="menu_about">About</string>
     <string name="scan_action_button_description">Scan QR code of asset</string>
     <string name="menu_checkin_assets">Checkin Assets</string>
+    <string name="title_lenting_next">Lent</string>
+    <string name="lenting_scanlist_hint">Scan assets to lent</string>
+    <string name="lentingListFragment">Asset Lenting</string>
+    <string name="menu_lent">Lent Assets</string>
 </resources>

@@ -28,13 +28,13 @@
         app:layout_constraintTop_toBottomOf="@id/progressLoading" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/frag_lent_scanButton"
+        android:id="@+id/frag_lent_lentButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/ic_qr_code"
+        android:contentDescription="@string/scan_action_button_description"
+        android:src="@android:drawable/ic_input_add"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:contentDescription="@string/scan_action_button_description" />
+        app:layout_constraintEnd_toEndOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

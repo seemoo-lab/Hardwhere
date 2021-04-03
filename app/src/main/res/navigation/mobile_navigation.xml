@@ -68,10 +68,29 @@
         <action
             android:id="@+id/action_scannerFragment_self"
             app:destination="@id/scannerFragment" />
+        <action
+            android:id="@+id/action_scannerFragment_to_lentingScanListFragment"
+            app:destination="@id/lentingScanListFragment" />
     </fragment>
     <fragment
         android:id="@+id/asset_search_fragment"
         android:name="de.tu_darmstadt.seemoo.LARS.ui.scan.AssetSearchFragment"
-        android:label="AssetSearchFragment" />
+        android:label="AssetSearchFragment" >
+        <action
+            android:id="@+id/action_asset_search_fragment_to_lentingScanListFragment"
+            app:destination="@id/lentingScanListFragment"
+            app:enterAnim="@anim/fragment_fade_enter" />
+    </fragment>
+    <fragment
+        android:id="@+id/lentingScanListFragment"
+        android:name="de.tu_darmstadt.seemoo.LARS.ui.lent.LentingScanListFragment"
+        android:label="@string/lentingListFragment">
+        <action
+            android:id="@+id/action_lentingScanListFragment_to_asset_search_fragment"
+            app:destination="@id/asset_search_fragment" />
+        <action
+            android:id="@+id/action_lentingScanListFragment_to_scannerFragment"
+            app:destination="@id/scannerFragment" />
+    </fragment>
 
 </navigation>
