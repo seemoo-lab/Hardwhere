@@ -109,30 +109,34 @@ class MainActivity : AppCompatActivity() {
             } else {
                 Log.d(this::class.java.name, "No userdata")
                 val data = mainViewModel.getLoginData(this)
-                val client = APIClient.getClient(data.apiBackend, data.apiToken)
-                val api = client.create(APIInterface::class.java)
-                api.getUserInfo(data.userID).enqueue(object : Callback<User> {
-                    override fun onFailure(call: Call<User>?, t: Throwable?) {
-                        Log.w(this@MainActivity::class.java.name, "Unable to fetch user $t")
-                        Toast.makeText(
-                            this@MainActivity,
-                            R.string.failure_userinfo,
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-
-                    override fun onResponse(call: Call<User>?, response: Response<User>?) {
-                        response?.body()?.run {
-                            mainViewModel.userData.value = UserData(this.name, this.email)
-                        } ?: logResponseVerbose(this@MainActivity::class.java, response).also {
+                if (data == null) {
+                    showLogin()
+                } else {
+                    val client = APIClient.getClient(data.apiBackend, data.apiToken)
+                    val api = client.create(APIInterface::class.java)
+                    api.getUserInfo(data.userID).enqueue(object : Callback<User> {
+                        override fun onFailure(call: Call<User>?, t: Throwable?) {
+                            Log.w(this@MainActivity::class.java.name, "Unable to fetch user $t")
                             Toast.makeText(
                                 this@MainActivity,
                                 R.string.failure_userinfo,
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
-                    }
-                })
+
+                        override fun onResponse(call: Call<User>?, response: Response<User>?) {
+                            response?.body()?.run {
+                                mainViewModel.userData.value = UserData(this.name, this.email)
+                            } ?: logResponseVerbose(this@MainActivity::class.java, response).also {
+                                Toast.makeText(
+                                    this@MainActivity,
+                                    R.string.failure_userinfo,
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                    })
+                }
             }
         })
     }

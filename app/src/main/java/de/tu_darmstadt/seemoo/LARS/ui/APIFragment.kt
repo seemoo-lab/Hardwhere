@@ -26,18 +26,25 @@ abstract class APIFragment : Fragment() {
         } ?: throw Exception("Requires Activity!")
 
         mainViewModel.loginData.observe(this, Observer {
-            updateAPI(it)
+            it?.run { updateAPI(this) }
         })
-        updateAPI(mainViewModel.loginData.value)
+        mainViewModel.loginData.value?.run {
+            updateAPI(this)
+        }
     }
 
     private fun updateAPI(data: LoginData?) {
-        val login = data ?: mainViewModel.getLoginData(requireContext())
+        val login = data ?: mainViewModel.requireLoginData(requireContext())
         val client = APIClient.getClient(login.apiBackend, login.apiToken)
         api = client.create(APIInterface::class.java)
     }
 
     protected fun getAPI(): APIInterface {
+        if (!this::api.isInitialized){
+            val login = mainViewModel.requireLoginData(requireContext());
+            val client = APIClient.getClient(login.apiBackend, login.apiToken)
+            api = client.create(APIInterface::class.java)
+        }
         return api
     }
 }
