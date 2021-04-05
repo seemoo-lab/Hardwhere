@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.*
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -91,8 +92,25 @@ class LentingScanListFragment: APIFragment(), LentingRecyclerViewAdapter.OnListI
             it?.run {
                 when (it.inputID) {
                     R.id.frag_lenting_scanlist_recycler -> {
-                        lentingViewModel.lastSelectedUser.value = it.item as Selectable.User
-                        lentingViewModel.checkout(getAPI())
+                        val item = it.item as Selectable.User
+                        lentingViewModel.lastSelectedUser.value = item
+                        val alertDialogBuilder: AlertDialog.Builder = AlertDialog.Builder(requireContext())
+                        alertDialogBuilder.setMessage(getString(R.string.lenting_alert_confirm_msg,item.name))
+                        alertDialogBuilder.setCancelable(true)
+
+                        alertDialogBuilder.setPositiveButton(
+                            getString(android.R.string.yes)
+                        ) { dialog, _ ->
+                            lentingViewModel.checkout(getAPI())
+                            dialog.cancel()
+                        }
+                        alertDialogBuilder.setNegativeButton(getString(android.R.string.cancel)) {
+                            dialog,_ -> dialog.cancel()
+                        }
+
+                        val alertDialog: AlertDialog = alertDialogBuilder.create()
+                        alertDialog.show()
+
                     }
                     else -> Log.w(
                         this@LentingScanListFragment::class.java.name,
@@ -147,6 +165,6 @@ class LentingScanListFragment: APIFragment(), LentingRecyclerViewAdapter.OnListI
     }
 
     override fun onListItemClicked(item: Asset) {
-        TODO("Not yet implemented")
+        // TODO("Not yet implemented")
     }
 }

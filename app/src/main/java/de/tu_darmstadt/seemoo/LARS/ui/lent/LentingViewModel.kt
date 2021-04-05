@@ -81,17 +81,15 @@ class LentingViewModel: ViewModel() {
     }
 
     internal fun decLoading() {
-        _loading.run {
-            value = if(value!! > 0)
-                value!! - 1
-            else
-                0
-        }
+        val value = _loading.value!!
+        val newValue = if (value > 0)
+            value - 1
+        else
+            0
+        _loading.postValue(newValue)
     }
 
     internal fun incLoading() {
-        _loading.run {
-            value = value!! + 1
-        }
+        _loading.postValue(_loading.value!! + 1)
     }
 }
