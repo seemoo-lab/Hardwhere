@@ -82,7 +82,7 @@ class LentFragment : APIFragment(), LentRecyclerViewAdapter.OnListInteractionLis
             }
         })
 
-        lentViewModel.loadData(getAPI())
+        lentViewModel.loadData(getAPI(),getUserID())
     }
 
 

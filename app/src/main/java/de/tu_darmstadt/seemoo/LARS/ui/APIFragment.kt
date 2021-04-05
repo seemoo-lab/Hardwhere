@@ -47,4 +47,6 @@ abstract class APIFragment : Fragment() {
         }
         return api
     }
+
+    protected fun getUserID(): Int = mainViewModel.requireLoginData(requireContext()).userID
 }

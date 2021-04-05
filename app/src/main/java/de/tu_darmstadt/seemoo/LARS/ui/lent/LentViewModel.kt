@@ -20,15 +20,16 @@ class LentViewModel : ViewModel() {
 
 
 
-    fun loadData(client: APIInterface) {
+    fun loadData(client: APIInterface, userID: Int) {
         _loading.value = true
         client.getCheckedOutAssets().enqueue(object : Callback<ArrayList<Asset>> {
             override fun onResponse(call: Call<ArrayList<Asset>>, response: Response<ArrayList<Asset>>) {
                 var log = true
                 response?.run {
                     if (this.isSuccessful && this.body() != null) {
+                        val assetsLent = this.body()!!.filter { a -> a.assigned_to!!.id != userID }
                         _checkedOutAsssets.value!!.clear()
-                        _checkedOutAsssets.value!!.addAll(this.body()!!)
+                        _checkedOutAsssets.value!!.addAll(assetsLent)
                         log = false
                     } else {
                         _error.value = "Failed to load checked out assets!"
