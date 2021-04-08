@@ -57,6 +57,8 @@ pub enum ActionType {
     Add,
     #[serde(rename = "zurücknehmen von")]
     Checkin,
+    #[serde(rename = "hochgeladen")]
+    Upload,
 }
 
 #[derive(Deserialize, Debug)]
@@ -142,10 +144,10 @@ pub struct SnipeitResult {
 impl SnipeitResult {
     /// Check for success
     #[must_use = "has to check for errors"]
-    pub fn check(&self) -> crate::prelude::Result<()> {
+    pub fn check(self) -> crate::prelude::Result<Self> {
         match self.status {
-            SUCCESS_STATUS::success => Ok(()),
-            SUCCESS_STATUS::error => Err(crate::prelude::Error::Snipeit(format!("{:?}",self))),
+            SUCCESS_STATUS::success => Ok(self),
+            SUCCESS_STATUS::error => Err(crate::prelude::Error::Snipeit(self)),
         }
     }
 

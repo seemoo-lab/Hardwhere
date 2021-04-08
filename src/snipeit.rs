@@ -1,8 +1,5 @@
-use std::convert::TryInto;
-
 use actix_web::{HttpRequest, client::{Client, ClientResponse}, http::{HeaderValue, header::AUTHORIZATION}};
-use serde::Deserialize;
-use serde_json::json;
+
 
 use crate::prelude::*;
 use crate::types::*;
@@ -72,13 +69,19 @@ pub async fn checkout(asset: AssetId, user: UID, token: HeaderValue, client: &Cl
         .header(AUTHORIZATION,token)
         .send_json(&AssetCheckout::new(user))
         .await?;
-        // TODO: add support for more than user checkout
-    verify_status(&response)?;
+    // TODO: add support for more than user checkout
+    if !response.status().is_success() {
+        if let Ok(v) = response.json::<SnipeitResult>().await {
+            return Err(Error::Snipeit(v));
+        } else {
+            return Err(Error::SnipeitBadRequest(format!("{:?}",response)));
+        }
+    } else {
+        let res: SnipeitResult = response.json().await?;
+        res.check()?;
+    }
     // let body_inscp = response.body().await.unwrap();
     // trace!("{}",std::str::from_utf8(&body_inscp).unwrap());
-    let res: SnipeitResult = response.json().await?;
-    res.check()?;
-    info!("{:?}",res);
     Ok(())
 }
 
@@ -88,19 +91,25 @@ pub async fn checkin(asset: AssetId, token: HeaderValue, client: &Client, snipei
         .header(AUTHORIZATION,token)
         .send()
         .await?;
-    verify_status(&response)?;
+    if !response.status().is_success() {
+        if let Ok(v) = response.json::<SnipeitResult>().await {
+            return Err(Error::Snipeit(v));
+        } else {
+            return Err(Error::SnipeitBadRequest(format!("{:?}",response)));
+        }
+    } else {
+        let res: SnipeitResult = response.json().await?;
+        res.check()?;
+    }
     // let body_inscp = response.body().await.unwrap();
     // trace!("{}",std::str::from_utf8(&body_inscp).unwrap());
-    let res: SnipeitResult = response.json().await?;
-    res.check()?;
-    info!("{:?}",res);
     Ok(())
 }
 
 fn verify_payload(res: SnipeitResult, key: &'static str, expected: serde_json::Value) -> Result<()> {
     let mut payload = match res.payload {
         Some(v) => v,
-        None => return Err(Error::Snipeit(format!("No payload, expected one with {}",key))),
+        None => return Err(Error::SnipeitBadRequest(format!("No payload, expected one with {}",key))),
     };
     if payload.get(key) != Some(&expected) {
         return Err(Error::SnipeitPayloadError{
@@ -112,9 +121,10 @@ fn verify_payload(res: SnipeitResult, key: &'static str, expected: serde_json::V
     Ok(())
 }
 
+/// Verify generic response by http status code
 fn verify_status<T>(response: &ClientResponse<T>) -> Result<()>{
     if !response.status().is_success() {
-        return Err(Error::Snipeit(format!("{:?}",response)));
+        return Err(Error::SnipeitBadRequest(format!("{:?}",response)));
     }
     Ok(())
 }

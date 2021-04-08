@@ -1,11 +1,11 @@
 
 
-use actix_web::{HttpResponse, ResponseError, client::{ClientResponse, JsonPayloadError, SendRequestError}, http::header::InvalidHeaderValue};
+use actix_web::{HttpResponse, ResponseError, client::{JsonPayloadError, SendRequestError}, http::header::InvalidHeaderValue};
 use handlebars::RenderError;
 pub use log::*;
 use thiserror::Error;
 
-use crate::types::AssetId;
+use crate::types::{AssetId, SnipeitResult};
 #[derive(Error, Debug)]
 pub enum Error {
     #[error("IO error {0}")]
@@ -22,8 +22,10 @@ pub enum Error {
     InvalidAuthorization,
     #[error("Failed to send snipeit API cmd {0}")]
     ClientError(#[from] SendRequestError),
-    #[error("Invalid snipeit response {0:?}")]
-    Snipeit(String),
+    #[error("Invalid snipeit request: response {0:?}")]
+    SnipeitBadRequest(String),
+    #[error("Invalid snipeit response with result {0:?}")]
+    Snipeit(SnipeitResult),
     #[error("Can't parse response from snipeit {0}")]
     SnipeitJsonResponse(#[from] JsonPayloadError),
     #[error("Invalid payload, expected {expected:?} for {key} got {found:?}")]
@@ -44,8 +46,9 @@ impl ResponseError for Error {
     fn error_response(&self) -> HttpResponse {
         error!("Error {}",self);
         match self {
-            MissingAuthorization => HttpResponse::BadRequest().finish(),
-            InvalidAuthorization => HttpResponse::Unauthorized().finish(),
+            Error::MissingAuthorization => HttpResponse::BadRequest().finish(),
+            Error::InvalidAuthorization => HttpResponse::Unauthorized().finish(),
+            Error::Snipeit(v) => HttpResponse::BadRequest().json(v),
             _ => HttpResponse::InternalServerError().finish(),
         }
         

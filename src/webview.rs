@@ -1,5 +1,5 @@
 use actix_session::Session;
-use actix_web::{HttpResponse, client::Client, get, http::HeaderValue, web::{self, Data}};
+use actix_web::{HttpResponse, client::Client, http::HeaderValue, web::{self, Data}};
 use handlebars::Handlebars;
 use mysql_async::Pool;
 use serde_json::json;
@@ -34,7 +34,7 @@ pub async fn login(params: web::Form<LoginData>, hb: web::Data<Handlebars<'_>>, 
     let token = HeaderValue::from_str(&api_token)?;
     let user = match snipeit::user(token, &client, &cfg.snipeit_url).await {
         Ok(u) => u,
-        Err(Error::Snipeit(s)) => {
+        Err(Error::SnipeitBadRequest(s)) => {
             info!("Login failed: {}",s);
             let data = json!({
                 "login_page": cfg.snipeit_url,
