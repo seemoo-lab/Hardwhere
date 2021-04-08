@@ -35,10 +35,17 @@ abstract class AbstractScannerFragment : APIFragment() {
         beepManager = BeepManager(requireActivity())
     }
 
+    /**
+     * Called if [assetList] deduplication passed
+     */
     abstract fun addToList(asset: Asset)
     abstract fun decreaseLoading()
     abstract fun increaseLoading()
-    abstract fun assetList() : ArrayList<Asset>
+
+    /**
+     * Used for deduplication checks
+     */
+    abstract fun assetList(): ArrayList<Asset>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -66,8 +73,12 @@ abstract class AbstractScannerFragment : APIFragment() {
                             Utils.displayToastUp(context!!,R.string.duplicate_scan,Toast.LENGTH_SHORT)
                             Utils.playErrorBeep()
                         } else {
-                            beepManager.playBeepSound()
-//                            viewModel.incLoading()
+                            try {
+                                beepManager.playBeepSound()
+                            } catch (e: Exception) {
+                                Log.e(this@AbstractScannerFragment::class.java.name,"Failed to beep",e)
+                            }
+
                             increaseLoading()
                             api.getAsset(id).enqueue(object : Callback<Asset> {
                                 override fun onFailure(call: Call<Asset>?, t: Throwable?) {
@@ -78,7 +89,6 @@ abstract class AbstractScannerFragment : APIFragment() {
                                         Toast.LENGTH_LONG
                                     )
                                         .show()
-//                                    viewModel.decLoading()
                                     decreaseLoading()
                                 }
 
@@ -88,7 +98,6 @@ abstract class AbstractScannerFragment : APIFragment() {
                                 ) {
                                     response?.run {
                                         if (this.isSuccessful && this.body()!!.id == id) {
-//                                            viewModel.scanList.value!!.add(0, this.body()!!)
                                             addToList(this.body()!!)
                                         } else {
                                             Toast.makeText(
@@ -101,7 +110,6 @@ abstract class AbstractScannerFragment : APIFragment() {
                                         this@AbstractScannerFragment::class.java,
                                         response
                                     )
-//                                    viewModel.decLoading()
                                     decreaseLoading()
                                 }
                             })
