@@ -1,5 +1,5 @@
-use actix_web::{App, HttpRequest, HttpResponse, HttpServer, Responder, client::Client, http::HeaderValue, middleware, web};
-use mysql_async::{Conn, Pool};
+use actix_web::{HttpRequest, HttpResponse, client::Client, http::HeaderValue, web};
+use mysql_async::Pool;
 use mysql_async::prelude::*;
 use web::Data;
 use crate::snipeit;

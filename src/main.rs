@@ -1,5 +1,5 @@
 use actix_session::CookieSession;
-use actix_web::{App, HttpRequest, HttpResponse, HttpServer, Responder, client::{Client, ClientBuilder}, http::header::{ACCEPT, CONTENT_TYPE}, middleware::{self, Logger}, web};
+use actix_web::{App, HttpServer, client::{ClientBuilder}, http::header::{ACCEPT, CONTENT_TYPE}, middleware::{Logger}, rt::spawn, web};
 use handlebars::Handlebars;
 use mysql_async::{Opts, OptsBuilder, Pool, prelude::*};
 
@@ -46,7 +46,7 @@ async fn main() -> Result<()> {
     }
     let session_key: &'static [u8] = key.leak();
     let config_main = web::Data::new(config.main);
-    let db_c = db.clone();
+    
 
     let mut handlebars = Handlebars::new();
     handlebars
@@ -54,11 +54,13 @@ async fn main() -> Result<()> {
     .expect("Can't initialize templates!");
     let handlebars_ref = web::Data::new(handlebars);
 
-    
-    // if let Err(e) = indexer::refresh_index(&config_main, db.clone()).await {
-    //     error!("Failed to index: {}",e);
-    //     return Err(e);
-    // }
+    let db_c = db.clone();
+    let config_main_c = config_main.clone();
+    spawn(async move {if let Err(e) = indexer::refresh_index(&config_main_c, db_c).await {
+        error!("Failed to index: {}",e);
+    }});
+
+    let db_c = db.clone();
     info!("Listening on {}",bind);
     HttpServer::new(move || {
         App::new()
