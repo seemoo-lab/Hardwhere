@@ -137,13 +137,26 @@ class LentingScanListFragment: APIFragment(), LentingRecyclerViewAdapter.OnListI
         })
 
         lentingViewModel.assetsToLent.observe(viewLifecycleOwner, Observer {
-            hintText.visibility = if (it.isNullOrEmpty()) View.VISIBLE else View.INVISIBLE
+            updateHint()
         })
 
         lentButton.setOnClickListener {
             val id = LentingScannerFragment.newInstance()
             findNavController().navigate(id)
         }
+
+        lentingViewModel.finishedAssets.observe(viewLifecycleOwner, Observer {
+            it?.run {
+                Log.d(this@LentingScanListFragment::class.java.name,"finished assets $this")
+                lentingViewModel.assetsToLent.value!!.removeAll(this)
+                viewAdapter.notifyDataSetChanged()
+                updateHint()
+                lentingViewModel.resetFinishedAssets()
+                if(lentingViewModel.assetsToLent.value.isNullOrEmpty()) {
+                    findNavController().popBackStack()
+                }
+            }
+        })
 
         mainViewModel.scanData.observe(viewLifecycleOwner, Observer {
             it?.run {
@@ -152,6 +165,10 @@ class LentingScanListFragment: APIFragment(), LentingRecyclerViewAdapter.OnListI
                 viewAdapter.notifyDataSetChanged()
             }
         })
+    }
+
+    private fun updateHint() {
+        hintText.visibility = if (lentingViewModel.assetsToLent.value.isNullOrEmpty()) View.VISIBLE else View.INVISIBLE
     }
 
     companion object {

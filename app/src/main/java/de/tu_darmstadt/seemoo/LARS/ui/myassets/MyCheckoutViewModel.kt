@@ -12,33 +12,19 @@ import io.reactivex.schedulers.Schedulers
 import kotlin.collections.ArrayList
 import de.tu_darmstadt.seemoo.LARS.data.model.Result
 import de.tu_darmstadt.seemoo.LARS.data.model.ResultAsset
+import de.tu_darmstadt.seemoo.LARS.ui.lib.ScanListViewModel
 
-class MyCheckoutViewModel: ViewModel() {
+class MyCheckoutViewModel: ScanListViewModel() {
     val assetsToLent: MutableLiveData<ArrayList<Asset>> = MutableLiveData(ArrayList())
 
-    private val _loading: MutableLiveData<Int> = MutableLiveData(0)
-    val loading: LiveData<Int> = _loading
+
     /**
      * Last selected user for lenting
      */
     val lastSelectedUser: MutableLiveData<Selectable.User?> = MutableLiveData(null)
 
-    /**
-     * Notifies of finished lenting
-     */
-    private val _lentFinished: MutableLiveData<Boolean> = MutableLiveData(false)
-    val lentFinished: LiveData<Boolean> = _lentFinished
-
-    /**
-     * Reset loading finished
-     */
-    fun resetFinishedLoading() {
-        _lentFinished.value = false
-    }
-
     fun checkout(client: APIInterface, myUserId: Int) {
         incLoading()
-        _lentFinished.value = false
 
         val requests: MutableList<Observable<Result<ResultAsset>>> = mutableListOf()
         requests.addAll(assetsToLent.value!!.map {
@@ -61,13 +47,7 @@ class MyCheckoutViewModel: ViewModel() {
         }
             .subscribe({
                 Log.d(this@MyCheckoutViewModel::class.java.name, "Finished with $it")
-//                loading.postValue(
-//                    Loading(
-//                        null,
-//                        it.isEmpty()
-//                    )
-//                )
-                _lentFinished.postValue(true)
+                processFinishedAssets(it, assetsToLent.value!!)
                 decLoading()
             }) {
                 Log.w(this@MyCheckoutViewModel::class.java.name, "Error: $it")
@@ -79,18 +59,5 @@ class MyCheckoutViewModel: ViewModel() {
 //                )
                 decLoading()
             }
-    }
-
-    internal fun decLoading() {
-        val value = _loading.value!!
-        val newValue = if (value > 0)
-            value - 1
-        else
-            0
-        _loading.postValue(newValue)
-    }
-
-    internal fun incLoading() {
-        _loading.postValue(_loading.value!! + 1)
     }
 }

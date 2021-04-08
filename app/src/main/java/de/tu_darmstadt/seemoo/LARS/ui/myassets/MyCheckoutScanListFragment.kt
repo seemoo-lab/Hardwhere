@@ -115,7 +115,7 @@ class MyCheckoutScanListFragment: APIFragment(), MyCheckoutRecyclerViewAdapter.O
         })
 
         myCheckoutViewModel.assetsToLent.observe(viewLifecycleOwner, Observer {
-            hintText.visibility = if (it.isNullOrEmpty()) View.VISIBLE else View.INVISIBLE
+            updateHint()
         })
 
         lentButton.setOnClickListener {
@@ -125,10 +125,26 @@ class MyCheckoutScanListFragment: APIFragment(), MyCheckoutRecyclerViewAdapter.O
         mainViewModel.scanData.observe(viewLifecycleOwner, Observer {
             it?.run {
                 Log.d(this@MyCheckoutScanListFragment::class.java.name, "ScanData updated.")
-
                 viewAdapter.notifyDataSetChanged()
             }
         })
+
+        myCheckoutViewModel.finishedAssets.observe(viewLifecycleOwner, Observer {
+            it?.run {
+                Log.d(this@MyCheckoutScanListFragment::class.java.name,"finished assets $this")
+                myCheckoutViewModel.assetsToLent.value!!.removeAll(this)
+                viewAdapter.notifyDataSetChanged()
+                updateHint()
+                myCheckoutViewModel.resetFinishedAssets()
+                if(myCheckoutViewModel.assetsToLent.value.isNullOrEmpty()) {
+                    findNavController().popBackStack()
+                }
+            }
+        })
+    }
+
+    private fun updateHint() {
+        hintText.visibility = if (myCheckoutViewModel.assetsToLent.value.isNullOrEmpty()) View.VISIBLE else View.INVISIBLE
     }
 
     companion object {

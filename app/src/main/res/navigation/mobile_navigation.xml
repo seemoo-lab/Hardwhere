@@ -117,7 +117,7 @@
     <fragment
         android:id="@+id/ownCheckoutScannerFragment"
         android:name="de.tu_darmstadt.seemoo.LARS.ui.myassets.MyCheckoutScannerFragment"
-        android:label="OwnCheckoutScannerFragment">
+        android:label="@string/title_scanner">
         <action
             android:id="@+id/action_ownCheckoutScannerFragment_to_ownCheckoutScanListFragment"
             app:destination="@id/ownCheckoutScanListFragment" />

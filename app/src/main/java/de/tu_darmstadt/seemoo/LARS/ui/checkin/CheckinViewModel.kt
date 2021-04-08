@@ -12,19 +12,10 @@ import io.reactivex.schedulers.Schedulers
 import kotlin.collections.ArrayList
 import de.tu_darmstadt.seemoo.LARS.data.model.Result
 import de.tu_darmstadt.seemoo.LARS.data.model.ResultAsset
+import de.tu_darmstadt.seemoo.LARS.ui.lib.ScanListViewModel
 
-class CheckinViewModel: ViewModel() {
+class CheckinViewModel: ScanListViewModel() {
     val assetsToReturn: MutableLiveData<ArrayList<Asset>> = MutableLiveData(ArrayList())
-
-    private val _loading: MutableLiveData<Int> = MutableLiveData(0)
-    val loading: LiveData<Int> = _loading
-
-    private val _finishedAssets: MutableLiveData<List<Asset>?> = MutableLiveData()
-
-    /**
-     * Assets that finished checkin, to be removed on main thread
-     */
-    val finishedAssets: LiveData<List<Asset>?> = _finishedAssets
     /**
      * Last selected user for lenting
      */
@@ -55,13 +46,7 @@ class CheckinViewModel: ViewModel() {
         }
             .subscribe({
                 Log.d(this@CheckinViewModel::class.java.name, "Finished with $it")
-                val finished = it.mapNotNull {
-                    val item = it as Result<ResultAsset>
-                    assetsToReturn.value!!.find {
-                        it.asset_tag == item.payload!!.asset
-                    }
-                }
-                _finishedAssets.postValue(finished)
+                processFinishedAssets(it,assetsToReturn.value!!)
                 decLoading()
             }) {
                 Log.w(this@CheckinViewModel::class.java.name, "Error: $it")
@@ -73,22 +58,5 @@ class CheckinViewModel: ViewModel() {
 //                )
                 decLoading()
             }
-    }
-
-    internal fun decLoading() {
-        val value = _loading.value!!
-        val newValue = if (value > 0)
-            value - 1
-        else
-            0
-        _loading.postValue(newValue)
-    }
-
-    internal fun incLoading() {
-        _loading.postValue(_loading.value!! + 1)
-    }
-
-    fun resetFinishedAssets() {
-        _finishedAssets.value = null
     }
 }
