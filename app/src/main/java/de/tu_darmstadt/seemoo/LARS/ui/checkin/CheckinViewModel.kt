@@ -1,4 +1,4 @@
-package de.tu_darmstadt.seemoo.LARS.ui.myassets
+package de.tu_darmstadt.seemoo.LARS.ui.checkin
 
 import android.util.Log
 import androidx.lifecycle.LiveData
@@ -13,8 +13,8 @@ import kotlin.collections.ArrayList
 import de.tu_darmstadt.seemoo.LARS.data.model.Result
 import de.tu_darmstadt.seemoo.LARS.data.model.ResultAsset
 
-class MyCheckoutViewModel: ViewModel() {
-    val assetsToLent: MutableLiveData<ArrayList<Asset>> = MutableLiveData(ArrayList())
+class CheckinViewModel: ViewModel() {
+    val assetsToReturn: MutableLiveData<ArrayList<Asset>> = MutableLiveData(ArrayList())
 
     private val _loading: MutableLiveData<Int> = MutableLiveData(0)
     val loading: LiveData<Int> = _loading
@@ -23,26 +23,12 @@ class MyCheckoutViewModel: ViewModel() {
      */
     val lastSelectedUser: MutableLiveData<Selectable.User?> = MutableLiveData(null)
 
-    /**
-     * Notifies of finished lenting
-     */
-    private val _lentFinished: MutableLiveData<Boolean> = MutableLiveData(false)
-    val lentFinished: LiveData<Boolean> = _lentFinished
-
-    /**
-     * Reset loading finished
-     */
-    fun resetFinishedLoading() {
-        _lentFinished.value = false
-    }
-
-    fun checkout(client: APIInterface, myUserId: Int) {
+    fun checkin(client: APIInterface) {
         incLoading()
-        _lentFinished.value = false
 
         val requests: MutableList<Observable<Result<ResultAsset>>> = mutableListOf()
-        requests.addAll(assetsToLent.value!!.map {
-            client.checkout(it.createCheckout(myUserId))
+        requests.addAll(assetsToReturn.value!!.map {
+            client.checkin(it.createCheckin())
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.newThread())
         })
@@ -60,17 +46,11 @@ class MyCheckoutViewModel: ViewModel() {
             failed
         }
             .subscribe({
-                Log.d(this@MyCheckoutViewModel::class.java.name, "Finished with $it")
-//                loading.postValue(
-//                    Loading(
-//                        null,
-//                        it.isEmpty()
-//                    )
-//                )
-                _lentFinished.postValue(true)
+                Log.d(this@CheckinViewModel::class.java.name, "Finished with $it")
+
                 decLoading()
             }) {
-                Log.w(this@MyCheckoutViewModel::class.java.name, "Error: $it")
+                Log.w(this@CheckinViewModel::class.java.name, "Error: $it")
 //                loading.postValue(
 //                    Loading(
 //                        it,

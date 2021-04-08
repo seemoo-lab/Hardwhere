@@ -11,6 +11,7 @@ import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import kotlin.collections.ArrayList
 import de.tu_darmstadt.seemoo.LARS.data.model.Result
+import de.tu_darmstadt.seemoo.LARS.data.model.ResultAsset
 
 class LentingViewModel: ViewModel() {
     val assetsToLent: MutableLiveData<ArrayList<Asset>> = MutableLiveData(ArrayList())
@@ -39,7 +40,7 @@ class LentingViewModel: ViewModel() {
         incLoading()
         _lentFinished.value = false
 
-        val requests: MutableList<Observable<Result<Void>>> = mutableListOf()
+        val requests: MutableList<Observable<Result<ResultAsset>>> = mutableListOf()
         requests.addAll(assetsToLent.value!!.map {
             client.checkout(it.createCheckout(lastSelectedUser.value!!.id))
                 .subscribeOn(Schedulers.io())

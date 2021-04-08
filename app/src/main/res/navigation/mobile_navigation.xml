@@ -122,5 +122,21 @@
             android:id="@+id/action_ownCheckoutScannerFragment_to_ownCheckoutScanListFragment"
             app:destination="@id/ownCheckoutScanListFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/nav_checkin"
+        android:name="de.tu_darmstadt.seemoo.LARS.ui.checkin.CheckinScanListFragment"
+        android:label="@string/nav_checkin" >
+        <action
+            android:id="@+id/action_nav_checkin_to_checkinScannerFragment"
+            app:destination="@id/checkinScannerFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/checkinScannerFragment"
+        android:name="de.tu_darmstadt.seemoo.LARS.ui.checkin.CheckinScannerFragment"
+        android:label="CheckinScannerFragment" >
+        <action
+            android:id="@+id/action_checkinScannerFragment_to_nav_checkin"
+            app:destination="@id/nav_checkin" />
+    </fragment>
 
 </navigation>

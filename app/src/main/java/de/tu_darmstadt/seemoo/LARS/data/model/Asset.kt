@@ -160,6 +160,15 @@ data class Asset(
         return base
     }
 
+    /**
+     * Create asset checkin JsonObject.
+     */
+    fun createCheckin(): JsonObject {
+        val base = JsonObject()
+        base.addProperty(FIELD_CHECKOUT_ASSET,this.id)
+        return base
+    }
+
     fun isMultiAsset(): Boolean {
         return id == ID_MULTI_ASSET
     }

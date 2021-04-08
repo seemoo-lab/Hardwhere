@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import de.tu_darmstadt.seemoo.LARS.data.model.Asset
+import de.tu_darmstadt.seemoo.LARS.data.model.ResultAsset
 import de.tu_darmstadt.seemoo.LARS.data.model.SearchResults
 import de.tu_darmstadt.seemoo.LARS.data.model.Selectable
 import io.reactivex.Observable
@@ -40,10 +41,10 @@ interface APIInterface {
     fun getCheckedoutAssets(@Path("id") id: Int): Call<SearchResults<Asset>>
 
     @POST("LARS/api/checkout")
-    fun checkout(@Body data: JsonObject): Observable<Result1<Void>>
+    fun checkout(@Body data: JsonObject): Observable<Result1<ResultAsset>>
 
     @POST("LARS/api/checkin")
-    fun checkin(@Body data: JsonObject): Observable<Result1<Void>>
+    fun checkin(@Body data: JsonObject): Observable<Result1<ResultAsset>>
 
     /**
      * @param data JsonElement of data to update, use makePath the Asset
