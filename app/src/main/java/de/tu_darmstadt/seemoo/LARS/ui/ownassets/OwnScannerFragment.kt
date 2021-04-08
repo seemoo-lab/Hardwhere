@@ -20,23 +20,16 @@ class OwnScannerFragment : AbstractScannerFragment() {
     }
 
     override fun addToList(asset: Asset) {
-        if (asset.assigned_to == null) {
+        if (asset.assigned_to != null) {
             Toast.makeText(
                 requireContext(),
-                getString(R.string.scanned_asset_not_checkedout,asset.asset_tag),
+                getString(R.string.scanned_asset_checkedout,asset.asset_tag,asset.assigned_to.username),
                 Toast.LENGTH_LONG
             )
                 .show()
             return
-        }
-        if (asset.assigned_to.id != getUserID()) {
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.scanned_asset_not_own,asset.asset_tag),
-                Toast.LENGTH_LONG
-            )
-                .show()
-            return
+        } else {
+            // TODO: checkout & add to list
         }
     }
 
@@ -48,8 +41,7 @@ class OwnScannerFragment : AbstractScannerFragment() {
         viewModel.incLoading()
     }
 
-    // we don't have anything to de-duplicate, ignore
-    override fun assetList(): ArrayList<Asset> = ArrayList()
+    override fun assetList(): ArrayList<Asset> = viewModel.checkedOutAsset.value!!
 
     companion object {
         /**

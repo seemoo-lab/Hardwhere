@@ -73,4 +73,5 @@
     <string name="scanned_asset_not_checkedout">Asset %1$s is not checked out!</string>
     <string name="scanned_asset_not_own">Asset %1$s is not checked out to you!</string>
     <string name="menu_own">Own Assets</string>
+    <string name="scanned_asset_checkedout">Asset %1$s is already checked out to %2$s!</string>
 </resources>
