@@ -39,10 +39,10 @@ class OwnAssetsFragment : APIFragment(), OwnRecyclerViewAdapter.OnListInteractio
         savedInstanceState: Bundle?
     ): View? {
         setHasOptionsMenu(true)
-        val root = inflater.inflate(R.layout.fragment_lent_assets, container, false)
-        progressBar = root.findViewById(R.id.progressLoading)
+        val root = inflater.inflate(R.layout.fragment_own_assets, container, false)
+        progressBar = root.findViewById(R.id.frag_own_progressLoading)
         progressBar.isIndeterminate = true
-        lentButton = root.findViewById(R.id.frag_lent_lentButton)
+        lentButton = root.findViewById(R.id.frag_own_lentButton)
         return root
     }
 
@@ -56,7 +56,7 @@ class OwnAssetsFragment : APIFragment(), OwnRecyclerViewAdapter.OnListInteractio
 
         viewAdapter = OwnRecyclerViewAdapter(this, viewModel.checkedOutAsset.value!!)
         viewManager = LinearLayoutManager(context)
-        recyclerView = view.findViewById<RecyclerView>(R.id.lent_recycler).apply {
+        recyclerView = view.findViewById<RecyclerView>(R.id.frag_own_recycler).apply {
             layoutManager = viewManager
             adapter = viewAdapter
         }

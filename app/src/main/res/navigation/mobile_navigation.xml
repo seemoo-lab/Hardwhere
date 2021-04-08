@@ -11,6 +11,11 @@
         android:label="@string/menu_checkin"
         tools:layout="@layout/fragment_lent_assets" />
     <fragment
+        android:id="@+id/nav_own"
+        android:name="de.tu_darmstadt.seemoo.LARS.ui.ownassets.OwnAssetsFragment"
+        android:label="@string/menu_own"
+        tools:layout="@layout/fragment_own_assets"/>
+    <fragment
         android:id="@+id/nav_about"
         android:name="de.tu_darmstadt.seemoo.LARS.ui.about.AboutFragment"
         android:label="@string/menu_about"
@@ -100,9 +105,5 @@
             android:id="@+id/action_lentingScannerFragment_to_lentingScanListFragment"
             app:destination="@id/lentingScanListFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/nav_own"
-        android:name="de.tu_darmstadt.seemoo.LARS.ui.ownassets.OwnAssetsFragment"
-        android:label="@string/menu_own" />
 
 </navigation>
