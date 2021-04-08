@@ -94,9 +94,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         Log.d(this::class.java.name, "Initialized")
-
-        val navigationView: NavigationView = findViewById(R.id.nav_view)
-        val headerView: View = navigationView.getHeaderView(0)
+        val headerView: View = navView.getHeaderView(0)
         val navTitle: TextView = headerView.findViewById(R.id.nav_header)
         val navSubtitle: TextView = headerView.findViewById(R.id.nav_subheader)
 
