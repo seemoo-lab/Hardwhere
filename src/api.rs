@@ -36,18 +36,18 @@ pub async fn lent_asset(data: web::Json<CheckoutRequest>, db: Data<Pool>, client
     let token = snipeit::token(&req)?;
     let user = snipeit::user(token.clone(),&client, &cfg.snipeit_url).await?;
     trace!("User: {:?}",user);
-    snipeit::checkout(data.asset, data.user, token, &client, &cfg.snipeit_url).await?;
+    let response = snipeit::checkout(data.asset, data.user, token, &client, &cfg.snipeit_url).await?;
     let mut conn = db.get_conn().await?;
     conn.exec_drop("INSERT INTO `lent` (`user`,`asset`) VALUES(?,?) ON DUPLICATE KEY UPDATE `user`=VALUES(`user`)", (user.id,data.asset)).await?;
-    Ok(HttpResponse::Ok().json(SnipeitResult::success()))
+    Ok(HttpResponse::Ok().json(response))
 }
 
 pub async fn return_asset(data: web::Json<CheckinRequest>, db: Data<Pool>, client: Data<Client>, cfg: web::Data<Main>, req: HttpRequest) -> Result<HttpResponse> {
     let token = snipeit::token(&req)?;
     let user = snipeit::user(token.clone(),&client, &cfg.snipeit_url).await?;
     trace!("User: {:?}",user);
-    snipeit::checkin(data.asset, token, &client, &cfg.snipeit_url).await?;
+    let response = snipeit::checkin(data.asset, token, &client, &cfg.snipeit_url).await?;
     let mut conn = db.get_conn().await?;
     conn.exec_drop("DELETE FROM `lent` WHERE `asset` = ?", (data.asset,)).await?;
-    Ok(HttpResponse::Ok().json(SnipeitResult::success()))
+    Ok(HttpResponse::Ok().json(response))
 }

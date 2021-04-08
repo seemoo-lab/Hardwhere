@@ -64,7 +64,7 @@ pub fn token(request: &HttpRequest) -> Result<HeaderValue> {
 }
 
 /// Checkout asset to user
-pub async fn checkout(asset: AssetId, user: UID, token: HeaderValue, client: &Client, snipeit_url: &str) -> Result<()> {
+pub async fn checkout(asset: AssetId, user: UID, token: HeaderValue, client: &Client, snipeit_url: &str) -> Result<SnipeitResult> {
     let mut response = client.post(format!("{}/api/v1/hardware/{}/checkout",snipeit_url,asset))
         .header(AUTHORIZATION,token)
         .send_json(&AssetCheckout::new(user))
@@ -78,15 +78,12 @@ pub async fn checkout(asset: AssetId, user: UID, token: HeaderValue, client: &Cl
         }
     } else {
         let res: SnipeitResult = response.json().await?;
-        res.check()?;
+        res.check()
     }
-    // let body_inscp = response.body().await.unwrap();
-    // trace!("{}",std::str::from_utf8(&body_inscp).unwrap());
-    Ok(())
 }
 
 /// Checkin/return asset unconditionally
-pub async fn checkin(asset: AssetId, token: HeaderValue, client: &Client, snipeit_url: &str) -> Result<()> {
+pub async fn checkin(asset: AssetId, token: HeaderValue, client: &Client, snipeit_url: &str) -> Result<SnipeitResult> {
     let mut response = client.post(format!("{}/api/v1/hardware/{}/checkin",snipeit_url,asset))
         .header(AUTHORIZATION,token)
         .send()
@@ -99,11 +96,8 @@ pub async fn checkin(asset: AssetId, token: HeaderValue, client: &Client, snipei
         }
     } else {
         let res: SnipeitResult = response.json().await?;
-        res.check()?;
+        res.check()
     }
-    // let body_inscp = response.body().await.unwrap();
-    // trace!("{}",std::str::from_utf8(&body_inscp).unwrap());
-    Ok(())
 }
 
 fn verify_payload(res: SnipeitResult, key: &'static str, expected: serde_json::Value) -> Result<()> {
