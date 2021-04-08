@@ -5,7 +5,7 @@
     android:layout_height="match_parent">
 
     <ProgressBar
-        android:id="@+id/frag_own_progressLoading"
+        android:id="@+id/frag_myassets_progressLoading"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -17,7 +17,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/frag_own_recycler"
+        android:id="@+id/frag_myassets_recycler"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="1dp"
@@ -25,10 +25,10 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/frag_own_progressLoading" />
+        app:layout_constraintTop_toBottomOf="@id/frag_myassets_progressLoading" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/frag_own_lentButton"
+        android:id="@+id/frag_myassets_lentButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"

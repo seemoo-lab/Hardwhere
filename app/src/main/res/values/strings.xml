@@ -70,8 +70,10 @@
     <string name="menu_lent">Lent Assets</string>
     <string name="frag_lenting_scanner_title">Scan assets to lent</string>
     <string name="lenting_alert_confirm_msg">Do you want to lent these item to %1$s ?</string>
+    <string name="selfcheckout_alert_confirm_msg">Do you want to checkout these items ?</string>
     <string name="scanned_asset_not_checkedout">Asset %1$s is not checked out!</string>
     <string name="scanned_asset_not_own">Asset %1$s is not checked out to you!</string>
-    <string name="menu_own">Own Assets</string>
+    <string name="menu_own">My Assets</string>
     <string name="scanned_asset_checkedout">Asset %1$s is already checked out to %2$s!</string>
+    <string name="own_scanlist_hint">Scan assets to checkout to you</string>
 </resources>

@@ -12,9 +12,9 @@
         tools:layout="@layout/fragment_lent_assets" />
     <fragment
         android:id="@+id/nav_own"
-        android:name="de.tu_darmstadt.seemoo.LARS.ui.ownassets.OwnAssetsFragment"
+        android:name="de.tu_darmstadt.seemoo.LARS.ui.myassets.MyAssetsFragment"
         android:label="@string/menu_own"
-        tools:layout="@layout/fragment_own_assets"/>
+        tools:layout="@layout/fragment_my_assets"/>
     <fragment
         android:id="@+id/nav_about"
         android:name="de.tu_darmstadt.seemoo.LARS.ui.about.AboutFragment"
@@ -104,6 +104,23 @@
         <action
             android:id="@+id/action_lentingScannerFragment_to_lentingScanListFragment"
             app:destination="@id/lentingScanListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/ownCheckoutScanListFragment"
+        android:name="de.tu_darmstadt.seemoo.LARS.ui.myassets.MyCheckoutScanListFragment"
+        android:label="OwnCheckoutScanListFragment"
+        tools:layout="@layout/fragment_myassets_checkout_scanlist">
+        <action
+            android:id="@+id/action_ownCheckoutScanListFragment_to_ownCheckoutScannerFragment"
+            app:destination="@id/ownCheckoutScannerFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/ownCheckoutScannerFragment"
+        android:name="de.tu_darmstadt.seemoo.LARS.ui.myassets.MyCheckoutScannerFragment"
+        android:label="OwnCheckoutScannerFragment">
+        <action
+            android:id="@+id/action_ownCheckoutScannerFragment_to_ownCheckoutScanListFragment"
+            app:destination="@id/ownCheckoutScanListFragment" />
     </fragment>
 
 </navigation>

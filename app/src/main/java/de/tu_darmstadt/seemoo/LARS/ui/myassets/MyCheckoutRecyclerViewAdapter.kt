@@ -1,4 +1,4 @@
-package de.tu_darmstadt.seemoo.LARS.ui.ownassets
+package de.tu_darmstadt.seemoo.LARS.ui.myassets
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
@@ -7,22 +7,24 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import de.tu_darmstadt.seemoo.LARS.R
 import de.tu_darmstadt.seemoo.LARS.data.model.Asset
 import de.tu_darmstadt.seemoo.LARS.ui.lib.RecyclerItemTouchHelper
 
-class OwnRecyclerViewAdapter(
+class MyCheckoutRecyclerViewAdapter(
     private val mListener: OnListInteractionListener?,
     private val assetList: ArrayList<Asset>
 )         :
-    RecyclerView.Adapter<OwnRecyclerViewAdapter.ViewHolder>() {
+    RecyclerView.Adapter<MyCheckoutRecyclerViewAdapter.ViewHolder>() {
 
     // holder class to hold reference
     inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view), RecyclerItemTouchHelper.SwipeViewHolder {
         //get view reference
         var modelName: TextView = view.findViewById(R.id.modelName)
         var assetTag: TextView = view.findViewById(R.id.assetTag)
+        // TODO: allow removing items
         var checkoutStatus: TextView = view.findViewById(R.id.checkoutStatus)
         var viewForeground: ConstraintLayout = view.findViewById(R.id.view_foreground)
         // TODO: remove checkbox, not used at all ?
@@ -50,8 +52,8 @@ class OwnRecyclerViewAdapter(
         val asset = assetList[position]
         holder.modelName.text = asset.model?.name ?: "<no model>"
         holder.assetTag.text = asset.asset_tag ?: "<no tag>"
+        holder.checkoutStatus.text = asset.assigned_to?.name ?: ""
         holder.checkbox.isChecked = asset.selected
-        holder.checkoutStatus.visibility = View.GONE
         holder.checkbox.visibility = View.INVISIBLE
 
         with(holder.view) {

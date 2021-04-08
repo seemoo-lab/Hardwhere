@@ -1,4 +1,4 @@
-package de.tu_darmstadt.seemoo.LARS.ui.ownassets
+package de.tu_darmstadt.seemoo.LARS.ui.myassets
 
 import android.os.Bundle
 import android.util.Log
@@ -19,18 +19,18 @@ import de.tu_darmstadt.seemoo.LARS.ui.info.AssetInfoBTFragment
 /**
  * Fragment of currently lent assets through user
  */
-class OwnAssetsFragment : APIFragment(), OwnRecyclerViewAdapter.OnListInteractionListener {
+class MyAssetsFragment : APIFragment(), MyRecyclerViewAdapter.OnListInteractionListener {
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var progressBar: ProgressBar
-    private lateinit var viewModel: OwnAssetsViewModel
+    private lateinit var viewModel: MyAssetsViewModel
     private lateinit var recyclerView: RecyclerView
-    private lateinit var viewAdapter: OwnRecyclerViewAdapter
+    private lateinit var viewAdapter: MyRecyclerViewAdapter
     private lateinit var lentButton: FloatingActionButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel =
-            ViewModelProvider(requireActivity())[OwnAssetsViewModel::class.java]
+            ViewModelProvider(requireActivity())[MyAssetsViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -39,10 +39,10 @@ class OwnAssetsFragment : APIFragment(), OwnRecyclerViewAdapter.OnListInteractio
         savedInstanceState: Bundle?
     ): View? {
         setHasOptionsMenu(true)
-        val root = inflater.inflate(R.layout.fragment_own_assets, container, false)
-        progressBar = root.findViewById(R.id.frag_own_progressLoading)
+        val root = inflater.inflate(R.layout.fragment_my_assets, container, false)
+        progressBar = root.findViewById(R.id.frag_myassets_progressLoading)
         progressBar.isIndeterminate = true
-        lentButton = root.findViewById(R.id.frag_own_lentButton)
+        lentButton = root.findViewById(R.id.frag_myassets_lentButton)
         return root
     }
 
@@ -51,18 +51,18 @@ class OwnAssetsFragment : APIFragment(), OwnRecyclerViewAdapter.OnListInteractio
         // TODO: use refresh-layout for pulldown refresh
         // TODO: decide if we just display old data on loading failure
         viewModel.loading.observe(viewLifecycleOwner, Observer {
-            progressBar.visibility = if (it > 0) View.VISIBLE else View.GONE
+            progressBar.visibility = if (it) View.VISIBLE else View.GONE
         })
 
-        viewAdapter = OwnRecyclerViewAdapter(this, viewModel.checkedOutAsset.value!!)
+        viewAdapter = MyRecyclerViewAdapter(this, viewModel.checkedOutAsset.value!!)
         viewManager = LinearLayoutManager(context)
-        recyclerView = view.findViewById<RecyclerView>(R.id.frag_own_recycler).apply {
+        recyclerView = view.findViewById<RecyclerView>(R.id.frag_myassets_recycler).apply {
             layoutManager = viewManager
             adapter = viewAdapter
         }
 
         lentButton.setOnClickListener {
-            findNavController().navigate(OwnScannerFragment.newInstance())
+            findNavController().navigate(MyCheckoutScanListFragment.instanceId())
         }
 
         viewModel.checkedOutAsset.observe(viewLifecycleOwner, Observer {

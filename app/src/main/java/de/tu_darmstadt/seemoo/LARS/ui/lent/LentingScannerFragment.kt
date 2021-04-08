@@ -1,6 +1,7 @@
 package de.tu_darmstadt.seemoo.LARS.ui.lent
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import de.tu_darmstadt.seemoo.LARS.R
 import de.tu_darmstadt.seemoo.LARS.data.model.Asset
@@ -19,6 +20,14 @@ class LentingScannerFragment : AbstractScannerFragment() {
     }
 
     override fun addToList(asset: Asset) {
+        if (asset.assigned_to != null) {
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.scanned_asset_checkedout,asset.asset_tag,asset.assigned_to.username),
+                Toast.LENGTH_LONG
+            )
+                .show()
+        }
         viewModel.assetsToLent.value!!.add(0,asset)
     }
 

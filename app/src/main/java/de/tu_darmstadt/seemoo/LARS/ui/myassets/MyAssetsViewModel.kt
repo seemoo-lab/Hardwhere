@@ -1,4 +1,4 @@
-package de.tu_darmstadt.seemoo.LARS.ui.ownassets
+package de.tu_darmstadt.seemoo.LARS.ui.myassets
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -11,16 +11,16 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class OwnAssetsViewModel : ViewModel() {
+class MyAssetsViewModel : ViewModel() {
     private val _checkedOutAsssets: MutableLiveData<ArrayList<Asset>> = MutableLiveData(ArrayList())
     val checkedOutAsset: LiveData<ArrayList<Asset>> = _checkedOutAsssets
-    private val _loading: MutableLiveData<Int> = MutableLiveData(0)
-    val loading: LiveData<Int> = _loading
+    private val _loading: MutableLiveData<Boolean> = MutableLiveData(false)
+    val loading: LiveData<Boolean> = _loading
     private val _error: MutableLiveData<String> = MutableLiveData()
     val error: LiveData<String> = _error
 
     fun loadData(client: APIInterface, userID: Int) {
-        incLoading()
+        _loading.value = true
         client.getCheckedoutAssets(userID).enqueue(object : Callback<SearchResults<Asset>> {
             override fun onResponse(call: Call<SearchResults<Asset>>, response: Response<SearchResults<Asset>>) {
                 var log = true
@@ -36,30 +36,17 @@ class OwnAssetsViewModel : ViewModel() {
                 }
                 if(log)
                     Utils.logResponseVerbose(
-                        this@OwnAssetsViewModel::class.java,
+                        this@MyAssetsViewModel::class.java,
                         response
                     )
-                decLoading()
+                _loading.value = false
             }
 
             override fun onFailure(call: Call<SearchResults<Asset>>, t: Throwable) {
                 _error.value = "Failed to load checked out assets!"
-                decLoading()
+                _loading.value = false
             }
 
         })
-    }
-
-    internal fun decLoading() {
-        val value = _loading.value!!
-        val newValue = if (value > 0)
-            value - 1
-        else
-            0
-        _loading.postValue(newValue)
-    }
-
-    internal fun incLoading() {
-        _loading.postValue(_loading.value!! + 1)
     }
 }
