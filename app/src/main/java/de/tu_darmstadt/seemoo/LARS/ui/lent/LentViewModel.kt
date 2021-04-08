@@ -1,5 +1,6 @@
 package de.tu_darmstadt.seemoo.LARS.ui.lent
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -27,7 +28,14 @@ class LentViewModel : ViewModel() {
                 var log = true
                 response?.run {
                     if (this.isSuccessful && this.body() != null) {
-                        val assetsLent = this.body()!!.filter { a -> a.assigned_to!!.id != userID }
+                        val assetsLent = this.body()!!.filter { a ->
+                            if (a.assigned_to != null) {
+                                a.assigned_to.id != userID
+                            } else {
+                                Log.w(this@LentViewModel::class.java.name,"Received asset that has no assigned_to! $a")
+                                false
+                            }
+                        }
                         _checkedOutAsssets.value!!.clear()
                         _checkedOutAsssets.value!!.addAll(assetsLent)
                         log = false
