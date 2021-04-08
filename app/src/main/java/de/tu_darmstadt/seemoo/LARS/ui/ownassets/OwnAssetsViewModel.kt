@@ -1,4 +1,4 @@
-package de.tu_darmstadt.seemoo.LARS.ui.lent
+package de.tu_darmstadt.seemoo.LARS.ui.ownassets
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -6,30 +6,29 @@ import androidx.lifecycle.ViewModel
 import de.tu_darmstadt.seemoo.LARS.Utils
 import de.tu_darmstadt.seemoo.LARS.data.APIInterface
 import de.tu_darmstadt.seemoo.LARS.data.model.Asset
+import de.tu_darmstadt.seemoo.LARS.data.model.SearchResults
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class LentViewModel : ViewModel() {
+class OwnAssetsViewModel : ViewModel() {
     private val _checkedOutAsssets: MutableLiveData<ArrayList<Asset>> = MutableLiveData(ArrayList())
     val checkedOutAsset: LiveData<ArrayList<Asset>> = _checkedOutAsssets
-    private val _loading: MutableLiveData<Boolean> = MutableLiveData()
-    val loading: LiveData<Boolean> = _loading
+    private val _loading: MutableLiveData<Int> = MutableLiveData(0)
+    val loading: LiveData<Int> = _loading
     private val _error: MutableLiveData<String> = MutableLiveData()
     val error: LiveData<String> = _error
 
-
-
     fun loadData(client: APIInterface, userID: Int) {
-        _loading.value = true
-        client.getLentAssets().enqueue(object : Callback<ArrayList<Asset>> {
-            override fun onResponse(call: Call<ArrayList<Asset>>, response: Response<ArrayList<Asset>>) {
+        incLoading()
+        client.getCheckedoutAssets(userID).enqueue(object : Callback<SearchResults<Asset>> {
+            override fun onResponse(call: Call<SearchResults<Asset>>, response: Response<SearchResults<Asset>>) {
                 var log = true
                 response?.run {
                     if (this.isSuccessful && this.body() != null) {
-                        val assetsLent = this.body()!!.filter { a -> a.assigned_to!!.id != userID }
+                        val assets = this.body()!!.rows // TODO: iterate to load all of them if required!
                         _checkedOutAsssets.value!!.clear()
-                        _checkedOutAsssets.value!!.addAll(assetsLent)
+                        _checkedOutAsssets.value!!.addAll(assets)
                         log = false
                     } else {
                         _error.value = "Failed to load checked out assets!"
@@ -37,19 +36,30 @@ class LentViewModel : ViewModel() {
                 }
                 if(log)
                     Utils.logResponseVerbose(
-                        this@LentViewModel::class.java,
+                        this@OwnAssetsViewModel::class.java,
                         response
                     )
-                _loading.value = false
+                decLoading()
             }
 
-            override fun onFailure(call: Call<ArrayList<Asset>>, t: Throwable) {
+            override fun onFailure(call: Call<SearchResults<Asset>>, t: Throwable) {
                 _error.value = "Failed to load checked out assets!"
-                _loading.value = false
+                decLoading()
             }
 
         })
     }
 
+    internal fun decLoading() {
+        val value = _loading.value!!
+        val newValue = if (value > 0)
+            value - 1
+        else
+            0
+        _loading.postValue(newValue)
+    }
 
+    internal fun incLoading() {
+        _loading.postValue(_loading.value!! + 1)
+    }
 }

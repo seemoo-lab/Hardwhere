@@ -9,6 +9,10 @@
             android:icon="@android:drawable/stat_sys_upload"
             android:title="@string/menu_lent" />
         <item
+            android:id="@+id/nav_own"
+            android:icon="@android:drawable/stat_sys_upload"
+            android:title="@string/menu_own" />
+        <item
             android:id="@+id/nav_scan"
             android:icon="@drawable/ic_mode_edit_white_24dp"
             android:title="@string/menu_editor" />

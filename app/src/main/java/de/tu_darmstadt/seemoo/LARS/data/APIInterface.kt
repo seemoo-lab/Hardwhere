@@ -34,7 +34,10 @@ interface APIInterface {
     fun getSelectablePage(@Path("type") type: String, @Query("limit") limit: Int, @Query("offset") offset: Int): Call<SearchResults<JsonElement>>
 
     @GET("LARS/api/checkedout")
-    fun getCheckedOutAssets(): Call<ArrayList<Asset>>
+    fun getLentAssets(): Call<ArrayList<Asset>>
+
+    @GET("api/v1/users/{id}/assets")
+    fun getCheckedoutAssets(@Path("id") id: Int): Call<SearchResults<Asset>>
 
     @POST("LARS/api/checkout")
     fun checkout(@Body data: JsonObject): Observable<Result1<Void>>
