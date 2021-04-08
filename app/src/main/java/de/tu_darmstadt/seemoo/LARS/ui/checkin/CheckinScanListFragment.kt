@@ -113,8 +113,18 @@ class CheckinScanListFragment: APIFragment(), CheckinRecyclerViewAdapter.OnListI
             }
         })
 
+        checkinViewModel.finishedAssets.observe(viewLifecycleOwner, Observer {
+            it?.run {
+                Log.d(this@CheckinScanListFragment::class.java.name,"finished assets $this")
+                checkinViewModel.assetsToReturn.value!!.removeAll(this)
+                viewAdapter.notifyDataSetChanged()
+                updateHint()
+                checkinViewModel.resetFinishedAssets()
+            }
+        })
+
         checkinViewModel.assetsToReturn.observe(viewLifecycleOwner, Observer {
-            hintText.visibility = if (it.isNullOrEmpty()) View.VISIBLE else View.INVISIBLE
+            updateHint()
         })
 
         lentButton.setOnClickListener {
@@ -128,6 +138,11 @@ class CheckinScanListFragment: APIFragment(), CheckinRecyclerViewAdapter.OnListI
                 viewAdapter.notifyDataSetChanged()
             }
         })
+    }
+
+    private fun updateHint() {
+        hintText.visibility =
+            if (checkinViewModel.assetsToReturn.value.isNullOrEmpty()) View.VISIBLE else View.GONE
     }
 
     companion object {

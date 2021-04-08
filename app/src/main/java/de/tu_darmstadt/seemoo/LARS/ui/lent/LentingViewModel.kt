@@ -52,10 +52,10 @@ class LentingViewModel: ViewModel() {
             val failed = list.filter {
                 if (it is Result<*>) {
                     if (it.status == "success") {
-                        return@filter false
+                        return@filter true
                     }
                 }
-                true
+                false
             }
             failed
         }

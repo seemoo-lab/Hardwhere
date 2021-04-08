@@ -18,6 +18,13 @@ class CheckinViewModel: ViewModel() {
 
     private val _loading: MutableLiveData<Int> = MutableLiveData(0)
     val loading: LiveData<Int> = _loading
+
+    private val _finishedAssets: MutableLiveData<List<Asset>?> = MutableLiveData()
+
+    /**
+     * Assets that finished checkin, to be removed on main thread
+     */
+    val finishedAssets: LiveData<List<Asset>?> = _finishedAssets
     /**
      * Last selected user for lenting
      */
@@ -25,6 +32,7 @@ class CheckinViewModel: ViewModel() {
 
     fun checkin(client: APIInterface) {
         incLoading()
+        resetFinishedAssets()
 
         val requests: MutableList<Observable<Result<ResultAsset>>> = mutableListOf()
         requests.addAll(assetsToReturn.value!!.map {
@@ -38,16 +46,22 @@ class CheckinViewModel: ViewModel() {
             val failed = list.filter {
                 if (it is Result<*>) {
                     if (it.status == "success") {
-                        return@filter false
+                        return@filter true
                     }
                 }
-                true
+                false
             }
             failed
         }
             .subscribe({
                 Log.d(this@CheckinViewModel::class.java.name, "Finished with $it")
-
+                val finished = it.mapNotNull {
+                    val item = it as Result<ResultAsset>
+                    assetsToReturn.value!!.find {
+                        it.asset_tag == item.payload!!.asset
+                    }
+                }
+                _finishedAssets.postValue(finished)
                 decLoading()
             }) {
                 Log.w(this@CheckinViewModel::class.java.name, "Error: $it")
@@ -72,5 +86,9 @@ class CheckinViewModel: ViewModel() {
 
     internal fun incLoading() {
         _loading.postValue(_loading.value!! + 1)
+    }
+
+    fun resetFinishedAssets() {
+        _finishedAssets.value = null
     }
 }

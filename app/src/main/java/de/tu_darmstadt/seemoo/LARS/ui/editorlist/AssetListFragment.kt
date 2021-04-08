@@ -154,7 +154,7 @@ class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListInteract
 
     private fun updateHint() {
         scanHint.visibility =
-            if (editorListViewModel.scanList.value!!.isEmpty()) View.VISIBLE else View.GONE
+            if (editorListViewModel.scanList.value.isNullOrEmpty()) View.VISIBLE else View.GONE
     }
 
     private fun updateAssets() {
