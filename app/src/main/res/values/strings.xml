@@ -79,4 +79,7 @@
     <string name="scanned_asset_checkedout">Asset %1$s is already checked out to %2$s!</string>
     <string name="own_scanlist_hint">Scan assets to checkout to you</string>
     <string name="checkin_scanlist_hint">Scan assets to return</string>
+    <string name="frag_myassets_scanlist_title">Checkout Assets</string>
+    <string name="frag_checkin_scanner_title">Scan Assets For Check-in</string>
+    <string name="frag_search_title">Search</string>
 </resources>

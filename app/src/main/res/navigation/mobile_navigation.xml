@@ -80,7 +80,7 @@
     <fragment
         android:id="@+id/asset_search_fragment"
         android:name="de.tu_darmstadt.seemoo.LARS.ui.editorlist.AssetSearchFragment"
-        android:label="AssetSearchFragment" >
+        android:label="@string/frag_search_title" >
         <action
             android:id="@+id/action_asset_search_fragment_to_lentingScanListFragment"
             app:destination="@id/lentingScanListFragment"
@@ -108,7 +108,7 @@
     <fragment
         android:id="@+id/ownCheckoutScanListFragment"
         android:name="de.tu_darmstadt.seemoo.LARS.ui.myassets.MyCheckoutScanListFragment"
-        android:label="OwnCheckoutScanListFragment"
+        android:label="@string/frag_myassets_scanlist_title"
         tools:layout="@layout/fragment_myassets_checkout_scanlist">
         <action
             android:id="@+id/action_ownCheckoutScanListFragment_to_ownCheckoutScannerFragment"
@@ -133,7 +133,7 @@
     <fragment
         android:id="@+id/checkinScannerFragment"
         android:name="de.tu_darmstadt.seemoo.LARS.ui.checkin.CheckinScannerFragment"
-        android:label="CheckinScannerFragment" >
+        android:label="@string/frag_checkin_scanner_title" >
         <action
             android:id="@+id/action_checkinScannerFragment_to_nav_checkin"
             app:destination="@id/nav_checkin" />
