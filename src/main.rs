@@ -56,9 +56,19 @@ async fn main() -> Result<()> {
 
     let db_c = db.clone();
     let config_main_c = config_main.clone();
-    spawn(async move {if let Err(e) = indexer::refresh_index(&config_main_c, db_c).await {
-        error!("Failed to index: {}",e);
-    }});
+    spawn(async move {
+        let wait_time = std::time::Duration::from_secs(60*20);
+        let mut interval = actix_web::rt::time::interval(wait_time);
+        loop {
+            if let Err(e) = indexer::refresh_index(&config_main_c, &db_c).await {
+                error!("Failed to index: {}",e);
+            }
+            // first tick doesn't trigger wait
+            if interval.tick().await.elapsed() < wait_time {
+                interval.tick().await;
+            }
+        }
+    });
 
     let db_c = db.clone();
     info!("Listening on {}",bind);

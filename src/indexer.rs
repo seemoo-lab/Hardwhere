@@ -6,7 +6,7 @@ use mysql_async::{Pool, prelude::Queryable};
 use crate::{cfg::Main, prelude::*, snipeit, types::*};
 
 
-pub async fn refresh_index(config: &Main, db: Pool) -> Result<()>{
+pub async fn refresh_index(config: &Main, db: &Pool) -> Result<()>{
     let client = ClientBuilder::new().header(ACCEPT,"application/json").header(CONTENT_TYPE,"application/json").finish();
     let token = HeaderValue::from_str(&format!("Bearer {}",config.snipeit_system_token)).unwrap();
     trace!("Requesting total item..");
