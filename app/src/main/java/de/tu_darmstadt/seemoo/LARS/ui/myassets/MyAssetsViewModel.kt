@@ -7,6 +7,7 @@ import de.tu_darmstadt.seemoo.LARS.Utils
 import de.tu_darmstadt.seemoo.LARS.data.APIInterface
 import de.tu_darmstadt.seemoo.LARS.data.model.Asset
 import de.tu_darmstadt.seemoo.LARS.data.model.SearchResults
+import io.sentry.core.Sentry
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -45,6 +46,7 @@ class MyAssetsViewModel : ViewModel() {
             override fun onFailure(call: Call<SearchResults<Asset>>, t: Throwable) {
                 _error.value = "Failed to load checked out assets!"
                 _loading.value = false
+                Sentry.captureException(t)
             }
 
         })

@@ -19,6 +19,7 @@ import de.tu_darmstadt.seemoo.LARS.Utils.Companion.DEFAULT_LOAD_AMOUNT
 import de.tu_darmstadt.seemoo.LARS.data.model.SearchResults
 import de.tu_darmstadt.seemoo.LARS.data.model.Selectable
 import de.tu_darmstadt.seemoo.LARS.ui.APIFragment
+import io.sentry.core.Sentry
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -202,6 +203,7 @@ class SelectorFragment : APIFragment(),
             if(!call!!.isCanceled) {
                 Log.w(this::class.java.name, "$t")
                 Utils.displayToastUp(context,R.string.error_fetch_selectable,Toast.LENGTH_SHORT)
+                t?.apply { Sentry.captureException(this) }
             } else {
                 Log.w(this::class.java.name,"Canceled request")
             }

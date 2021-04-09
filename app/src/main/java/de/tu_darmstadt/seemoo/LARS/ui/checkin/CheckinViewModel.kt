@@ -13,6 +13,7 @@ import kotlin.collections.ArrayList
 import de.tu_darmstadt.seemoo.LARS.data.model.Result
 import de.tu_darmstadt.seemoo.LARS.data.model.ResultAsset
 import de.tu_darmstadt.seemoo.LARS.ui.lib.ScanListViewModel
+import io.sentry.core.Sentry
 
 class CheckinViewModel: ScanListViewModel() {
     val assetsToReturn: MutableLiveData<ArrayList<Asset>> = MutableLiveData(ArrayList())
@@ -56,6 +57,7 @@ class CheckinViewModel: ScanListViewModel() {
 //                        false
 //                    )
 //                )
+                Sentry.captureException(it)
                 decLoading()
             }
     }

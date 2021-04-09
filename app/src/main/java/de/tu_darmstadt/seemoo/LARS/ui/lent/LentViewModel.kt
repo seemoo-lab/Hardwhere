@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import de.tu_darmstadt.seemoo.LARS.Utils
 import de.tu_darmstadt.seemoo.LARS.data.APIInterface
 import de.tu_darmstadt.seemoo.LARS.data.model.Asset
+import io.sentry.core.Sentry
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -54,6 +55,7 @@ class LentViewModel : ViewModel() {
             override fun onFailure(call: Call<ArrayList<Asset>>, t: Throwable) {
                 _error.value = "Failed to load checked out assets!"
                 _loading.value = false
+                Sentry.captureException(t)
             }
 
         })

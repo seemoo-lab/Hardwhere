@@ -11,6 +11,7 @@ import de.tu_darmstadt.seemoo.LARS.data.model.CustomField
 import de.tu_darmstadt.seemoo.LARS.data.model.Result
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
+import io.sentry.core.Sentry
 import java.util.function.Predicate
 
 
@@ -138,6 +139,7 @@ class EditorViewModel : ViewModel() {
                         false
                     )
                 )
+                Sentry.captureException(it)
             }
     }
 
