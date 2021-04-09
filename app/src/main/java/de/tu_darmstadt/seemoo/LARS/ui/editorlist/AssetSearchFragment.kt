@@ -111,6 +111,7 @@ class AssetSearchFragment : APIFragment(),
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.select, menu)
         (menu.findItem(R.id.app_bar_search).actionView as SearchView).run {
+            this.setIconifiedByDefault(false)
             setOnQueryTextListener(this@AssetSearchFragment)
             setQuery(viewModel.searchString.value, false)
             isIconified = false
