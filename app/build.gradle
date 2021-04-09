@@ -20,7 +20,7 @@ def getGitHash = { ->
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "com.heinecke.aron.lars"
+        applicationId "de.tu_darmstadt.seemoo.lars"
         minSdkVersion 25
         targetSdkVersion 28
         versionCode 1
