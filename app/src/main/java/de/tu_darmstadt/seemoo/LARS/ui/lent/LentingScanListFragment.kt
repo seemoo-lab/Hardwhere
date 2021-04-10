@@ -9,6 +9,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -20,12 +21,14 @@ import de.tu_darmstadt.seemoo.LARS.ui.editor.SelectorFragment
 import de.tu_darmstadt.seemoo.LARS.ui.editor.SelectorViewModel
 import de.tu_darmstadt.seemoo.LARS.ui.editorlist.EditorListViewModel
 import de.tu_darmstadt.seemoo.LARS.ui.editorlist.EditorScannerFragment
+import de.tu_darmstadt.seemoo.LARS.ui.lib.RecyclerItemTouchHelper
 import de.tu_darmstadt.seemoo.LARS.ui.lib.ScanListFragment
 
 /**
  * View for selecting assets that can then be lent to other users
  */
-class LentingScanListFragment: ScanListFragment<LentingViewModel>(), LentingRecyclerViewAdapter.OnListInteractionListener {
+class LentingScanListFragment: ScanListFragment<LentingViewModel>(), LentingRecyclerViewAdapter.OnListInteractionListener,
+    RecyclerItemTouchHelper.SwipeListener {
     private lateinit var selectorViewModel: SelectorViewModel
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var progressBar: ProgressBar
@@ -140,6 +143,10 @@ class LentingScanListFragment: ScanListFragment<LentingViewModel>(), LentingRecy
             updateHint()
         })
 
+        val itemTouchHelperCallback: ItemTouchHelper.SimpleCallback =
+            RecyclerItemTouchHelper(this, ItemTouchHelper.LEFT)
+        ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerView)
+
         lentButton.setOnClickListener {
             val id = LentingScannerFragment.newInstance()
             findNavController().navigate(id)
@@ -187,5 +194,11 @@ class LentingScanListFragment: ScanListFragment<LentingViewModel>(), LentingRecy
 
     override fun notifyDataSetChanged() {
         viewAdapter.notifyDataSetChanged()
+    }
+
+    override fun onSwiped(viewHolder: RecyclerView.ViewHolder?, direction: Int, position: Int) {
+        viewAdapter.removeItem(position)
+        if(viewAdapter.itemCount == 0)
+            updateHint()
     }
 }

@@ -9,6 +9,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -17,12 +18,14 @@ import de.tu_darmstadt.seemoo.LARS.data.model.Asset
 import de.tu_darmstadt.seemoo.LARS.data.model.Selectable
 import de.tu_darmstadt.seemoo.LARS.ui.APIFragment
 import de.tu_darmstadt.seemoo.LARS.ui.editor.SelectorFragment
+import de.tu_darmstadt.seemoo.LARS.ui.lib.RecyclerItemTouchHelper
 import de.tu_darmstadt.seemoo.LARS.ui.lib.ScanListFragment
 
 /**
  * View for selecting assets that can then be lent to other users
  */
-class CheckinScanListFragment: ScanListFragment<CheckinViewModel>(), CheckinRecyclerViewAdapter.OnListInteractionListener {
+class CheckinScanListFragment: ScanListFragment<CheckinViewModel>(), CheckinRecyclerViewAdapter.OnListInteractionListener,
+    RecyclerItemTouchHelper.SwipeListener {
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var progressBar: ProgressBar
     private lateinit var recyclerView: RecyclerView
@@ -113,6 +116,10 @@ class CheckinScanListFragment: ScanListFragment<CheckinViewModel>(), CheckinRecy
             }
         })
 
+        val itemTouchHelperCallback: ItemTouchHelper.SimpleCallback =
+            RecyclerItemTouchHelper(this, ItemTouchHelper.LEFT)
+        ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerView)
+
         viewModel.finishedAssets.observe(viewLifecycleOwner, Observer {
             it?.run {
                 Log.d(this@CheckinScanListFragment::class.java.name,"finished assets $this")
@@ -161,5 +168,11 @@ class CheckinScanListFragment: ScanListFragment<CheckinViewModel>(), CheckinRecy
 
     override fun notifyDataSetChanged() {
         viewAdapter.notifyDataSetChanged()
+    }
+
+    override fun onSwiped(viewHolder: RecyclerView.ViewHolder?, direction: Int, position: Int) {
+        viewAdapter.removeItem(position)
+        if(viewAdapter.itemCount == 0)
+            updateHint()
     }
 }
