@@ -59,6 +59,8 @@
     <string name="no_filter">No Filter</string>
     <string name="remove_list_entry">Remove</string>
     <string name="error_fetch_update">Unable to update data!%1$s</string>
+    <string name="error_checkout_assets">Unable to checkout some assets!%1$s</string>
+    <string name="error_checkin_assets">Unable to checkin some assets!%1$</string>
     <string name="editor_switch_update">Update</string>
     <string name="asset_category_uneditable">Categories depend on the model.</string>
     <string name="menu_about">About</string>

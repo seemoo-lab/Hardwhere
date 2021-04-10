@@ -1,5 +1,6 @@
 package de.tu_darmstadt.seemoo.LARS.ui.lib
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,14 +14,14 @@ abstract class ProgressViewModel: ViewModel() {
     val loading: LiveData<Int> = _loading
 
     /**
-     * Set to non-null to display default loading error with this string
+     * Error consisting out of text [@StringRes] ID and optional details
      */
-    internal val _error: MutableLiveData<String?> = MutableLiveData()
+    internal val _error: MutableLiveData<Pair<Int,Throwable?>?> = MutableLiveData()
 
     /**
      * Error container, should be reset via [resetError]
      */
-    val error: LiveData<String?> = _error
+    val error: LiveData<Pair<Int,Throwable?>?> = _error
 
     internal fun decLoading() {
         val value = _loading.value!!

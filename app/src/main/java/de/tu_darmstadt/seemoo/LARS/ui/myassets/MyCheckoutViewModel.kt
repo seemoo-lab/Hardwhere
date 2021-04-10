@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import de.tu_darmstadt.seemoo.LARS.R
 import de.tu_darmstadt.seemoo.LARS.data.APIInterface
 import de.tu_darmstadt.seemoo.LARS.data.model.Asset
 import de.tu_darmstadt.seemoo.LARS.data.model.Selectable
@@ -49,7 +50,7 @@ class MyCheckoutViewModel: ScanListViewModel() {
                 decLoading()
             }) {
                 Log.w(this@MyCheckoutViewModel::class.java.name, "Error: $it")
-                _error.postValue("")
+                _error.postValue(Pair(R.string.error_checkout_assets,it))
                 Sentry.captureException(it)
                 decLoading()
             }

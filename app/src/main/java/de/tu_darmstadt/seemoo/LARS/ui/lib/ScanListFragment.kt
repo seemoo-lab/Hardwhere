@@ -25,9 +25,16 @@ abstract class ScanListFragment<T: ScanListViewModel>: APIFragment() {
         })
 
         viewModel.error.observe(viewLifecycleOwner, {
-            it?.run { Utils.displayToastUp(
+            it?.run {
+                val (id, details) = this
+                val text = if(details != null) {
+                    getString(id, details.message)
+                } else {
+                    getString(id)
+                }
+                Utils.displayToastUp(
                 requireContext(),
-                getString(R.string.error_fetch_update, this),
+                text,
                 Toast.LENGTH_LONG
             )}
             viewModel.resetError()

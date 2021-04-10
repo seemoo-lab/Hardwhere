@@ -25,6 +25,7 @@ import de.tu_darmstadt.seemoo.LARS.ui.lib.RecyclerItemTouchHelper
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import io.sentry.core.Sentry
 
 
 /**
@@ -192,12 +193,13 @@ class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListInteract
                 }
             }) {
                 editorListViewModel.decLoading()
+                Log.w(this@AssetListFragment::class.java.name, "Error: $it")
                 Utils.displayToastUp(
                     requireContext(),
-                    R.string.error_fetch_update,
+                    getString(R.string.error_fetch_update,it.message),
                     Toast.LENGTH_LONG
                 )
-                Log.w(this@AssetListFragment::class.java.name, "Error: $it")
+                Sentry.captureException(it)
             }
     }
 
