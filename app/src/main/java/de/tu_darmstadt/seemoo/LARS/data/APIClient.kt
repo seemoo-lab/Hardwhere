@@ -1,6 +1,5 @@
 package de.tu_darmstadt.seemoo.LARS.data
 
-import android.util.Log
 import com.google.gson.*
 import de.tu_darmstadt.seemoo.LARS.BuildConfig
 import de.tu_darmstadt.seemoo.LARS.data.model.Date
@@ -15,11 +14,7 @@ import java.security.KeyStore
 import java.security.SecureRandom
 import java.security.cert.CertificateException
 import java.security.cert.X509Certificate
-import javax.net.ssl.HostnameVerifier
-import javax.net.ssl.SSLContext
-import javax.net.ssl.TrustManager
-import javax.net.ssl.TrustManagerFactory
-import javax.net.ssl.X509TrustManager
+import javax.net.ssl.*
 
 
 class APIClient {
@@ -116,8 +111,12 @@ class APIClient {
                     .build()
                 it.proceed(newRequest)
             }
+            val interceptor = SentryHttpInterceptor()
+            interceptor.redactHeader("Authorization")
+            builder.addInterceptor(interceptor)
             if (BuildConfig.DEBUG) {
                 val interceptor = HttpLoggingInterceptor()
+                interceptor.redactHeader("Authorization")
                 if(DISPLAY_FULL_LOG)
                     interceptor.level = HttpLoggingInterceptor.Level.BODY
                 else

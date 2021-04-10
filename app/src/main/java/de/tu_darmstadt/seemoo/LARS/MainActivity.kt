@@ -77,8 +77,9 @@ class MainActivity : AppCompatActivity() {
                 showLogin()
                 true
             } else if (it.itemId == R.id.nav_dev) {
-                Log.d(this@MainActivity::class.java.name, "play beep")
-                Utils.playErrorBeep()
+                Log.d(this@MainActivity::class.java.name, "debug test")
+                Sentry.captureException(Throwable("Debug Test throwable"))
+                Utils.displayToastUp(this,"Send debug crash report",Toast.LENGTH_SHORT)
                 true
             } else {
                 val handled = NavigationUI.onNavDestinationSelected(it, navController)
