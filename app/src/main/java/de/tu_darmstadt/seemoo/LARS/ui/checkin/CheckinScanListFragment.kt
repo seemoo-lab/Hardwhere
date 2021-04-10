@@ -17,12 +17,12 @@ import de.tu_darmstadt.seemoo.LARS.data.model.Asset
 import de.tu_darmstadt.seemoo.LARS.data.model.Selectable
 import de.tu_darmstadt.seemoo.LARS.ui.APIFragment
 import de.tu_darmstadt.seemoo.LARS.ui.editor.SelectorFragment
+import de.tu_darmstadt.seemoo.LARS.ui.lib.ScanListFragment
 
 /**
  * View for selecting assets that can then be lent to other users
  */
-class CheckinScanListFragment: APIFragment(), CheckinRecyclerViewAdapter.OnListInteractionListener {
-    private lateinit var checkinViewModel: CheckinViewModel
+class CheckinScanListFragment: ScanListFragment<CheckinViewModel>(), CheckinRecyclerViewAdapter.OnListInteractionListener {
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var progressBar: ProgressBar
     private lateinit var recyclerView: RecyclerView
@@ -40,7 +40,7 @@ class CheckinScanListFragment: APIFragment(), CheckinRecyclerViewAdapter.OnListI
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        checkinViewModel = ViewModelProvider(requireActivity())[CheckinViewModel::class.java]
+        viewModel = ViewModelProvider(requireActivity())[CheckinViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -59,7 +59,7 @@ class CheckinScanListFragment: APIFragment(), CheckinRecyclerViewAdapter.OnListI
 
     private fun displayUserSelection() {
         val (id, args) = SelectorFragment.newInstancePair(
-            checkinViewModel.lastSelectedUser.value,
+            viewModel.lastSelectedUser.value,
             R.id.frag_lenting_scanlist_recycler,
             Selectable.SelectableType.User
         )
@@ -80,7 +80,7 @@ class CheckinScanListFragment: APIFragment(), CheckinRecyclerViewAdapter.OnListI
                 alertDialogBuilder.setPositiveButton(
                     getString(android.R.string.yes)
                 ) { dialog, _ ->
-                    checkinViewModel.checkin(getAPI())
+                    viewModel.checkin(getAPI())
                     dialog.cancel()
                 }
                 alertDialogBuilder.setNegativeButton(getString(android.R.string.cancel)) {
@@ -98,7 +98,7 @@ class CheckinScanListFragment: APIFragment(), CheckinRecyclerViewAdapter.OnListI
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewAdapter = CheckinRecyclerViewAdapter(this, checkinViewModel.assetsToReturn.value!!)
+        viewAdapter = CheckinRecyclerViewAdapter(this, viewModel.assetsToReturn.value!!)
         viewManager = LinearLayoutManager(context)
 
 
@@ -107,23 +107,23 @@ class CheckinScanListFragment: APIFragment(), CheckinRecyclerViewAdapter.OnListI
             adapter = viewAdapter
         }
 
-        checkinViewModel.loading.observe(viewLifecycleOwner, Observer {
+        viewModel.loading.observe(viewLifecycleOwner, Observer {
             it?.run {
                 progressBar.visibility = if(this > 0) View.VISIBLE else View.GONE
             }
         })
 
-        checkinViewModel.finishedAssets.observe(viewLifecycleOwner, Observer {
+        viewModel.finishedAssets.observe(viewLifecycleOwner, Observer {
             it?.run {
                 Log.d(this@CheckinScanListFragment::class.java.name,"finished assets $this")
-                checkinViewModel.assetsToReturn.value!!.removeAll(this)
+                viewModel.assetsToReturn.value!!.removeAll(this)
                 viewAdapter.notifyDataSetChanged()
                 updateHint()
-                checkinViewModel.resetFinishedAssets()
+                viewModel.resetFinishedAssets()
             }
         })
 
-        checkinViewModel.assetsToReturn.observe(viewLifecycleOwner, Observer {
+        viewModel.assetsToReturn.observe(viewLifecycleOwner, Observer {
             updateHint()
         })
 
@@ -142,7 +142,7 @@ class CheckinScanListFragment: APIFragment(), CheckinRecyclerViewAdapter.OnListI
 
     private fun updateHint() {
         hintText.visibility =
-            if (checkinViewModel.assetsToReturn.value.isNullOrEmpty()) View.VISIBLE else View.GONE
+            if (viewModel.assetsToReturn.value.isNullOrEmpty()) View.VISIBLE else View.GONE
     }
 
     companion object {
@@ -157,5 +157,9 @@ class CheckinScanListFragment: APIFragment(), CheckinRecyclerViewAdapter.OnListI
 
     override fun onListItemClicked(item: Asset) {
         // TODO("Not yet implemented")
+    }
+
+    override fun notifyDataSetChanged() {
+        viewAdapter.notifyDataSetChanged()
     }
 }

@@ -16,7 +16,6 @@ import de.tu_darmstadt.seemoo.LARS.ui.lib.ScanListViewModel
 import io.sentry.core.Sentry
 
 class LentingViewModel: ScanListViewModel() {
-    val assetsToLent: MutableLiveData<ArrayList<Asset>> = MutableLiveData(ArrayList())
     /**
      * Last selected user for lenting
      */
@@ -27,7 +26,7 @@ class LentingViewModel: ScanListViewModel() {
         incLoading()
 
         val requests: MutableList<Observable<Result<ResultAsset>>> = mutableListOf()
-        requests.addAll(assetsToLent.value!!.map {
+        requests.addAll(assetList.value!!.map {
             client.checkout(it.createCheckout(lastSelectedUser.value!!.id))
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.newThread())
@@ -47,16 +46,11 @@ class LentingViewModel: ScanListViewModel() {
         }
             .subscribe({
                 Log.d(this@LentingViewModel::class.java.name, "Finished with $it")
-                processFinishedAssets(it, assetsToLent.value!!)
+                processFinishedAssets(it, assetList.value!!)
                 decLoading()
             }) {
                 Log.w(this@LentingViewModel::class.java.name, "Error: $it")
-//                loading.postValue(
-//                    Loading(
-//                        it,
-//                        false
-//                    )
-//                )
+                _error.postValue("")
                 Sentry.captureException(it)
                 decLoading()
             }

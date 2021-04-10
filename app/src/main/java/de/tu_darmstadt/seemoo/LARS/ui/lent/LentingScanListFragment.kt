@@ -20,13 +20,13 @@ import de.tu_darmstadt.seemoo.LARS.ui.editor.SelectorFragment
 import de.tu_darmstadt.seemoo.LARS.ui.editor.SelectorViewModel
 import de.tu_darmstadt.seemoo.LARS.ui.editorlist.EditorListViewModel
 import de.tu_darmstadt.seemoo.LARS.ui.editorlist.EditorScannerFragment
+import de.tu_darmstadt.seemoo.LARS.ui.lib.ScanListFragment
 
 /**
  * View for selecting assets that can then be lent to other users
  */
-class LentingScanListFragment: APIFragment(), LentingRecyclerViewAdapter.OnListInteractionListener {
+class LentingScanListFragment: ScanListFragment<LentingViewModel>(), LentingRecyclerViewAdapter.OnListInteractionListener {
     private lateinit var selectorViewModel: SelectorViewModel
-    private lateinit var lentingViewModel: LentingViewModel
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var progressBar: ProgressBar
     private lateinit var recyclerView: RecyclerView
@@ -44,7 +44,7 @@ class LentingScanListFragment: APIFragment(), LentingRecyclerViewAdapter.OnListI
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        lentingViewModel = ViewModelProvider(requireActivity())[LentingViewModel::class.java]
+        viewModel = ViewModelProvider(requireActivity())[LentingViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -63,7 +63,7 @@ class LentingScanListFragment: APIFragment(), LentingRecyclerViewAdapter.OnListI
 
     private fun displayUserSelection() {
         val (id, args) = SelectorFragment.newInstancePair(
-            lentingViewModel.lastSelectedUser.value,
+            viewModel.lastSelectedUser.value,
             R.id.frag_lenting_scanlist_recycler,
             Selectable.SelectableType.User
         )
@@ -93,7 +93,7 @@ class LentingScanListFragment: APIFragment(), LentingRecyclerViewAdapter.OnListI
                 when (it.inputID) {
                     R.id.frag_lenting_scanlist_recycler -> {
                         val item = it.item as Selectable.User
-                        lentingViewModel.lastSelectedUser.value = item
+                        viewModel.lastSelectedUser.value = item
                         val alertDialogBuilder: AlertDialog.Builder = AlertDialog.Builder(requireContext())
                         alertDialogBuilder.setMessage(getString(R.string.lenting_alert_confirm_msg,item.name))
                         alertDialogBuilder.setCancelable(true)
@@ -101,7 +101,7 @@ class LentingScanListFragment: APIFragment(), LentingRecyclerViewAdapter.OnListI
                         alertDialogBuilder.setPositiveButton(
                             getString(android.R.string.yes)
                         ) { dialog, _ ->
-                            lentingViewModel.checkout(getAPI())
+                            viewModel.checkout(getAPI())
                             dialog.cancel()
                         }
                         alertDialogBuilder.setNegativeButton(getString(android.R.string.cancel)) {
@@ -121,7 +121,7 @@ class LentingScanListFragment: APIFragment(), LentingRecyclerViewAdapter.OnListI
             }
         })
 
-        viewAdapter = LentingRecyclerViewAdapter(this, lentingViewModel.assetsToLent.value!!)
+        viewAdapter = LentingRecyclerViewAdapter(this, viewModel.assetList.value!!)
         viewManager = LinearLayoutManager(context)
 
 
@@ -130,13 +130,13 @@ class LentingScanListFragment: APIFragment(), LentingRecyclerViewAdapter.OnListI
             adapter = viewAdapter
         }
 
-        lentingViewModel.loading.observe(viewLifecycleOwner, Observer {
+        viewModel.loading.observe(viewLifecycleOwner, Observer {
             it?.run {
                 progressBar.visibility = if(this > 0) View.VISIBLE else View.GONE
             }
         })
 
-        lentingViewModel.assetsToLent.observe(viewLifecycleOwner, Observer {
+        viewModel.assetList.observe(viewLifecycleOwner, Observer {
             updateHint()
         })
 
@@ -145,14 +145,14 @@ class LentingScanListFragment: APIFragment(), LentingRecyclerViewAdapter.OnListI
             findNavController().navigate(id)
         }
 
-        lentingViewModel.finishedAssets.observe(viewLifecycleOwner, Observer {
+        viewModel.finishedAssets.observe(viewLifecycleOwner, Observer {
             it?.run {
                 Log.d(this@LentingScanListFragment::class.java.name,"finished assets $this")
-                lentingViewModel.assetsToLent.value!!.removeAll(this)
+                viewModel.assetList.value!!.removeAll(this)
                 viewAdapter.notifyDataSetChanged()
                 updateHint()
-                lentingViewModel.resetFinishedAssets()
-                if(lentingViewModel.assetsToLent.value.isNullOrEmpty()) {
+                viewModel.resetFinishedAssets()
+                if(viewModel.assetList.value.isNullOrEmpty()) {
                     findNavController().popBackStack()
                 }
             }
@@ -168,7 +168,7 @@ class LentingScanListFragment: APIFragment(), LentingRecyclerViewAdapter.OnListI
     }
 
     private fun updateHint() {
-        hintText.visibility = if (lentingViewModel.assetsToLent.value.isNullOrEmpty()) View.VISIBLE else View.INVISIBLE
+        hintText.visibility = if (viewModel.assetList.value.isNullOrEmpty()) View.VISIBLE else View.INVISIBLE
     }
 
     companion object {
@@ -183,5 +183,9 @@ class LentingScanListFragment: APIFragment(), LentingRecyclerViewAdapter.OnListI
 
     override fun onListItemClicked(item: Asset) {
         // TODO("Not yet implemented")
+    }
+
+    override fun notifyDataSetChanged() {
+        viewAdapter.notifyDataSetChanged()
     }
 }

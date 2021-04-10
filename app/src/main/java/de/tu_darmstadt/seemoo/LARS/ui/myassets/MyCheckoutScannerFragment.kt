@@ -29,7 +29,7 @@ class MyCheckoutScannerFragment : AbstractScannerFragment() {
             )
             .show()
         }
-        viewModel.assetsToLent.value!!.add(0,asset)
+        viewModel.assetList.value!!.add(0,asset)
     }
 
     override fun decreaseLoading() {
@@ -40,7 +40,7 @@ class MyCheckoutScannerFragment : AbstractScannerFragment() {
         viewModel.incLoading()
     }
 
-    override fun assetList(): ArrayList<Asset> = viewModel.assetsToLent.value!!
+    override fun assetList(): ArrayList<Asset> = viewModel.assetList.value!!
 
     companion object {
         /**

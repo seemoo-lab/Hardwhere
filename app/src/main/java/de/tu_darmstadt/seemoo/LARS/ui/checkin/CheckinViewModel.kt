@@ -51,12 +51,7 @@ class CheckinViewModel: ScanListViewModel() {
                 decLoading()
             }) {
                 Log.w(this@CheckinViewModel::class.java.name, "Error: $it")
-//                loading.postValue(
-//                    Loading(
-//                        it,
-//                        false
-//                    )
-//                )
+                _error.postValue("")
                 Sentry.captureException(it)
                 decLoading()
             }

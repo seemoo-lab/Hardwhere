@@ -18,12 +18,12 @@ import de.tu_darmstadt.seemoo.LARS.data.model.Selectable
 import de.tu_darmstadt.seemoo.LARS.ui.APIFragment
 import de.tu_darmstadt.seemoo.LARS.ui.editor.SelectorFragment
 import de.tu_darmstadt.seemoo.LARS.ui.editor.SelectorViewModel
+import de.tu_darmstadt.seemoo.LARS.ui.lib.ScanListFragment
 
 /**
  * View for selecting assets that can then be lent to other users
  */
-class MyCheckoutScanListFragment: APIFragment(), MyCheckoutRecyclerViewAdapter.OnListInteractionListener {
-    private lateinit var myCheckoutViewModel: MyCheckoutViewModel
+class MyCheckoutScanListFragment: ScanListFragment<MyCheckoutViewModel>(), MyCheckoutRecyclerViewAdapter.OnListInteractionListener {
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var progressBar: ProgressBar
     private lateinit var recyclerView: RecyclerView
@@ -41,7 +41,7 @@ class MyCheckoutScanListFragment: APIFragment(), MyCheckoutRecyclerViewAdapter.O
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        myCheckoutViewModel = ViewModelProvider(requireActivity())[MyCheckoutViewModel::class.java]
+        viewModel = ViewModelProvider(requireActivity())[MyCheckoutViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -60,7 +60,7 @@ class MyCheckoutScanListFragment: APIFragment(), MyCheckoutRecyclerViewAdapter.O
 
     private fun displayUserSelection() {
         val (id, args) = SelectorFragment.newInstancePair(
-            myCheckoutViewModel.lastSelectedUser.value,
+            viewModel.lastSelectedUser.value,
             R.id.frag_lenting_scanlist_recycler,
             Selectable.SelectableType.User
         )
@@ -81,7 +81,7 @@ class MyCheckoutScanListFragment: APIFragment(), MyCheckoutRecyclerViewAdapter.O
                 alertDialogBuilder.setPositiveButton(
                     getString(android.R.string.yes)
                 ) { dialog, _ ->
-                    myCheckoutViewModel.checkout(getAPI(),getUserID())
+                    viewModel.checkout(getAPI(),getUserID())
                     dialog.cancel()
                 }
                 alertDialogBuilder.setNegativeButton(getString(android.R.string.cancel)) {
@@ -99,7 +99,7 @@ class MyCheckoutScanListFragment: APIFragment(), MyCheckoutRecyclerViewAdapter.O
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewAdapter = MyCheckoutRecyclerViewAdapter(this, myCheckoutViewModel.assetsToLent.value!!)
+        viewAdapter = MyCheckoutRecyclerViewAdapter(this, viewModel.assetList.value!!)
         viewManager = LinearLayoutManager(context)
 
 
@@ -108,13 +108,13 @@ class MyCheckoutScanListFragment: APIFragment(), MyCheckoutRecyclerViewAdapter.O
             adapter = viewAdapter
         }
 
-        myCheckoutViewModel.loading.observe(viewLifecycleOwner, Observer {
+        viewModel.loading.observe(viewLifecycleOwner, Observer {
             it?.run {
                 progressBar.visibility = if(this > 0) View.VISIBLE else View.GONE
             }
         })
 
-        myCheckoutViewModel.assetsToLent.observe(viewLifecycleOwner, Observer {
+        viewModel.assetList.observe(viewLifecycleOwner, Observer {
             updateHint()
         })
 
@@ -129,14 +129,14 @@ class MyCheckoutScanListFragment: APIFragment(), MyCheckoutRecyclerViewAdapter.O
             }
         })
 
-        myCheckoutViewModel.finishedAssets.observe(viewLifecycleOwner, Observer {
+        viewModel.finishedAssets.observe(viewLifecycleOwner, Observer {
             it?.run {
                 Log.d(this@MyCheckoutScanListFragment::class.java.name,"finished assets $this")
-                myCheckoutViewModel.assetsToLent.value!!.removeAll(this)
+                viewModel.assetList.value!!.removeAll(this)
                 viewAdapter.notifyDataSetChanged()
                 updateHint()
-                myCheckoutViewModel.resetFinishedAssets()
-                if(myCheckoutViewModel.assetsToLent.value.isNullOrEmpty()) {
+                viewModel.resetFinishedAssets()
+                if(viewModel.assetList.value.isNullOrEmpty()) {
                     findNavController().popBackStack()
                 }
             }
@@ -144,7 +144,7 @@ class MyCheckoutScanListFragment: APIFragment(), MyCheckoutRecyclerViewAdapter.O
     }
 
     private fun updateHint() {
-        hintText.visibility = if (myCheckoutViewModel.assetsToLent.value.isNullOrEmpty()) View.VISIBLE else View.INVISIBLE
+        hintText.visibility = if (viewModel.assetList.value.isNullOrEmpty()) View.VISIBLE else View.INVISIBLE
     }
 
     companion object {
@@ -160,4 +160,10 @@ class MyCheckoutScanListFragment: APIFragment(), MyCheckoutRecyclerViewAdapter.O
     override fun onListItemClicked(item: Asset) {
         // TODO("Not yet implemented")
     }
+
+    override fun notifyDataSetChanged() {
+        viewAdapter.notifyDataSetChanged()
+    }
+
+
 }
