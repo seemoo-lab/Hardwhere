@@ -90,8 +90,8 @@ class EditorViewModel : ViewModel() {
     }
 
     fun updateAssets(client: APIInterface) {
-        loading.value =
-            Loading()
+        if (multiEditAssets.value!!.isNotEmpty())
+            loading.value = Loading()
 
         val requests: MutableList<Observable<Result<Asset>>> = mutableListOf()
         val singleAsset = asset.value!!

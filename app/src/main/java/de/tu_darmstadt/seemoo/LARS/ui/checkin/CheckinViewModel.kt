@@ -24,7 +24,8 @@ class CheckinViewModel: ScanListViewModel() {
     val lastSelectedUser: MutableLiveData<Selectable.User?> = MutableLiveData(null)
 
     fun checkin(client: APIInterface) {
-        incLoading()
+        if(assetList.value!!.isNotEmpty())
+            incLoading()
         resetFinishedAssets()
 
         val requests: MutableList<Observable<Result<ResultAsset>>> = mutableListOf()

@@ -24,7 +24,8 @@ class LentingViewModel: ScanListViewModel() {
 
 
     fun checkout(client: APIInterface) {
-        incLoading()
+        if(assetList.value!!.isNotEmpty())
+            incLoading()
 
         val requests: MutableList<Observable<Result<ResultAsset>>> = mutableListOf()
         requests.addAll(assetList.value!!.map {

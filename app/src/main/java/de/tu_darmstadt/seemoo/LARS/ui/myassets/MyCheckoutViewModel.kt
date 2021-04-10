@@ -23,7 +23,8 @@ class MyCheckoutViewModel: ScanListViewModel() {
     val lastSelectedUser: MutableLiveData<Selectable.User?> = MutableLiveData(null)
 
     fun checkout(client: APIInterface, myUserId: Int) {
-        incLoading()
+        if(assetList.value!!.isNotEmpty())
+            incLoading()
 
         val requests: MutableList<Observable<Result<ResultAsset>>> = mutableListOf()
         requests.addAll(assetList.value!!.map {
