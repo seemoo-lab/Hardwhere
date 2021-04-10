@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/nav_home"
         android:name="de.tu_darmstadt.seemoo.LARS.ui.lent.LentFragment"
-        android:label="@string/menu_checkin"
+        android:label="@string/menu_lent"
         tools:layout="@layout/fragment_lent_assets" />
     <fragment
         android:id="@+id/nav_own"
