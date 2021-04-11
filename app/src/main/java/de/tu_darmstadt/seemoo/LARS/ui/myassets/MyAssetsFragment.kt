@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import de.tu_darmstadt.seemoo.LARS.R
+import de.tu_darmstadt.seemoo.LARS.Utils
 import de.tu_darmstadt.seemoo.LARS.data.model.Asset
 import de.tu_darmstadt.seemoo.LARS.ui.APIFragment
 import de.tu_darmstadt.seemoo.LARS.ui.info.AssetInfoBTFragment
@@ -96,10 +97,12 @@ class MyAssetsFragment : APIFragment(), MyRecyclerViewAdapter.OnListInteractionL
         return when (item.itemId) {
             R.id.checkin_sort -> {
                 // TODO
+                Utils.displayTodo(requireContext())
                 true
             }
             R.id.checkin_filter -> {
                 // TODO
+                Utils.displayTodo(requireContext())
                 true
             }
             else -> false

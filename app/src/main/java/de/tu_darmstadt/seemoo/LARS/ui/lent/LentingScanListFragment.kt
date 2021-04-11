@@ -21,6 +21,7 @@ import de.tu_darmstadt.seemoo.LARS.ui.editor.SelectorFragment
 import de.tu_darmstadt.seemoo.LARS.ui.editor.SelectorViewModel
 import de.tu_darmstadt.seemoo.LARS.ui.editorlist.EditorListViewModel
 import de.tu_darmstadt.seemoo.LARS.ui.editorlist.EditorScannerFragment
+import de.tu_darmstadt.seemoo.LARS.ui.info.AssetInfoBTFragment
 import de.tu_darmstadt.seemoo.LARS.ui.lib.RecyclerItemTouchHelper
 import de.tu_darmstadt.seemoo.LARS.ui.lib.ScanListFragment
 
@@ -189,7 +190,10 @@ class LentingScanListFragment: ScanListFragment<LentingViewModel>(), LentingRecy
     }
 
     override fun onListItemClicked(item: Asset) {
-        // TODO("Not yet implemented")
+        AssetInfoBTFragment.newInstance(item).show(
+            parentFragmentManager,
+            "LentingAssetInfoBTFragment"
+        )
     }
 
     override fun notifyDataSetChanged() {

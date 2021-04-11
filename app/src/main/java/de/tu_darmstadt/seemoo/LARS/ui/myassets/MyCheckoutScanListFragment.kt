@@ -19,6 +19,7 @@ import de.tu_darmstadt.seemoo.LARS.data.model.Selectable
 import de.tu_darmstadt.seemoo.LARS.ui.APIFragment
 import de.tu_darmstadt.seemoo.LARS.ui.editor.SelectorFragment
 import de.tu_darmstadt.seemoo.LARS.ui.editor.SelectorViewModel
+import de.tu_darmstadt.seemoo.LARS.ui.info.AssetInfoBTFragment
 import de.tu_darmstadt.seemoo.LARS.ui.lib.RecyclerItemTouchHelper
 import de.tu_darmstadt.seemoo.LARS.ui.lib.ScanListFragment
 
@@ -165,7 +166,10 @@ class MyCheckoutScanListFragment: ScanListFragment<MyCheckoutViewModel>(), MyChe
     }
 
     override fun onListItemClicked(item: Asset) {
-        // TODO("Not yet implemented")
+        AssetInfoBTFragment.newInstance(item).show(
+            parentFragmentManager,
+            "MyCheckoutAssetInfoBTFragment"
+        )
     }
 
     override fun notifyDataSetChanged() {

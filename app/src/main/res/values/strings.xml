@@ -36,6 +36,7 @@
     <string name="hint_asset_name">Asset Name</string>
     <string name="error_fetch_selectable">Can\'t fetch data!</string>
     <string name="info_multiple_models_editing">Custom attributes can only be edited per-model.</string>
+    <string name="todo">Not yet implemented.</string>
 
     <string name="menu_checkin">Checkin</string>
     <string name="menu_editor">Editor</string>
@@ -84,4 +85,6 @@
     <string name="frag_myassets_scanlist_title">Checkout Assets</string>
     <string name="frag_checkin_scanner_title">Scan Assets For Check-in</string>
     <string name="frag_search_title">Search</string>
+    <string name="menu_sort">Sort by</string>
+    <string name="menu_filter">Filter by</string>
 </resources>
