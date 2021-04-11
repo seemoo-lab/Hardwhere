@@ -6,12 +6,12 @@
         android:id="@+id/checkin_filter"
         android:icon="@drawable/ic_filter_list_white_24dp"
         android:orderInCategory="100"
-        android:title="@string/title_manual"
+        android:title="@string/menu_filter"
         app:showAsAction="ifRoom" />
     <item
-        android:id="@+id/checkin_clear"
-        android:icon="@drawable/ic_empty_white_24dp"
-        android:title="@string/title_clear"
-        android:orderInCategory="2"
-        app:showAsAction="ifRoom|withText" />
+        android:id="@+id/checkin_sort"
+        android:icon="@drawable/ic_sort_white_24"
+        android:orderInCategory="100"
+        android:title="@string/menu_sort"
+        app:showAsAction="ifRoom" />
 </menu>

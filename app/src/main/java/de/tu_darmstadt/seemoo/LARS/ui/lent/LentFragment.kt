@@ -94,7 +94,7 @@ class LentFragment : APIFragment(), LentRecyclerViewAdapter.OnListInteractionLis
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.checkin_clear -> {
+            R.id.checkin_sort -> {
                 // TODO
                 true
             }
