@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.*
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -78,6 +79,9 @@ class MyCheckoutScanListFragment: ScanListFragment<MyCheckoutViewModel>(), MyChe
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.lentingNext -> {
+                if(!verifyNoAssignedAssets(recyclerView,viewAdapter))
+                    return true
+
                 val alertDialogBuilder: AlertDialog.Builder = AlertDialog.Builder(requireContext())
                 alertDialogBuilder.setMessage(getString(R.string.selfcheckout_alert_confirm_msg))
                 alertDialogBuilder.setCancelable(true)

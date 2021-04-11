@@ -81,6 +81,8 @@ class LentingScanListFragment: ScanListFragment<LentingViewModel>(), LentingRecy
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.lentingNext -> {
+                if(!verifyNoAssignedAssets(recyclerView,viewAdapter))
+                    return true
                 displayUserSelection()
                 true
             }

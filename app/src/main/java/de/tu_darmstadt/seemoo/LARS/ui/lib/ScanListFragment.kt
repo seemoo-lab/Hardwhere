@@ -3,6 +3,8 @@ package de.tu_darmstadt.seemoo.LARS.ui.lib
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.Adapter
 import de.tu_darmstadt.seemoo.LARS.R
 import de.tu_darmstadt.seemoo.LARS.Utils
 import de.tu_darmstadt.seemoo.LARS.ui.APIFragment
@@ -39,6 +41,36 @@ abstract class ScanListFragment<T: ScanListViewModel>: APIFragment() {
                 viewModel.resetError()
             }
         })
+    }
+
+    /**
+     * Get first position of asset in [viewModel.assetList] that is assigned
+     */
+    private fun getFirstAssignedPosition(): Int? {
+        viewModel.assetList.value!!.run {
+            for (i in 0..this.size) {
+                if (this[i].assigned_to != null) {
+                    return i
+                }
+            }
+        }
+
+        return null
+    }
+
+    /**
+     * Check for assigned assets, return false if assets are assigned.
+     * Displays UI information on failure.
+     */
+    fun <T: RecyclerView.ViewHolder> verifyNoAssignedAssets(recyclerView: RecyclerView, viewAdapter: Adapter<T>): Boolean {
+        val assigned = getFirstAssignedPosition()
+        if (assigned != null) {
+            Toast.makeText(requireContext(),R.string.checkout_assets_assigned_msg,Toast.LENGTH_LONG).show()
+            recyclerView.scrollToPosition(assigned)
+            viewAdapter.notifyItemChanged(assigned)
+            return false
+        }
+        return true
     }
 
     abstract fun notifyDataSetChanged()

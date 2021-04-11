@@ -87,4 +87,6 @@
     <string name="frag_search_title">Search</string>
     <string name="menu_sort">Sort by</string>
     <string name="menu_filter">Filter by</string>
+    <string name="checkout_assets_assigned_msg">You have lent assets in your list!</string>
+    <string name="checkin_assets_unassigned_msg">You have unassigned assets in your list!</string>
 </resources>
