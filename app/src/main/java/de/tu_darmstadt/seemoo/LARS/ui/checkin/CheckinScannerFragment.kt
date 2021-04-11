@@ -23,7 +23,7 @@ class CheckinScannerFragment : AbstractScannerFragment() {
         if (asset.assigned_to == null) {
             Toast.makeText(
                 requireContext(),
-                getString(R.string.scanned_asset_not_checkedout,asset.asset_tag),
+                getString(R.string.scanned_asset_not_checkedout,asset.asset_tag ?: "<no asset tag>"),
                 Toast.LENGTH_LONG
             )
             .show()
