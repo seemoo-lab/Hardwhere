@@ -1,4 +1,4 @@
-package de.tu_darmstadt.seemoo.LARS.ui.editorlist
+package de.tu_darmstadt.seemoo.LARS.ui.lib
 
 import android.os.Bundle
 import android.util.Log
@@ -16,6 +16,7 @@ import de.tu_darmstadt.seemoo.LARS.ui.APIFragment
 import com.journeyapps.barcodescanner.BarcodeCallback
 import com.journeyapps.barcodescanner.BarcodeResult
 import com.journeyapps.barcodescanner.DecoratedBarcodeView
+import io.sentry.core.Sentry
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -76,7 +77,8 @@ abstract class AbstractScannerFragment : APIFragment() {
                             try {
                                 beepManager.playBeepSound()
                             } catch (e: Exception) {
-                                Log.e(this@AbstractScannerFragment::class.java.name,"Failed to beep",e)
+                                Log.e(this@AbstractScannerFragment::class.java.name,"Failed to beep")
+                                Sentry.captureException(e)
                             }
 
                             increaseLoading()

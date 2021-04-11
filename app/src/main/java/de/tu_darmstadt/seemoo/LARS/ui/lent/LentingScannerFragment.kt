@@ -5,7 +5,7 @@ import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import de.tu_darmstadt.seemoo.LARS.R
 import de.tu_darmstadt.seemoo.LARS.data.model.Asset
-import de.tu_darmstadt.seemoo.LARS.ui.editorlist.AbstractScannerFragment
+import de.tu_darmstadt.seemoo.LARS.ui.lib.AbstractScannerFragment
 
 /**
  * Fragment for continuous scanning assets.
