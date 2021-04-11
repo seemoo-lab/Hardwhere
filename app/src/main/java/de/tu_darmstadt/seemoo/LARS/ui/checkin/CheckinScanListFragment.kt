@@ -96,6 +96,13 @@ class CheckinScanListFragment: ScanListFragment<CheckinViewModel>(), CheckinRecy
                 alertDialog.show()
                 true
             }
+            R.id.lenting_clear -> {
+                val items = viewModel.assetList.value!!.size
+                viewModel.assetList.value!!.clear()
+                viewAdapter.notifyItemRangeRemoved(0,items)
+                updateHint()
+                true
+            }
             else -> false
         }
     }
