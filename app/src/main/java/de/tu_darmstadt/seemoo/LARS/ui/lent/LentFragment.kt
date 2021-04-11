@@ -79,6 +79,7 @@ class LentFragment : APIFragment(), LentRecyclerViewAdapter.OnListInteractionLis
                     it,
                     Toast.LENGTH_LONG
                 ).show()
+                lentViewModel.resetError()
             }
         })
 

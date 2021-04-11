@@ -35,9 +35,9 @@ abstract class ScanListFragment<T: ScanListViewModel>: APIFragment() {
                 Utils.displayToastUp(
                 requireContext(),
                 text,
-                Toast.LENGTH_LONG
-            )}
-            viewModel.resetError()
+                Toast.LENGTH_LONG)
+                viewModel.resetError()
+            }
         })
     }
 

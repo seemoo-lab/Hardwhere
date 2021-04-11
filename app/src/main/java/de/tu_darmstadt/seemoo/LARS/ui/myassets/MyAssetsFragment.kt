@@ -79,6 +79,7 @@ class MyAssetsFragment : APIFragment(), MyRecyclerViewAdapter.OnListInteractionL
                     it,
                     Toast.LENGTH_LONG
                 ).show()
+                viewModel.resetError()
             }
         })
 

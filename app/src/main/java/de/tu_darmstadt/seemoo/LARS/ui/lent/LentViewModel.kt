@@ -20,7 +20,9 @@ class LentViewModel : ViewModel() {
     private val _error: MutableLiveData<String> = MutableLiveData()
     val error: LiveData<String> = _error
 
-
+    fun resetError() {
+        _error.value = null
+    }
 
     fun loadData(client: APIInterface, userID: Int) {
         _loading.value = true
