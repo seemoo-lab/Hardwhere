@@ -124,6 +124,10 @@ class SentryHttpInterceptor: Interceptor {
 //        for (i in 0 until headersRecv.size) {
 //            logHeader(false,headersRecv, i,breadcrumb)
 //        }
+        // log API rate limits
+        headersRecv.get("X-RateLimit-Remaining")?.run {
+            breadcrumb.setData("X-RateLimit-Remaining",this)
+        }
 
         if (!response.promisesBody() || bodyHasUnknownEncoding(response.headers)) {
             // do nothing
@@ -150,13 +154,13 @@ class SentryHttpInterceptor: Interceptor {
             }
 
             if (contentLength != 0L) {
-                breadcrumb.setData("recv-body",buffer.clone().readString(charset))
+                breadcrumb.setData("recv-body",buffer.clone().readString(charset).take(30))
             }
 
             if (gzippedLength != null){
-                breadcrumb.setData("recv-body","(${buffer.size}-byte, $gzippedLength-gzipped-byte body)")
+                breadcrumb.setData("recv-body-l","(${buffer.size}-byte, $gzippedLength-gzipped-byte body)")
             } else {
-                breadcrumb.setData("recv-body","(${buffer.size}-byte body)")
+                breadcrumb.setData("recv-body-l","(${buffer.size}-byte body)")
             }
         }
         Sentry.addBreadcrumb(breadcrumb)
