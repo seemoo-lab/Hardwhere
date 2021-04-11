@@ -105,6 +105,7 @@ class SentryHttpInterceptor: Interceptor {
             response = chain.proceed(request)
         } catch (e: Exception) {
             breadcrumb.setData("failed","$e")
+            Sentry.addBreadcrumb(breadcrumb)
             throw e
         }
 
@@ -114,10 +115,10 @@ class SentryHttpInterceptor: Interceptor {
         val contentLength = responseBody.contentLength()
         val bodySize = if (contentLength != -1L) "$contentLength-byte" else "unknown-length"
 
-        breadcrumb.setData("response-code",response.code)
-        breadcrumb.setData("response-message",response.message)
-        breadcrumb.setData("response-url","$response.request.url")
-        breadcrumb.setData("response-size",bodySize)
+        breadcrumb.setData("resp-code",response.code)
+        breadcrumb.setData("resp-message",response.message)
+//        breadcrumb.setData("response-url","$response.request.url")
+        breadcrumb.setData("resp-size",bodySize)
         breadcrumb.setData("tookMs",tookMs)
 
         val headersRecv = response.headers
@@ -154,17 +155,16 @@ class SentryHttpInterceptor: Interceptor {
             }
 
             if (contentLength != 0L) {
-                breadcrumb.setData("recv-body",buffer.clone().readString(charset).take(30))
+                breadcrumb.setData("resp-body",buffer.clone().readString(charset).take(220))
             }
 
             if (gzippedLength != null){
-                breadcrumb.setData("recv-body-l","(${buffer.size}-byte, $gzippedLength-gzipped-byte body)")
+                breadcrumb.setData("resp-body-l","(${buffer.size}-byte, $gzippedLength-gzipped-byte body)")
             } else {
-                breadcrumb.setData("recv-body-l","(${buffer.size}-byte body)")
+                breadcrumb.setData("resp-body-l","(${buffer.size}-byte body)")
             }
         }
         Sentry.addBreadcrumb(breadcrumb)
-        Log.d(this@SentryHttpInterceptor::class.java.name,"logged breadcrumb")
         return response
     }
 
