@@ -46,6 +46,9 @@ interface APIInterface {
     @POST("LARS/api/checkin")
     fun checkin(@Body data: JsonObject): Observable<Result1<ResultAsset>>
 
+    @GET("api/v1/users/me")
+    fun getSelfUser(): Call<Selectable.User>
+
     /**
      * @param data JsonElement of data to update, use makePath the Asset
      */
