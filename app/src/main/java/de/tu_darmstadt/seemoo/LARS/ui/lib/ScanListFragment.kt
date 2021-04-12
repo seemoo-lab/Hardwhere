@@ -48,7 +48,7 @@ abstract class ScanListFragment<T: ScanListViewModel>: APIFragment() {
      */
     private fun getFirstAssignedPosition(): Int? {
         viewModel.assetList.value!!.run {
-            for (i in 0..this.size) {
+            for (i in 0 until this.size) {
                 if (this[i].assigned_to != null) {
                     return i
                 }
