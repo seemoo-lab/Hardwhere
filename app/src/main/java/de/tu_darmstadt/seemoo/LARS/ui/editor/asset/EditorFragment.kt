@@ -336,7 +336,7 @@ class EditorFragment : APIFragment() {
 
     companion object {
         /**
-         * Create a new navigation resource ID and param bundle pair to be used with nagController.
+         * Create a new navigation resource ID and param bundle pair to be used with navController.
          * Multi-edit features are determined on the amount of elements in [assets]
          */
         @JvmStatic

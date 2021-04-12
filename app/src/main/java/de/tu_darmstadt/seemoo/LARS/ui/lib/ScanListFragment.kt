@@ -42,6 +42,15 @@ abstract class ScanListFragment<T: ScanListViewModel>: APIFragment() {
             }
         })
     }
+    lent assets:
+    filtern nach benutzer
+    sortieren weg
+
+    my assets:
+    filtern nach hersteller & modell
+    aktuell gefiltert -> kontrastfarbe rot über der Liste mit Assets als Anzeige
+    sortieren: hersteller & modell
+
 
     /**
      * Get first position of asset in [viewModel.assetList] that is assigned

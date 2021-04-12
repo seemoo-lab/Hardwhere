@@ -89,4 +89,6 @@
     <string name="menu_filter">Filter by</string>
     <string name="checkout_assets_assigned_msg">You have lent assets in your list!</string>
     <string name="checkin_assets_unassigned_msg">You have unassigned assets in your list!</string>
+    <string name="no_user_assets_hint">No assets assigned to this user.</string>
+    <string name="error_fetch_checkedout">Failed to load checked out assets!</string>
 </resources>

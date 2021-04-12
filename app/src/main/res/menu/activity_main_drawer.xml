@@ -20,6 +20,10 @@
             android:id="@+id/nav_scan"
             android:icon="@drawable/ic_mode_edit_white_24dp"
             android:title="@string/menu_editor" />
+        <item
+            android:id="@+id/nav_user_assets"
+            android:icon="@android:drawable/ic_menu_info_details"
+            android:title="@string/todo" />
 <!--        <item-->
 <!--            android:id="@+id/nav_slideshow"-->
 <!--            android:icon="@drawable/ic_menu_slideshow"-->
