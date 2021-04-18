@@ -85,8 +85,7 @@ class LentViewModel : ViewModel() {
                                 false
                             }
                         }
-                        _checkedOutAsssets.value!!.clear()
-                        _checkedOutAsssets.value!!.addAll(assetsLent)
+                        _checkedOutAsssets.value = assetsLent
                         log = false
                     } else {
                         _error.value = "Failed to load checked out assets!"
