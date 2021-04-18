@@ -85,17 +85,7 @@ class LentFragment : APIFragment(), LentRecyclerViewAdapter.OnListInteractionLis
             findNavController().navigate(LentingScanListFragment.instanceId())
         }
 
-        lentViewModel.checkedOutAsset.observe(viewLifecycleOwner, Observer {
-            it?.run {
-                recalcFilter(this)
-                Log.d(this::class.java.name, "List update ${it.size}");
-            }
-        })
-
         lentViewModel.filteredUser.observe(viewLifecycleOwner, Observer {
-            lentViewModel.checkedOutAsset.value?.run {
-                recalcFilter(this)
-            }
             filterCancelButton.visibility = if (it == null) View.GONE else View.VISIBLE
             it?.run {
                 filterCancelButton.text = getString(R.string.filtering_by_x,it.name)
@@ -109,6 +99,7 @@ class LentFragment : APIFragment(), LentRecyclerViewAdapter.OnListInteractionLis
         lentViewModel.filteredAssets.observe(viewLifecycleOwner, Observer {
             it?.run {
                 viewAdapter.replaceElements(this)
+                Log.d(this@LentFragment::class.java.name, "Updating assets from filter")
             }
         })
 
@@ -126,21 +117,7 @@ class LentFragment : APIFragment(), LentRecyclerViewAdapter.OnListInteractionLis
         lentViewModel.loadData(getAPI(),getUserID())
     }
 
-    fun recalcFilter(arrayList: ArrayList<Asset>) {
-        val filterUser = lentViewModel.filteredUser.value
-        if (filterUser == null) {
-            lentViewModel.filteredAssets.value = arrayList
-        } else {
-            lentViewModel.filteredAssets.value = arrayList.filter { asset ->
-                if (asset.assigned_to != null) {
-                    asset.assigned_to.id == filterUser.id
-                } else {
-                    Log.w(this::class.java.name, "Asset without assigned user! ${asset.asset_tag}")
-                    true
-                }
-            }
-        }
-    }
+
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.lent, menu)

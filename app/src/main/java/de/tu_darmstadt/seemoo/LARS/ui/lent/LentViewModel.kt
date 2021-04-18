@@ -1,9 +1,7 @@
 package de.tu_darmstadt.seemoo.LARS.ui.lent
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import de.tu_darmstadt.seemoo.LARS.Utils
 import de.tu_darmstadt.seemoo.LARS.data.APIInterface
 import de.tu_darmstadt.seemoo.LARS.data.model.Asset
@@ -14,18 +12,59 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class LentViewModel : ViewModel() {
-    private val _checkedOutAsssets: MutableLiveData<ArrayList<Asset>> = MutableLiveData(ArrayList())
-    val checkedOutAsset: LiveData<ArrayList<Asset>> = _checkedOutAsssets
-    val filteredAssets: MutableLiveData<List<Asset>> = MutableLiveData(listOf())
-    private val _loading: MutableLiveData<Boolean> = MutableLiveData()
-    val loading: LiveData<Boolean> = _loading
-    private val _error: MutableLiveData<String> = MutableLiveData()
-    val error: LiveData<String> = _error
+    private val _checkedOutAsssets: MutableLiveData<List<Asset>> = MutableLiveData(listOf())
+    val checkedOutAsset: LiveData<List<Asset>> = _checkedOutAsssets
     /**
      * User to filter after if set
      */
     internal val filteredUser: MutableLiveData<Selectable.User?> = MutableLiveData(null)
+    val filteredAssets: LiveData<List<Asset>> = MediatorLiveData<List<Asset>>().apply {
+        fun update() {
+            val user = filteredUser.value
+            val list = checkedOutAsset.value
+            if (list == null) {
+                value = listOf()
+                return
+            }
+            if (user == null) {
+                value = list
+            } else {
+                value = list.filter { asset ->
+                    if (asset.assigned_to != null) {
+                        asset.assigned_to.id == user.id
+                    } else {
+                        Log.w(this::class.java.name, "Asset without assigned user! ${asset.asset_tag}")
+                        true
+                    }
+                }
+            }
+        }
 
+        addSource(filteredUser) {update()}
+        addSource(checkedOutAsset) { update()}
+        update()
+    }
+    private val _loading: MutableLiveData<Boolean> = MutableLiveData()
+    val loading: LiveData<Boolean> = _loading
+    private val _error: MutableLiveData<String> = MutableLiveData()
+    val error: LiveData<String> = _error
+
+
+    fun updateAsset(assets: ArrayList<Asset>): List<Asset> {
+        val filterUser = filteredUser.value
+        return if (filterUser == null) {
+            assets
+        } else {
+            assets.filter { asset ->
+                if (asset.assigned_to != null) {
+                    asset.assigned_to.id == filterUser.id
+                } else {
+                    Log.w(this::class.java.name, "Asset without assigned user! ${asset.asset_tag}")
+                    true
+                }
+            }
+        }
+    }
 
     fun resetError() {
         _error.value = null
