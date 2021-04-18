@@ -14,7 +14,7 @@ import de.tu_darmstadt.seemoo.LARS.ui.lib.RecyclerItemTouchHelper
 
 class LentRecyclerViewAdapter(
     private val mListener: OnListInteractionListener?,
-    private val assetList: ArrayList<Asset>
+    private val assetList: ArrayList<Asset> = ArrayList()
 )         :
     RecyclerView.Adapter<LentRecyclerViewAdapter.ViewHolder>() {
 

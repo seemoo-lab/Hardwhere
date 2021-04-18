@@ -91,4 +91,8 @@
     <string name="checkin_assets_unassigned_msg">You have unassigned assets in your list!</string>
     <string name="no_user_assets_hint">No assets assigned to this user.</string>
     <string name="error_fetch_checkedout">Failed to load checked out assets!</string>
+    <string name="lent_asset_bt_action">Asset Action</string>
+    <string name="filter_by_user_x">Filter by user %1$s</string>
+    <string name="show_assets_of_x">Show assets of %1$s</string>
+    <string name="filtering_by_x">Filtering by %1$s</string>
 </resources>

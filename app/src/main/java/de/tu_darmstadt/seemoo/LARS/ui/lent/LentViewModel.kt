@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import de.tu_darmstadt.seemoo.LARS.Utils
 import de.tu_darmstadt.seemoo.LARS.data.APIInterface
 import de.tu_darmstadt.seemoo.LARS.data.model.Asset
+import de.tu_darmstadt.seemoo.LARS.data.model.Selectable
 import io.sentry.core.Sentry
 import retrofit2.Call
 import retrofit2.Callback
@@ -15,10 +16,16 @@ import retrofit2.Response
 class LentViewModel : ViewModel() {
     private val _checkedOutAsssets: MutableLiveData<ArrayList<Asset>> = MutableLiveData(ArrayList())
     val checkedOutAsset: LiveData<ArrayList<Asset>> = _checkedOutAsssets
+    val filteredAssets: MutableLiveData<List<Asset>> = MutableLiveData(listOf())
     private val _loading: MutableLiveData<Boolean> = MutableLiveData()
     val loading: LiveData<Boolean> = _loading
     private val _error: MutableLiveData<String> = MutableLiveData()
     val error: LiveData<String> = _error
+    /**
+     * User to filter after if set
+     */
+    internal val filteredUser: MutableLiveData<Selectable.User?> = MutableLiveData(null)
+
 
     fun resetError() {
         _error.value = null

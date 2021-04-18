@@ -18,7 +18,7 @@ class SelectorViewModel : ViewModel() {
      */
     internal val lastType: MutableLiveData<Selectable.SelectableType?> = MutableLiveData(null)
     /**
-     * Selected item, call resetSelected once a value got selected
+     * Selected item. Observe this to obtain selection of dialog. Call resetSelected once a value got selected
      */
     val selected: MutableLiveData<SelectorFragment.SelectorData?> =
         MutableLiveData()

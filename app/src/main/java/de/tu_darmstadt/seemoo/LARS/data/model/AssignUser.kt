@@ -10,4 +10,6 @@ data class AssignUser(
     val first_name: String,
     val last_name: String,
     val username: String,
-) : Parcelable
+) : Parcelable {
+    fun asSelector(): Selectable.User = Selectable.User(id,name,"<todo>")
+}
