@@ -1,5 +1,6 @@
 package de.tu_darmstadt.seemoo.LARS.ui.user
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import de.tu_darmstadt.seemoo.LARS.R
@@ -16,15 +17,13 @@ import retrofit2.Response
 
 class AssetListViewModel: ProgressViewModel() {
     internal val _user: MutableLiveData<Selectable.User?> = MutableLiveData(null)
-    internal val user: LiveData<Selectable.User?> = MutableLiveData()
+    internal val user: LiveData<Selectable.User?> = _user
     internal val assetList: MutableLiveData<ArrayList<Asset>> = MutableLiveData(ArrayList())
 
     fun loadData(client: APIInterface) {
-        if(_user.value == null) {
-            return
-        }
+        val user = _user.value ?: return
         incLoading()
-        client.getCheckedoutAssets(_user.value!!.id).enqueue(object : Callback<SearchResults<Asset>> {
+        client.getCheckedoutAssets(user.id).enqueue(object : Callback<SearchResults<Asset>> {
             override fun onResponse(call: Call<SearchResults<Asset>>, response: Response<SearchResults<Asset>>) {
                 var log = true
                 response?.run {

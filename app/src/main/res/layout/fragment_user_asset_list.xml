@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <ProgressBar
-        android:id="@+id/frag_user_asset_list_rogressScanning"
+        android:id="@+id/frag_user_asset_list_progress"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -26,7 +26,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/frag_user_asset_list_rogressScanning">
+        app:layout_constraintTop_toBottomOf="@id/frag_user_asset_list_progress">
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/frag_user_asset_list_recycler"
             android:layout_width="0dp"
@@ -36,7 +36,7 @@
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <TextView
-        android:id="@+id/scan_hint"
+        android:id="@+id/frag_user_asset_list_hint"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"

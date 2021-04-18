@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -28,6 +29,7 @@ class AssetListFragment: APIFragment(), MyRecyclerViewAdapter.OnListInteractionL
     private lateinit var viewModel: AssetListViewModel
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: MyRecyclerViewAdapter
+    private lateinit var hint: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,9 +50,10 @@ class AssetListFragment: APIFragment(), MyRecyclerViewAdapter.OnListInteractionL
     ): View? {
         setHasOptionsMenu(true)
         val root = inflater.inflate(R.layout.fragment_user_asset_list, container, false)
-        progressBar = root.findViewById(R.id.frag_user_asset_list_rogressScanning)
+        progressBar = root.findViewById(R.id.frag_user_asset_list_progress)
         progressBar.isIndeterminate = true
         swipeRefreshLayout = root.findViewById(R.id.frag_user_asset_list_swipeRefreshLayout)
+        hint = root.findViewById(R.id.frag_user_asset_list_hint)
         return root
     }
 
@@ -73,8 +76,8 @@ class AssetListFragment: APIFragment(), MyRecyclerViewAdapter.OnListInteractionL
         viewModel.assetList.observe(viewLifecycleOwner, Observer {
             it?.run {
                 viewAdapter.notifyDataSetChanged()
-                Log.d(this::class.java.name, "List update ${it.size}");
             }
+            updateHint()
         })
 
         viewModel.error.observe(viewLifecycleOwner, {
@@ -105,10 +108,23 @@ class AssetListFragment: APIFragment(), MyRecyclerViewAdapter.OnListInteractionL
                     }
                 }
             }
+            updateHint()
         })
     }
 
+    private fun updateHint() {
+        hint.visibility = if(viewModel.user.value == null || viewModel.assetList.value.isNullOrEmpty()) {
+            View.VISIBLE
+        } else {
+            View.GONE
+        }
 
+        hint.text = if(viewModel.user.value == null) {
+            getString(R.string.select_user)
+        } else {
+            getString(R.string.no_user_assets_hint)
+        }
+    }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.userassets, menu)
