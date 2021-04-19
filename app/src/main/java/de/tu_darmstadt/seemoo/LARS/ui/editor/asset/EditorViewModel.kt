@@ -93,7 +93,7 @@ class EditorViewModel : ViewModel() {
         if (multiEditAssets.value!!.isNotEmpty())
             loading.value = Loading()
 
-        val requests: MutableList<Observable<Result<Asset>>> = mutableListOf()
+        val requests: MutableList<Observable<Result<Void>>> = mutableListOf()
         val singleAsset = asset.value!!
         val patchData = singleAsset.createPatch(isSingleModel())
         if (!singleAsset.isMultiAsset()) {

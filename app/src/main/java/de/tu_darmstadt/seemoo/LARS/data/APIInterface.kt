@@ -51,9 +51,11 @@ interface APIInterface {
 
     /**
      * @param data JsonElement of data to update, use makePath the Asset
+     *
+     * We ignore the result payload as it's not adhering to the original Asset object
      */
     @PATCH("api/v1/hardware/{id}")
-    fun updateAsset(@Path("id") id: Int, @Body data: JsonObject): Observable<Result1<Asset>>
+    fun updateAsset(@Path("id") id: Int, @Body data: JsonObject): Observable<Result1<Void>>
 
     companion object {
         fun makeAssetPatch(data: Any): JsonElement {
