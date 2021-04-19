@@ -30,7 +30,7 @@ class AssetAttributeView(context: Context, attrs: AttributeSet? = null, defStyle
     private var textChangedListener: ((text: String) -> Unit)? = null
     private var onEditorClickListener: View.OnClickListener? = null
     private var onSwitchChangedListener: ((checked: Boolean) -> Unit)? = null
-    private var editable: Boolean = false;
+    private var editable: Boolean = true
     init {
         LayoutInflater.from(context).inflate(R.layout.asset_attribute_view_text, this, true)
         asset_attribute_view_label.id = View.generateViewId()
@@ -103,8 +103,15 @@ class AssetAttributeView(context: Context, attrs: AttributeSet? = null, defStyle
         attributes.recycle()
     }
 
+    /**
+     * Irreversible hack to allow disabling stuff for into BT without style attributes
+     */
+    public fun disable() {
+        asset_attribute_view_text.isEnabled = false
+
+    }
+
     private fun updateChangedState() {
-        Log.d(this::class.java.name,"updateChangedState")
         val text = getText().toString()
         val changed = originValue != text && !(originValue.isNullOrEmpty() && text.isEmpty())
         val color = if(changed) {
@@ -118,7 +125,6 @@ class AssetAttributeView(context: Context, attrs: AttributeSet? = null, defStyle
     }
 
     override fun setEnabled(enabled: Boolean) {
-        Log.d(this::class.java.name,"setEnabled($enabled)")
         super.setEnabled(enabled)
         asset_attribute_view_switch.isEnabled = enabled
         asset_attribute_view_text.isEnabled = enabled

@@ -75,6 +75,7 @@ pub struct Asset {
     pub model: AssetModel,
     #[serde(default)]
     pub assigned_to: Option<Assignee>,
+    pub custom_fields: Option<serde_json::Value>
 }
 
 #[derive(Serialize, Deserialize, Debug)]
