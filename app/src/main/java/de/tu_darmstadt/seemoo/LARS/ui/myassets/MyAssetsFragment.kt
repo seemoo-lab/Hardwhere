@@ -112,7 +112,10 @@ class MyAssetsFragment : APIFragment(), MyRecyclerViewAdapter.OnListInteractionL
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.myassets_sort -> {
-
+                SortListBTFragment.newInstance().show(
+                    parentFragmentManager,
+                    "MyAssetFilterBTFragment"
+                )
                 true
             }
             else -> false

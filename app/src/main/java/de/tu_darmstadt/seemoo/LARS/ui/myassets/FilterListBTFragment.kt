@@ -48,7 +48,6 @@ class FilterListBTFragment: BottomSheetDialogFragment() {
                 filter.filterValue = this
                 filter.filterValueName = filter.getNamedValue(asset) ?: "<no name>"
                 viewModel.filterMode.value = filter
-                Log.d(this::class.java.name,"updating filter")
                 dismiss()
             }
         }

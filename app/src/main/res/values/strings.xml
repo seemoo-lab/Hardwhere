@@ -98,4 +98,6 @@
     <string name="select_user">Select user to inspect</string>
     <string name="show_asset_details">Show asset info</string>
     <string name="filter_by_asset_attributes">Filter by asset attributes..</string>
+    <string name="sort_title">Sort By</string>
+    <string name="no_sort">Nothing</string>
 </resources>

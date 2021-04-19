@@ -85,7 +85,7 @@ data class Asset(
          */
         @Suppress("unused")
         enum class AssetSorter(val value: Int) {
-            None(R.string.no_filter) {
+            None(R.string.no_sort) {
                 override fun sortKey(asset: Asset): String? = null
             },
             Model(R.string.hint_model) {

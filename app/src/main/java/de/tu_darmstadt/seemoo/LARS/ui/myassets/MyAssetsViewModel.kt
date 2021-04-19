@@ -29,17 +29,13 @@ class MyAssetsViewModel : ViewModel() {
                 value = listOf()
                 return
             }
-            Log.d(this@MyAssetsViewModel::class.java.name,"updating checked out assets $filter $sorter")
             var processedList: List<Asset> = if (filter == Asset.Companion.AssetExactFilter.None) {
                 list
             } else {
-                val filtered = list.filter { asset ->
+                list.filter { asset ->
                     filter.isExact(asset)
                 }
-
-                filtered
             }
-            Log.d(this@MyAssetsViewModel::class.java.name,"processed $processedList")
 
             if (sorter != Asset.Companion.AssetSorter.None) {
                 value = processedList.sortedBy {
@@ -50,6 +46,7 @@ class MyAssetsViewModel : ViewModel() {
             }
         }
 
+        addSource(sortMode) {update()}
         addSource(filterMode) {update()}
         addSource(_checkedOutAssets) { update()}
         update()
