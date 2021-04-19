@@ -13,10 +13,10 @@ import de.tu_darmstadt.seemoo.LARS.data.model.Asset
 import de.tu_darmstadt.seemoo.LARS.ui.lib.RecyclerItemTouchHelper
 
 class MyRecyclerViewAdapter(
-    private val mListener: OnListInteractionListener?,
-    private val assetList: ArrayList<Asset>
+    private val mListener: OnListInteractionListener?
 )         :
     RecyclerView.Adapter<MyRecyclerViewAdapter.ViewHolder>() {
+    private val assetList: ArrayList<Asset> = ArrayList()
 
     // holder class to hold reference
     inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view), RecyclerItemTouchHelper.SwipeViewHolder {

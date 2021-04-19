@@ -55,7 +55,7 @@ class MyAssetsFragment : APIFragment(), MyRecyclerViewAdapter.OnListInteractionL
             progressBar.visibility = if (it) View.VISIBLE else View.GONE
         })
 
-        viewAdapter = MyRecyclerViewAdapter(this, viewModel.checkedOutAsset.value!!)
+        viewAdapter = MyRecyclerViewAdapter(this)
         viewManager = LinearLayoutManager(context)
         recyclerView = view.findViewById<RecyclerView>(R.id.frag_myassets_recycler).apply {
             layoutManager = viewManager
@@ -68,8 +68,7 @@ class MyAssetsFragment : APIFragment(), MyRecyclerViewAdapter.OnListInteractionL
 
         viewModel.checkedOutAsset.observe(viewLifecycleOwner, Observer {
             it?.run {
-                viewAdapter.notifyDataSetChanged()
-                Log.d(this::class.java.name, "List update ${it.size}");
+                viewAdapter.replaceElements(this)
             }
         })
 

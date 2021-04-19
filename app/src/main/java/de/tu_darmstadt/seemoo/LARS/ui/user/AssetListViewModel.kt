@@ -29,8 +29,7 @@ class AssetListViewModel: ProgressViewModel() {
                 response?.run {
                     if (this.isSuccessful && this.body() != null) {
                         val assets = this.body()!!.rows // TODO: iterate to load all of them if required!
-                        assetList.value!!.clear()
-                        assetList.value!!.addAll(assets)
+                        assetList.value = assets
                         log = false
                     } else {
                         _error.value = Pair(R.string.error_fetch_checkedout,null)

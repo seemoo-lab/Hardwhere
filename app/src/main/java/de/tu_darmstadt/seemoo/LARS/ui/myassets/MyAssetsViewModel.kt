@@ -32,8 +32,7 @@ class MyAssetsViewModel : ViewModel() {
                 response?.run {
                     if (this.isSuccessful && this.body() != null) {
                         val assets = this.body()!!.rows // TODO: iterate to load all of them if required!
-                        _checkedOutAsssets.value!!.clear()
-                        _checkedOutAsssets.value!!.addAll(assets)
+                        _checkedOutAsssets.value = assets
                         log = false
                     } else {
                         _error.value = "Failed to load checked out assets!"

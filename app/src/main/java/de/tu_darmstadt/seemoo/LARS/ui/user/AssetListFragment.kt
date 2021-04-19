@@ -64,7 +64,7 @@ class AssetListFragment: APIFragment(), MyRecyclerViewAdapter.OnListInteractionL
             progressBar.visibility = if (it > 0) View.VISIBLE else View.GONE
         })
 
-        viewAdapter = MyRecyclerViewAdapter(this, viewModel.assetList.value!!)
+        viewAdapter = MyRecyclerViewAdapter(this)
         viewManager = LinearLayoutManager(context)
         recyclerView = view.findViewById<RecyclerView>(R.id.frag_user_asset_list_recycler).apply {
             layoutManager = viewManager
@@ -75,7 +75,7 @@ class AssetListFragment: APIFragment(), MyRecyclerViewAdapter.OnListInteractionL
 
         viewModel.assetList.observe(viewLifecycleOwner, Observer {
             it?.run {
-                viewAdapter.notifyDataSetChanged()
+                viewAdapter.replaceElements(this)
             }
             updateHint()
         })
