@@ -1,6 +1,7 @@
 package de.tu_darmstadt.seemoo.LARS.data.model
 
 import android.os.Parcelable
+import android.util.Log
 import com.google.gson.JsonObject
 import de.tu_darmstadt.seemoo.LARS.R
 import de.tu_darmstadt.seemoo.LARS.data.model.Selectable.*
@@ -79,12 +80,95 @@ data class Asset(
         @JvmField
         val FIELD_CHECKOUT_USER = "user"
 
+        /**
+         * Helper enum for asset sorting by field.
+         */
+        @Suppress("unused")
+        enum class AssetSorter(val value: Int) {
+            None(R.string.no_filter) {
+                override fun sortKey(asset: Asset): String? = null
+            },
+            Model(R.string.hint_model) {
+                override fun sortKey(asset: Asset): String? = asset.model?.name
+            },
+            Category(R.string.hint_category) {
+                override fun sortKey(asset: Asset): String? = asset.category?.name
+            },
+            Location(R.string.hint_default_location) {
+                override fun sortKey(asset: Asset): String? = asset.rtd_location?.name
+            },
+            Name(R.string.hint_asset_name) {
+                override fun sortKey(asset: Asset): String? = asset.name
+            },
+            Notes(R.string.hint_note) {
+                override fun sortKey(asset: Asset): String? = asset.notes
+            },
+            Tag(R.string.hint_asset_tag) {
+                override fun sortKey(asset: Asset): String? = asset.asset_tag
+            };
+
+            /**
+             * Returns whether the asset matches this filter
+             */
+            abstract fun sortKey(asset: Asset): String?
+        }
+
+        /**
+         * Helper enum for asset exact filtering of attributes with an ID.
+         *
+         * [value] is not the value to be matched against. It's the naming-string id.
+         */
+        @Suppress("unused")
+        enum class AssetExactFilter(val value: Int, var filterValue: Int, var filterValueName: String) {
+            None(R.string.no_filter, -1, "") {
+                override fun isExact(asset: Asset): Boolean = true
+                override fun getValue(asset: Asset): Int? = -1
+                override fun getNamedValue(asset: Asset): String? = null
+            },
+            Model(R.string.hint_model, -1, "") {
+                override fun isExact(asset: Asset): Boolean = isHelper(getValue(asset), filterValue)
+                override fun getValue(asset: Asset): Int? = asset.model?.id
+                override fun getNamedValue(asset: Asset): String? = asset.model?.name
+            },
+            Category(R.string.hint_category, -1, "") {
+                override fun isExact(asset: Asset): Boolean = isHelper(getValue(asset), filterValue)
+                override fun getValue(asset: Asset): Int? = asset.category?.id
+                override fun getNamedValue(asset: Asset): String? = asset.category?.name
+            },
+            Location(R.string.hint_default_location, -1, "") {
+                override fun isExact(asset: Asset): Boolean = isHelper(getValue(asset), filterValue)
+                override fun getValue(asset: Asset): Int? = asset.rtd_location?.id
+                override fun getNamedValue(asset: Asset): String? = asset.rtd_location?.name
+            };
+
+            /**
+             * Returns whether asset is an exact match by ID
+             */
+            abstract fun isExact(asset: Asset): Boolean
+
+            protected fun isHelper(sel: Int?, input: Int): Boolean {
+                Log.d(this::class.java.name,"comparing $sel $input")
+                return sel?.run {
+                    this == input
+                } ?: false
+            }
+
+            abstract fun getValue(asset: Asset): Int?
+
+            /**
+             * Returns current string(name) value of asset for selected filter (for value preview etc)
+             */
+            abstract fun getNamedValue(asset: Asset): String?
+        }
 
         /**
          * Helper enum for asset search filtering by field.
          *
          * It makes the bigger amount of the dirty work required when still using hard typing and no reflections
+         *
+         * [value] is not the value to be matched against. It's the naming-string id.
          */
+        @Suppress("unused")
         enum class AssetFilter(val value: Int) {
             None(R.string.no_filter) {
                 override fun contains(asset: Asset, input: String): Boolean = true

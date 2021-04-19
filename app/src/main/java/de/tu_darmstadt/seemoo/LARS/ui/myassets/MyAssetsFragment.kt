@@ -3,6 +3,7 @@ package de.tu_darmstadt.seemoo.LARS.ui.myassets
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.lifecycle.Observer
@@ -27,6 +28,7 @@ class MyAssetsFragment : APIFragment(), MyRecyclerViewAdapter.OnListInteractionL
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: MyRecyclerViewAdapter
     private lateinit var lentButton: FloatingActionButton
+    private lateinit var cancelFilterBtn: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,6 +46,7 @@ class MyAssetsFragment : APIFragment(), MyRecyclerViewAdapter.OnListInteractionL
         progressBar = root.findViewById(R.id.frag_myassets_progressLoading)
         progressBar.isIndeterminate = true
         lentButton = root.findViewById(R.id.frag_myassets_lentButton)
+        cancelFilterBtn = root.findViewById(R.id.frag_myassets_stop_filter_button)
         return root
     }
 
@@ -70,6 +73,7 @@ class MyAssetsFragment : APIFragment(), MyRecyclerViewAdapter.OnListInteractionL
             it?.run {
                 viewAdapter.replaceElements(this)
             }
+            updateCancelButton()
         })
 
         viewModel.error.observe(viewLifecycleOwner, Observer {
@@ -83,25 +87,32 @@ class MyAssetsFragment : APIFragment(), MyRecyclerViewAdapter.OnListInteractionL
             }
         })
 
+        cancelFilterBtn.setOnClickListener {
+            viewModel.filterMode.value = Asset.Companion.AssetExactFilter.None
+        }
+
         viewModel.loadData(getAPI(),getUserID())
     }
 
-
+    fun updateCancelButton() {
+        val filter = viewModel.filterMode.value!!
+        cancelFilterBtn.visibility = if(filter != Asset.Companion.AssetExactFilter.None) {
+            val text = "${getString(filter.value)} ${filter.filterValueName}"
+            cancelFilterBtn.text = text
+            View.VISIBLE
+        } else {
+            View.GONE
+        }
+    }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.checkin_base, menu)
+        inflater.inflate(R.menu.my_assets, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.checkin_sort -> {
-                // TODO
-                Utils.displayTodo(requireContext())
-                true
-            }
-            R.id.checkin_filter -> {
-                // TODO
-                Utils.displayTodo(requireContext())
+            R.id.myassets_sort -> {
+
                 true
             }
             else -> false
@@ -109,9 +120,9 @@ class MyAssetsFragment : APIFragment(), MyRecyclerViewAdapter.OnListInteractionL
     }
 
     override fun onListItemClicked(item: Asset) {
-        AssetInfoBTFragment.newInstance(item).show(
+        MyAssetClickActionBTFragment.newInstance(item).show(
             parentFragmentManager,
-            "CheckinAssetInfoBTFragment"
+            "MyAssetsClickActionBTFragment"
         )
     }
 }

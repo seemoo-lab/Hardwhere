@@ -1,6 +1,8 @@
 package de.tu_darmstadt.seemoo.LARS.ui.myassets
 
+import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import de.tu_darmstadt.seemoo.LARS.Utils
@@ -13,12 +15,50 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class MyAssetsViewModel : ViewModel() {
-    private val _checkedOutAsssets: MutableLiveData<ArrayList<Asset>> = MutableLiveData(ArrayList())
-    val checkedOutAsset: LiveData<ArrayList<Asset>> = _checkedOutAsssets
+    private val _checkedOutAssets: MutableLiveData<ArrayList<Asset>> = MutableLiveData(ArrayList())
+
+    internal val filterMode: MutableLiveData<Asset.Companion.AssetExactFilter> = MutableLiveData(Asset.Companion.AssetExactFilter.None)
+    internal val sortMode: MutableLiveData<Asset.Companion.AssetSorter> = MutableLiveData(Asset.Companion.AssetSorter.None)
+
+    val checkedOutAsset: LiveData<List<Asset>> = MediatorLiveData<List<Asset>>().apply {
+        fun update() {
+            val filter = filterMode.value!!
+            val list = _checkedOutAssets.value
+            val sorter = sortMode.value!!
+            if (list == null) {
+                value = listOf()
+                return
+            }
+            Log.d(this@MyAssetsViewModel::class.java.name,"updating checked out assets $filter $sorter")
+            var processedList: List<Asset> = if (filter == Asset.Companion.AssetExactFilter.None) {
+                list
+            } else {
+                val filtered = list.filter { asset ->
+                    filter.isExact(asset)
+                }
+
+                filtered
+            }
+            Log.d(this@MyAssetsViewModel::class.java.name,"processed $processedList")
+
+            if (sorter != Asset.Companion.AssetSorter.None) {
+                value = processedList.sortedBy {
+                    sorter.sortKey(it)
+                }
+            } else {
+                value = processedList
+            }
+        }
+
+        addSource(filterMode) {update()}
+        addSource(_checkedOutAssets) { update()}
+        update()
+    }
     private val _loading: MutableLiveData<Boolean> = MutableLiveData(false)
     val loading: LiveData<Boolean> = _loading
     private val _error: MutableLiveData<String> = MutableLiveData()
     val error: LiveData<String> = _error
+
 
     fun resetError() {
         _error.value = null
@@ -32,7 +72,7 @@ class MyAssetsViewModel : ViewModel() {
                 response?.run {
                     if (this.isSuccessful && this.body() != null) {
                         val assets = this.body()!!.rows // TODO: iterate to load all of them if required!
-                        _checkedOutAsssets.value = assets
+                        _checkedOutAssets.value = assets
                         log = false
                     } else {
                         _error.value = "Failed to load checked out assets!"
