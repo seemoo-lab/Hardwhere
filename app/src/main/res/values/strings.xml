@@ -96,4 +96,5 @@
     <string name="show_assets_of_x">Show assets of %1$s</string>
     <string name="filtering_by_x">Filtering by %1$s</string>
     <string name="select_user">Select user to inspect</string>
+    <string name="show_asset_details">Show asset info</string>
 </resources>
