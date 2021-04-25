@@ -100,4 +100,5 @@
     <string name="filter_by_asset_attributes">Filter by asset attributes..</string>
     <string name="sort_title">Sort By</string>
     <string name="no_sort">Nothing</string>
+    <string name="user_input_hint">Inventory User</string>
 </resources>

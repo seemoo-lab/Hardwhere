@@ -3,9 +3,9 @@ package de.tu_darmstadt.seemoo.LARS.ui.user
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.widget.ProgressBar
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,6 +19,7 @@ import de.tu_darmstadt.seemoo.LARS.ui.APIFragment
 import de.tu_darmstadt.seemoo.LARS.ui.info.AssetInfoBTFragment
 import de.tu_darmstadt.seemoo.LARS.ui.myassets.MyRecyclerViewAdapter
 
+
 /**
  * Display assets of another user
  */
@@ -30,6 +31,7 @@ class AssetListFragment: APIFragment(), MyRecyclerViewAdapter.OnListInteractionL
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: MyRecyclerViewAdapter
     private lateinit var hint: TextView
+    private lateinit var userInput: AutoCompleteTextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,7 +50,7 @@ class AssetListFragment: APIFragment(), MyRecyclerViewAdapter.OnListInteractionL
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        setHasOptionsMenu(true)
+        setHasOptionsMenu(false)
         val root = inflater.inflate(R.layout.fragment_user_asset_list, container, false)
         progressBar = root.findViewById(R.id.frag_user_asset_list_progress)
         progressBar.isIndeterminate = true
@@ -57,9 +59,60 @@ class AssetListFragment: APIFragment(), MyRecyclerViewAdapter.OnListInteractionL
         return root
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        (requireActivity() as AppCompatActivity).supportActionBar!!.run {
+            // reset actionbar back to normal menu version
+            setDisplayShowCustomEnabled(false)
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // TODO: use refresh-layout for pulldown refresh
+        (requireActivity() as AppCompatActivity).supportActionBar!!.run {
+            setDisplayShowCustomEnabled(true)
+            setCustomView(R.layout.menu_search_autocomplete)
+        }
+        userInput = requireActivity().findViewById(R.id.frag_user_assets_autocomplete_textview)
+        userInput.threshold = 1
+        userInput.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                Log.d(this@AssetListFragment::class.java.name, "selected $id")
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                Log.d(
+                    this@AssetListFragment::class.java.name,
+                    "onNothingSelected Not yet implemented"
+                )
+            }
+        }
+
+        userInput.doOnTextChanged { text, start, before, count ->
+            viewModel.updateUserSearch(text.toString(), getAPI())
+            Log.d(this@AssetListFragment::class.java.name, "text changed $text")
+        }
+
+        val searchAdapter: ArrayAdapter<String> = ArrayAdapter<String>(requireContext(), android.R.layout.simple_dropdown_item_1line, arrayOf())
+        userInput.setAdapter(searchAdapter) // keywordField is a AutoCompleteTextView
+
+        viewModel.userComplectionList.observe(viewLifecycleOwner, { it ->
+            it?.run {
+                searchAdapter.clear()
+                searchAdapter.addAll(this.map { item ->
+                    item.toString()
+                })
+                searchAdapter.notifyDataSetChanged()
+            }
+
+        })
+
         viewModel.loading.observe(viewLifecycleOwner, Observer {
             progressBar.visibility = if (it > 0) View.VISIBLE else View.GONE
         })
@@ -83,7 +136,7 @@ class AssetListFragment: APIFragment(), MyRecyclerViewAdapter.OnListInteractionL
         viewModel.error.observe(viewLifecycleOwner, {
             it?.run {
                 val (id, details) = this
-                val text = if(details != null) {
+                val text = if (details != null) {
                     getString(id, details.message)
                 } else {
                     getString(id)
@@ -91,7 +144,8 @@ class AssetListFragment: APIFragment(), MyRecyclerViewAdapter.OnListInteractionL
                 Utils.displayToastUp(
                     requireContext(),
                     text,
-                    Toast.LENGTH_LONG)
+                    Toast.LENGTH_LONG
+                )
                 viewModel.resetError()
             }
         })
@@ -124,10 +178,6 @@ class AssetListFragment: APIFragment(), MyRecyclerViewAdapter.OnListInteractionL
         } else {
             getString(R.string.no_user_assets_hint)
         }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.userassets, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
