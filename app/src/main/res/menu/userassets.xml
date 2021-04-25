@@ -3,9 +3,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/app_bar_search"
-        android:orderInCategory="100"
-        app:showAsAction="always"
-        android:actionLayout="@layout/menu_search_autocomplete"
-        tools:ignore="MenuTitle" />
+        android:id="@+id/menu_user_list_change"
+        android:icon="@drawable/ic_baseline_clear_24"
+        android:title="@string/title_filter"
+        android:visible="true"
+        app:showAsAction="always" />
 </menu>

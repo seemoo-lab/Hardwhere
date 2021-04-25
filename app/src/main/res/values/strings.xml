@@ -100,4 +100,5 @@
     <string name="filter_by_asset_attributes">Filter by asset attributes..</string>
     <string name="sort_title">Sort By</string>
     <string name="no_sort">Nothing</string>
+    <string name="showing_user">Showing %1$s assets</string>
 </resources>

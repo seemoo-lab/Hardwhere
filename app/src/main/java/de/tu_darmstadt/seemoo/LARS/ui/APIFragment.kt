@@ -2,6 +2,7 @@ package de.tu_darmstadt.seemoo.LARS.ui
 
 import android.os.Bundle
 import androidx.annotation.CallSuper
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -50,4 +51,11 @@ abstract class APIFragment : Fragment() {
     }
 
     protected fun getUserID(): Int = mainViewModel.requireLoginData(requireContext()).userID
+
+    /**
+     * Set fragment title for custom overrides
+     */
+    protected fun title(title: String) {
+        (requireActivity() as AppCompatActivity).supportActionBar?.title = title
+    }
 }

@@ -6,8 +6,10 @@ import android.view.*
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -16,6 +18,8 @@ import de.tu_darmstadt.seemoo.LARS.Utils
 import de.tu_darmstadt.seemoo.LARS.data.model.Asset
 import de.tu_darmstadt.seemoo.LARS.data.model.Selectable
 import de.tu_darmstadt.seemoo.LARS.ui.APIFragment
+import de.tu_darmstadt.seemoo.LARS.ui.editor.SelectorFragment
+import de.tu_darmstadt.seemoo.LARS.ui.editor.SelectorViewModel
 import de.tu_darmstadt.seemoo.LARS.ui.info.AssetInfoBTFragment
 import de.tu_darmstadt.seemoo.LARS.ui.myassets.MyRecyclerViewAdapter
 
@@ -30,12 +34,14 @@ class AssetListFragment: APIFragment(), MyRecyclerViewAdapter.OnListInteractionL
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: MyRecyclerViewAdapter
     private lateinit var hint: TextView
+    private lateinit var clearUser: MenuItem
+    private lateinit var selectorViewModel: SelectorViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel =
             ViewModelProvider(requireActivity())[AssetListViewModel::class.java]
-
+        selectorViewModel = ViewModelProvider(requireActivity())[SelectorViewModel::class.java]
         if (savedInstanceState == null) {
             arguments?.run {
                 viewModel._user.value = this.getParcelable(PARAM_USER)
@@ -110,6 +116,20 @@ class AssetListFragment: APIFragment(), MyRecyclerViewAdapter.OnListInteractionL
             }
             updateHint()
         })
+
+        selectorViewModel = ViewModelProvider(requireActivity())[SelectorViewModel::class.java]
+        selectorViewModel.selected.observe(viewLifecycleOwner, Observer {
+            it?.run {
+                when (it.inputID) {
+                    R.id.menu_user_list_change -> viewModel._user.value = it.item as Selectable.User
+                    else -> Log.w(
+                        this@AssetListFragment::class.java.name,
+                        "Unknown inputID for selector update"
+                    )
+                }
+                selectorViewModel.resetSelected()
+            }
+        })
     }
 
     private fun updateHint() {
@@ -119,20 +139,34 @@ class AssetListFragment: APIFragment(), MyRecyclerViewAdapter.OnListInteractionL
             View.GONE
         }
 
+        if(this::clearUser.isInitialized) {
+            clearUser.isVisible = viewModel.user.value != null
+        }
+
         hint.text = if(viewModel.user.value == null) {
             getString(R.string.select_user)
         } else {
+            title(getString(R.string.showing_user,viewModel.user.value!!.name))
             getString(R.string.no_user_assets_hint)
         }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.userassets, menu)
+        clearUser = menu.findItem(R.id.menu_user_list_change)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-
+            R.id.menu_user_list_change  -> {
+                val (id, args) = SelectorFragment.newInstancePair(
+                    viewModel.user.value,
+                    R.id.menu_user_list_change,
+                    Selectable.SelectableType.User
+                )
+                findNavController().navigate(id, args)
+                true
+            }
             else -> false
         }
     }
