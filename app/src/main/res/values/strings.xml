@@ -101,4 +101,5 @@
     <string name="sort_title">Sort By</string>
     <string name="no_sort">Nothing</string>
     <string name="showing_user">Showing %1$s assets</string>
+    <string name="menu_user_list">User Assets</string>
 </resources>
