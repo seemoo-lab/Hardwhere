@@ -19,9 +19,14 @@ class AssetListViewModel: ProgressViewModel() {
     internal val _user: MutableLiveData<Selectable.User?> = MutableLiveData(null)
     internal val user: LiveData<Selectable.User?> = _user
     internal val assetList: MutableLiveData<ArrayList<Asset>> = MutableLiveData(ArrayList())
+    // Workaround to prevent a race condition on user selection where assetList of user pre-selection is
+    // received after the new users assetList, displaying wrong data.
+    internal var assetListSource: Selectable.User? = null
 
     fun loadData(client: APIInterface) {
         val user = _user.value ?: return
+        if (user == assetListSource)
+            return
         incLoading()
         client.getCheckedoutAssets(user.id).enqueue(object : Callback<SearchResults<Asset>> {
             override fun onResponse(call: Call<SearchResults<Asset>>, response: Response<SearchResults<Asset>>) {
@@ -30,6 +35,7 @@ class AssetListViewModel: ProgressViewModel() {
                     if (this.isSuccessful && this.body() != null) {
                         val assets = this.body()!!.rows // TODO: iterate to load all of them if required!
                         assetList.value = assets
+                        assetListSource = user
                         log = false
                     } else {
                         _error.value = Pair(R.string.error_fetch_checkedout,null)
