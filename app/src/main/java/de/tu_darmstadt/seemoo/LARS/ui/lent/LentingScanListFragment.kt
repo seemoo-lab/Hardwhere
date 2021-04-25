@@ -38,14 +38,6 @@ class LentingScanListFragment: ScanListFragment<LentingViewModel>(), LentingRecy
     private lateinit var hintText: TextView
     private lateinit var lentButton: FloatingActionButton
 
-    override fun onCreateContextMenu(
-        menu: ContextMenu,
-        v: View,
-        menuInfo: ContextMenu.ContextMenuInfo?
-    ) {
-        super.onCreateContextMenu(menu, v, menuInfo)
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(requireActivity())[LentingViewModel::class.java]

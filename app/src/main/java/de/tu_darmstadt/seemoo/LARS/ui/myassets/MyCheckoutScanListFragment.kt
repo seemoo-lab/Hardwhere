@@ -63,15 +63,6 @@ class MyCheckoutScanListFragment: ScanListFragment<MyCheckoutViewModel>(), MyChe
         return root
     }
 
-    private fun displayUserSelection() {
-        val (id, args) = SelectorFragment.newInstancePair(
-            viewModel.lastSelectedUser.value,
-            R.id.frag_lenting_scanlist_recycler,
-            Selectable.SelectableType.User
-        )
-        findNavController().navigate(id, args)
-    }
-
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.lenting, menu)
     }
