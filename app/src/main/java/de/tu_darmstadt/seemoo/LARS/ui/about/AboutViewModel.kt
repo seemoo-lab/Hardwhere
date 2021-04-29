@@ -24,8 +24,8 @@ class AboutViewModel : ViewModel() {
         value = "Large Accessories Retrieval System, copyright SEEMOO\nBuild: $date \nCommit: ${BuildConfig.GitHash}\nIncluded libraries & licenses:"
     }
     val text: LiveData<String> = _text
-    private val _libList: MutableLiveData<ArrayList<AboutFragment.About>> = MutableLiveData(arrayListOf())
-    val libList: LiveData<ArrayList<AboutFragment.About>> = _libList
+    private val _libList: MutableLiveData<List<AboutFragment.About>> = MutableLiveData(listOf())
+    val libList: LiveData<List<AboutFragment.About>> = _libList
 
     val _currentLicenseText: MutableLiveData<String?> = MutableLiveData()
     val currentLicenseText: LiveData<String?> = _currentLicenseText
@@ -39,12 +39,15 @@ class AboutViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val buffer = BufferedReader(InputStreamReader(context.resources.openRawResource(R.raw.licenses)))
-                val list = buffer.lines().map { line ->
+                var list: List<AboutFragment.About> = buffer.lines().map { line ->
                     val split = line.split(',')
                     AboutFragment.About(split[0], resolveLicense(split[1]))
                 }.collect(Collectors.toList())
+                var sorted = list.sortedBy {
+                    it.name
+                }
                 Log.d(this@AboutViewModel::class.java.name,"Loaded $list")
-                _libList.postValue(list as ArrayList<AboutFragment.About>?)
+                _libList.postValue(sorted)
             } catch (e: Exception) {
                 Log.wtf("Unable to load about resources",e)
                 Sentry.captureException(e)

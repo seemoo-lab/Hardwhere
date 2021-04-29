@@ -11,7 +11,7 @@ import de.tu_darmstadt.seemoo.LARS.data.model.Asset
 
 class AboutViewAdapter(
     private val mListener: OnListInteractionListener?,
-    private val aboutList: ArrayList<AboutFragment.About>
+    private val aboutList: MutableList<AboutFragment.About>
 )         :
     RecyclerView.Adapter<AboutViewAdapter.ViewHolder>() {
 
