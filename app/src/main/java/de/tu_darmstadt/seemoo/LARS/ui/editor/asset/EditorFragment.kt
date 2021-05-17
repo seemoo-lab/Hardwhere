@@ -215,7 +215,7 @@ class EditorFragment : APIFragment() {
         })
 
         editorViewModel.loading.observe(viewLifecycleOwner, Observer {
-            loading.visibility = if (it == null) View.INVISIBLE else View.INVISIBLE
+            loading.visibility = if (it == null) View.GONE else View.VISIBLE
             if (it != null) {
                 if (it.success != null) {
                     if (it.success == true) {
