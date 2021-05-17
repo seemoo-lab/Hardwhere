@@ -94,7 +94,7 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.1.0'
     implementation 'com.squareup.okhttp3:okhttp:4.2.2'
     implementation 'com.google.code.gson:gson:2.8.6'
-    implementation 'com.journeyapps:zxing-android-embedded:4.0.2'
+    implementation 'com.journeyapps:zxing-android-embedded:4.2.0'
     implementation 'org.conscrypt:conscrypt-android:2.2.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.navigation:navigation-fragment:2.3.4'
