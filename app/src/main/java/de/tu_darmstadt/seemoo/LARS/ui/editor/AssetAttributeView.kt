@@ -32,7 +32,7 @@ class AssetAttributeView(context: Context, attrs: AttributeSet? = null, defStyle
     private var binding: AssetAttributeViewTextBinding
 
     init {
-        binding = AssetAttributeViewTextBinding.inflate(LayoutInflater.from(context))
+        binding = AssetAttributeViewTextBinding.inflate(LayoutInflater.from(context),this,true)
         binding.assetAttributeViewLabel.id = View.generateViewId()
         binding.assetAttributeViewText.id = View.generateViewId()
         binding.assetAttributeViewSwitch.id = View.generateViewId()
