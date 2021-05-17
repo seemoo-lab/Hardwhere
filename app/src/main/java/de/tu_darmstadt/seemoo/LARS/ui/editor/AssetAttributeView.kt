@@ -32,6 +32,7 @@ class AssetAttributeView(context: Context, attrs: AttributeSet? = null, defStyle
     private var binding: AssetAttributeViewTextBinding
 
     init {
+        // it's IMPORTANT to have the parent and attach it apparently!
         binding = AssetAttributeViewTextBinding.inflate(LayoutInflater.from(context),this,true)
         binding.assetAttributeViewLabel.id = View.generateViewId()
         binding.assetAttributeViewText.id = View.generateViewId()
