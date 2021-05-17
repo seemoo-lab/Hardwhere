@@ -5,7 +5,7 @@ import android.util.Log
 import com.google.gson.JsonObject
 import de.tu_darmstadt.seemoo.LARS.R
 import de.tu_darmstadt.seemoo.LARS.data.model.Selectable.*
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class Asset(

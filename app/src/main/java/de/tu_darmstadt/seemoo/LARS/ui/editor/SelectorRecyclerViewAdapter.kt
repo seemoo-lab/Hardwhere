@@ -6,10 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import de.tu_darmstadt.seemoo.LARS.R
 import de.tu_darmstadt.seemoo.LARS.data.model.Selectable
+import de.tu_darmstadt.seemoo.LARS.databinding.FragmentSelectorBinding
 import de.tu_darmstadt.seemoo.LARS.ui.editor.SelectorRecyclerViewAdapter.OnListFragmentInteractionListener
-import kotlinx.android.synthetic.main.fragment_selector.view.*
 
 /**
  * [RecyclerView.Adapter] that can display a [DummyItem] and makes a call to the
@@ -41,16 +40,15 @@ class SelectorRecyclerViewAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.fragment_selector, parent, false)
-        return ViewHolder(view)
+        val binding = FragmentSelectorBinding.inflate(LayoutInflater.from(parent.context),parent,false)
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = mValues[position]
         holder.mContentView.text = item.name
 
-        with(holder.mView) {
+        with(holder.binding.root) {
             tag = item
             setOnClickListener(mOnClickListener)
         }
@@ -58,8 +56,8 @@ class SelectorRecyclerViewAdapter(
 
     override fun getItemCount(): Int = mValues.size
 
-    inner class ViewHolder(val mView: View) : RecyclerView.ViewHolder(mView) {
-        val mContentView: TextView = mView.content
+    inner class ViewHolder(val binding: FragmentSelectorBinding) : RecyclerView.ViewHolder(binding.root) {
+        val mContentView: TextView = binding.content
 
         override fun toString(): String {
             return super.toString() + " '" + mContentView.text + "'"

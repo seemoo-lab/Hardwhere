@@ -3,7 +3,7 @@ package de.tu_darmstadt.seemoo.LARS.data.model
 import android.os.Parcelable
 import com.google.gson.Gson
 import com.google.gson.JsonElement
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 /**
  * Interface for models that have a name & id, used for selection dialogs

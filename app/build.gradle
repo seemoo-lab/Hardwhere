@@ -2,9 +2,9 @@ apply plugin: 'com.android.application'
 
 apply plugin: 'kotlin-android'
 
-apply plugin: 'kotlin-android-extensions'
+//apply plugin: 'kotlin-android-extensions'
 // TODO: use this
-//apply plugin: 'kotlin-parcelize'
+apply plugin: 'kotlin-parcelize'
 
 apply plugin: 'androidx.navigation.safeargs.kotlin'
 
@@ -21,6 +21,9 @@ def getGitHash = { ->
 
 android {
     compileSdkVersion 28
+    buildFeatures {
+        viewBinding = true
+    }
     defaultConfig {
         applicationId "de.tu_darmstadt.seemoo.lars"
         minSdkVersion 25
