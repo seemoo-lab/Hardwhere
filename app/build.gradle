@@ -3,6 +3,8 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
+// TODO: use this
+//apply plugin: 'kotlin-parcelize'
 
 apply plugin: 'androidx.navigation.safeargs.kotlin'
 
