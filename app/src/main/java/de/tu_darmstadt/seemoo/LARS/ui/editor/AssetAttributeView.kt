@@ -99,7 +99,6 @@ class AssetAttributeView(context: Context, attrs: AttributeSet? = null, defStyle
             binding.assetAttributeViewText.isEnabled = false
         }
 
-
         setUpdate(attributes.getBoolean(R.styleable.AssetAttributeView_update,true))
         attributes.recycle()
     }
@@ -109,7 +108,7 @@ class AssetAttributeView(context: Context, attrs: AttributeSet? = null, defStyle
      */
     public fun disable() {
         binding.assetAttributeViewText.isEnabled = false
-
+        binding.assetAttributeViewSwitch.visibility = GONE
     }
 
     private fun updateChangedState() {
