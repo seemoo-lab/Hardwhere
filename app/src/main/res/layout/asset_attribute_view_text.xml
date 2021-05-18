@@ -1,52 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/editor_view_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="horizontal">
 
     <TextView
         android:id="@+id/asset_attribute_view_label"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:saveEnabled="false"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:labelFor="@id/asset_attribute_view_text"
+        android:saveEnabled="false"
         android:text="@string/PLACEHOLDER"
         app:layout_constraintBottom_toBottomOf="@+id/asset_attribute_view_switch"
         app:layout_constraintEnd_toStartOf="@+id/asset_attribute_view_switch"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <EditText
-        android:id="@+id/asset_attribute_view_text"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:ems="10"
-        android:saveEnabled="false"
-        android:gravity="start|top"
-        android:importantForAutofill="no"
-        android:inputType="textMultiLine"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/asset_attribute_view_label"
-        app:layout_constraintTop_toBottomOf="@+id/asset_attribute_view_switch" />
 
     <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/asset_attribute_view_switch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:saveEnabled="false"
         android:layout_marginEnd="8dp"
+        android:saveEnabled="false"
         android:text="@string/editor_switch_update"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/asset_attribute_view_label"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/asset_attribute_view_barrier"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="asset_attribute_view_label,asset_attribute_view_switch"
+        tools:layout_editor_absoluteX="244dp"
+        tools:layout_editor_absoluteY="44dp" />
+
+    <EditText
+        android:id="@+id/asset_attribute_view_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:ems="10"
+        android:gravity="start|top"
+        android:importantForAutofill="no"
+        android:inputType="textMultiLine"
+        android:saveEnabled="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/asset_attribute_view_barrier" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
