@@ -18,14 +18,16 @@ import okhttp3.Response
 import java.io.IOException
 
 private const val API_KEY_USERNAME = "name"
+private const val API_KEY_ERROR = "error"
+private const val API_KEY_USER_ID = "id"
 
 /**
  * Class that handles authentication w/ login credentials and retrieves user information.
  */
 class LoginDataSource {
-    fun login(data: LoginData, liveData: MutableLiveData<Result<LoggedInUserView>>) {
-        val request = Utils.buildAPI(data.apiBackend, "users/${data.userID}", data.apiToken).build()
-        getHttpBase(data.apiToken).newCall(request).enqueue(object : Callback {
+    fun login(backend: String, token: String, liveData: MutableLiveData<Result<LoggedInUserView>>) {
+        val request = Utils.buildAPI(backend, "users/me", token).build()
+        getHttpBase(token).newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 Log.w(this@LoginDataSource::class.java.name, "onFailure $e")
                 liveData.postValue(Result.Error(e))
@@ -40,7 +42,11 @@ class LoginDataSource {
                         val answer = JsonParser.parseString(bodyString)
                         if (answer.isJsonObject) {
                             val jsonObj = answer.asJsonObject
-                            if (jsonObj.has(API_KEY_USERNAME)) {
+                            if (jsonObj.has(API_KEY_ERROR)) {
+                                // {"error":"Unauthorized."}
+                                Result.Error(InvalidResponseException(code, it.toString()))
+                            } else if (jsonObj.has(API_KEY_USERNAME) && jsonObj.has(API_KEY_USER_ID)) {
+                                val data = LoginData(jsonObj.get(API_KEY_USER_ID).asInt,token,backend)
                                 Result.Success(
                                     LoggedInUserView(
                                         jsonObj.get(API_KEY_USERNAME).asString,

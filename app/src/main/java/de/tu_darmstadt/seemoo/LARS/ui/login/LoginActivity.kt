@@ -7,16 +7,12 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
-import android.view.inputmethod.EditorInfo
-import android.widget.Button
 import android.widget.EditText
-import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.material.textfield.TextInputEditText
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.zxing.integration.android.IntentIntegrator
@@ -24,41 +20,32 @@ import de.tu_darmstadt.seemoo.LARS.MainActivity
 import de.tu_darmstadt.seemoo.LARS.R
 import de.tu_darmstadt.seemoo.LARS.Utils
 import de.tu_darmstadt.seemoo.LARS.data.model.LoginData
+import de.tu_darmstadt.seemoo.LARS.databinding.ActivityLoginBinding
 
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var loginViewModel: LoginViewModel
+    private lateinit var binding: ActivityLoginBinding
 
     @SuppressLint("ApplySharedPref")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        setContentView(R.layout.activity_login)
-
-        val apiToken = findViewById<TextInputEditText>(R.id.apiToken)
-        val apiEndpoint = findViewById<TextInputEditText>(R.id.apiEndpoint)
-        val userID = findViewById<TextInputEditText>(R.id.userID)
-        val login = findViewById<Button>(R.id.login)
-        val loading = findViewById<ProgressBar>(R.id.loading)
-        val scanLogin = findViewById<Button>(R.id.scanLogin)
+        binding = ActivityLoginBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         loginViewModel = ViewModelProvider(this)[LoginViewModel::class.java]
 
         loginViewModel.loginFormState.observe(this@LoginActivity, Observer {
             val loginState = it ?: return@Observer
 
-            login.isEnabled = loginState.isDataValid
+            binding.login.isEnabled = loginState.isDataValid
 
             if (loginState.endpointError != null) {
-                apiEndpoint.error = getString(loginState.endpointError)
-            }
-
-            if (loginState.userIDError != null) {
-                userID.error = getString(loginState.userIDError)
+                binding.apiEndpoint.error = getString(loginState.endpointError)
             }
 
             if (loginState.tokenError != null) {
-                apiToken.error = getString(loginState.tokenError)
+                binding.apiToken.error = getString(loginState.tokenError)
             }
 
         })
@@ -66,7 +53,7 @@ class LoginActivity : AppCompatActivity() {
         loginViewModel.loginResult.observe(this@LoginActivity, Observer {
             val loginResult = it ?: return@Observer
 
-            loading.visibility = View.GONE
+            binding.loading.visibility = View.GONE
             if (loginResult.error != null) {
                 showLoginFailed(loginResult.error, loginResult.errorDetail)
             }
@@ -90,7 +77,7 @@ class LoginActivity : AppCompatActivity() {
 
         })
 
-        scanLogin.setOnClickListener {
+        binding.scanLogin.setOnClickListener {
             val integrator = IntentIntegrator(this)
             integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE)
             integrator.setPrompt("Scan QR-Login Code")
@@ -100,55 +87,29 @@ class LoginActivity : AppCompatActivity() {
             integrator.initiateScan()
         }
 
-        login.setOnClickListener {
-            loading.visibility = View.VISIBLE
+        binding.login.setOnClickListener {
+            binding.loading.visibility = View.VISIBLE
             loginViewModel.login(
-                apiToken.text.toString(),
-                apiEndpoint.text.toString(),
-                Integer.parseInt(userID.text.toString())
+                binding.apiToken.text.toString(),
+                binding.apiEndpoint.text.toString()
             )
         }
 
-        apiEndpoint.apply {
+        binding.apiEndpoint.apply {
             afterTextChanged {
                 loginViewModel.loginDataChanged(
-                    apiEndpoint.text.toString(),
-                    apiToken.text.toString(),
-                    userID.text.toString()
+                    binding.apiEndpoint.text.toString(),
+                    binding.apiToken.text.toString()
                 )
             }
         }
 
-        apiToken.apply {
+        binding.apiToken.apply {
             afterTextChanged {
                 loginViewModel.loginDataChanged(
-                    apiEndpoint.text.toString(),
-                    apiToken.text.toString(),
-                    userID.text.toString()
+                    binding.apiEndpoint.text.toString(),
+                    binding.apiToken.text.toString()
                 )
-            }
-        }
-
-        userID.apply {
-            afterTextChanged {
-                loginViewModel.loginDataChanged(
-                    apiEndpoint.text.toString(),
-                    apiToken.text.toString(),
-                    userID.text.toString()
-                )
-            }
-
-            setOnEditorActionListener { _, actionId, _ ->
-                when (actionId) {
-                    EditorInfo.IME_ACTION_DONE ->
-                        loginViewModel.login(
-                            apiToken.text.toString(),
-                            apiEndpoint.text.toString(),
-                            Integer.parseInt(userID.text.toString())
-                        )
-                }
-
-                false
             }
         }
     }
@@ -164,12 +125,8 @@ class LoginActivity : AppCompatActivity() {
                 try {
                     val loginData: LoginData = gson.fromJson(result.contents, LoginData::class.java)
                     Log.d(this::class.java.name, "Data: ${loginData.apiToken}")
-                    val apiToken: EditText = findViewById(R.id.apiToken)
-                    val apiEndpoint: EditText = findViewById(R.id.apiEndpoint)
-                    val userID: EditText = findViewById(R.id.userID)
-                    apiToken.setText(loginData.apiToken)
-                    apiEndpoint.setText(loginData.apiBackend)
-                    userID.setText(loginData.userID.toString())
+                    binding.apiToken.setText(loginData.apiToken)
+                    binding.apiEndpoint.setText(loginData.apiBackend)
                 } catch (e: JsonSyntaxException) {
                     Toast.makeText(this, R.string.invalid_login_json, Toast.LENGTH_LONG).show()
                     Log.d(this::class.java.name, "Can't parse login json", e)
