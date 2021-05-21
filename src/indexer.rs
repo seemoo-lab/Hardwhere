@@ -5,6 +5,7 @@ use mysql_async::{Pool, prelude::Queryable};
 
 use crate::{cfg::Main, prelude::*, snipeit, types::*};
 
+const SEEN_TEMP_TABLE: &str = "CREATE TEMPORARY TABLE `t_seen` ( `asset` int NOT NULL PRIMARY KEY );";
 
 pub async fn refresh_index(config: &Main, db: &Pool) -> Result<()>{
     let client = ClientBuilder::new().header(ACCEPT,"application/json").header(CONTENT_TYPE,"application/json").finish();
@@ -14,6 +15,7 @@ pub async fn refresh_index(config: &Main, db: &Pool) -> Result<()>{
     trace!("Total: {}",total);
     let mut done = 0;
     let mut conn = db.get_conn().await?;
+    conn.exec_drop(SEEN_TEMP_TABLE, ()).await?;
     let limit = 200;
     let mut checkedout = 0;
     let mut failed = 0;
@@ -24,23 +26,25 @@ pub async fn refresh_index(config: &Main, db: &Pool) -> Result<()>{
         trace!("Received {} items",data.rows.len());
         done += data.rows.len() as i32;
         for asset in data.rows {
+            conn.exec_drop("INSERT INTO `t_seen` (`asset`) VALUES(?)",(asset.id,)).await?;
             match asset.assigned_to {
-                Some(Assignee::User(u)) => {
+                Some(Assignee::User(_u)) => {
                     match find_activity_checkout(asset.id, token.clone(), &client, &config.snipeit_url).await {
                         Ok(u) => {
                             conn.exec_drop("INSERT INTO `lent` (`asset`,`user`) VALUES(?,?) ON DUPLICATE KEY UPDATE `user`=VALUES(`user`)",(asset.id,u)).await?;
                             checkedout +=1;
                         }
                         Err(e) => {error!("Failed to verify checkout-admin for {}: {}",asset.id,e); failed+=1;},
-                    }                    
+                    }
                 },
-                Some(v) => {warn!("Unsupported assignee! asset {}: {:?}",asset.id,v); failed += 1;},
                 None => {
                     conn.exec_drop("DELETE FROM `lent` WHERE asset = ?",(asset.id,)).await?;
                 }
             }
         }
     }
+    conn.exec_drop("DELETE FROM `lent` l WHERE l.asset NOT IN (SELECT asset FROM `t_seen`)",()).await?;
+    conn.exec_drop("DROP TABLE `t_seen`",()).await?;
     let time = start.elapsed();
     info!("Indexed {} assets, {} checked out. Failed {}. {} ms",total,checkedout,failed,time.as_millis());
     Ok(())
