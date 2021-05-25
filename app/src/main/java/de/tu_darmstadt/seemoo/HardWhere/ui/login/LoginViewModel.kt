@@ -51,6 +51,8 @@ class LoginViewModel : ViewModel() {
             _loginForm.value = LoginFormState(tokenError = R.string.invalid_token)
         } else if (!isEndpointValid(endpoint)) {
             _loginForm.value = LoginFormState(endpointError = R.string.invalid_api_endpoint)
+        } else {
+            _loginForm.value = LoginFormState(isDataValid = true)
         }
     }
 
