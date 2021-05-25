@@ -7,28 +7,28 @@
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="de.tu_darmstadt.seemoo.LARS.ui.lent.LentFragment"
+        android:name="de.tu_darmstadt.seemoo.HardWhere.ui.lent.LentFragment"
         android:label="@string/menu_lent"
         tools:layout="@layout/fragment_lent_assets" />
     <fragment
         android:id="@+id/nav_user_assets"
-        android:name="de.tu_darmstadt.seemoo.LARS.ui.user.AssetListFragment"
+        android:name="de.tu_darmstadt.seemoo.HardWhere.ui.user.AssetListFragment"
         android:label=""
         tools:layout="@layout/fragment_user_asset_list" />
     <fragment
         android:id="@+id/nav_own"
-        android:name="de.tu_darmstadt.seemoo.LARS.ui.myassets.MyAssetsFragment"
+        android:name="de.tu_darmstadt.seemoo.HardWhere.ui.myassets.MyAssetsFragment"
         android:label="@string/menu_own"
         tools:layout="@layout/fragment_my_assets"/>
     <fragment
         android:id="@+id/nav_about"
-        android:name="de.tu_darmstadt.seemoo.LARS.ui.about.AboutFragment"
+        android:name="de.tu_darmstadt.seemoo.HardWhere.ui.about.AboutFragment"
         android:label="@string/menu_about"
         tools:layout="@layout/fragment_about" />
 
     <fragment
         android:id="@+id/nav_scan"
-        android:name="de.tu_darmstadt.seemoo.LARS.ui.editorlist.AssetListFragment"
+        android:name="de.tu_darmstadt.seemoo.HardWhere.ui.editorlist.AssetListFragment"
         android:label="@string/menu_editor" >
         <action
             android:id="@+id/action_nav_scan_to_editorFragment"
@@ -43,12 +43,12 @@
 
     <fragment
         android:id="@+id/nav_dev"
-        android:name="de.tu_darmstadt.seemoo.LARS.ui.tools.ToolsFragment"
+        android:name="de.tu_darmstadt.seemoo.HardWhere.ui.tools.ToolsFragment"
         android:label="@string/menu_dev"
         tools:layout="@layout/fragment_tools" />
     <fragment
         android:id="@+id/editorFragment"
-        android:name="de.tu_darmstadt.seemoo.LARS.ui.editor.asset.EditorFragment"
+        android:name="de.tu_darmstadt.seemoo.HardWhere.ui.editor.asset.EditorFragment"
         android:label="@string/title_editor_asset" >
         <action
             android:id="@+id/action_editorFragment_to_selectorFragment"
@@ -60,7 +60,7 @@
     </fragment>
     <fragment
         android:id="@+id/selector_fragment"
-        android:name="de.tu_darmstadt.seemoo.LARS.ui.editor.SelectorFragment"
+        android:name="de.tu_darmstadt.seemoo.HardWhere.ui.editor.SelectorFragment"
         android:label="fragment_selector_list"
         tools:layout="@layout/fragment_selector_list" >
         <action
@@ -69,7 +69,7 @@
     </fragment>
     <fragment
         android:id="@+id/editorScannerFragment"
-        android:name="de.tu_darmstadt.seemoo.LARS.ui.editorlist.EditorScannerFragment"
+        android:name="de.tu_darmstadt.seemoo.HardWhere.ui.editorlist.EditorScannerFragment"
         android:label="@string/title_scanner" >
         <action
             android:id="@+id/action_scannerFragment_to_nav_scan2"
@@ -84,7 +84,7 @@
     </fragment>
     <fragment
         android:id="@+id/asset_search_fragment"
-        android:name="de.tu_darmstadt.seemoo.LARS.ui.editorlist.AssetSearchFragment"
+        android:name="de.tu_darmstadt.seemoo.HardWhere.ui.editorlist.AssetSearchFragment"
         android:label="@string/frag_search_title" >
         <action
             android:id="@+id/action_asset_search_fragment_to_lentingScanListFragment"
@@ -93,7 +93,7 @@
     </fragment>
     <fragment
         android:id="@+id/lentingScanListFragment"
-        android:name="de.tu_darmstadt.seemoo.LARS.ui.lent.LentingScanListFragment"
+        android:name="de.tu_darmstadt.seemoo.HardWhere.ui.lent.LentingScanListFragment"
         android:label="@string/lentingListFragment">
         <action
             android:id="@+id/action_lentingScanListFragment_to_asset_search_fragment"
@@ -104,7 +104,7 @@
     </fragment>
     <fragment
         android:id="@+id/lentingScannerFragment"
-        android:name="de.tu_darmstadt.seemoo.LARS.ui.lent.LentingScannerFragment"
+        android:name="de.tu_darmstadt.seemoo.HardWhere.ui.lent.LentingScannerFragment"
         android:label="@string/frag_lenting_scanner_title">
         <action
             android:id="@+id/action_lentingScannerFragment_to_lentingScanListFragment"
@@ -112,7 +112,7 @@
     </fragment>
     <fragment
         android:id="@+id/ownCheckoutScanListFragment"
-        android:name="de.tu_darmstadt.seemoo.LARS.ui.myassets.MyCheckoutScanListFragment"
+        android:name="de.tu_darmstadt.seemoo.HardWhere.ui.myassets.MyCheckoutScanListFragment"
         android:label="@string/frag_myassets_scanlist_title"
         tools:layout="@layout/fragment_myassets_checkout_scanlist">
         <action
@@ -121,7 +121,7 @@
     </fragment>
     <fragment
         android:id="@+id/ownCheckoutScannerFragment"
-        android:name="de.tu_darmstadt.seemoo.LARS.ui.myassets.MyCheckoutScannerFragment"
+        android:name="de.tu_darmstadt.seemoo.HardWhere.ui.myassets.MyCheckoutScannerFragment"
         android:label="@string/title_scanner">
         <action
             android:id="@+id/action_ownCheckoutScannerFragment_to_ownCheckoutScanListFragment"
@@ -129,7 +129,7 @@
     </fragment>
     <fragment
         android:id="@+id/nav_checkin"
-        android:name="de.tu_darmstadt.seemoo.LARS.ui.checkin.CheckinScanListFragment"
+        android:name="de.tu_darmstadt.seemoo.HardWhere.ui.checkin.CheckinScanListFragment"
         android:label="@string/nav_checkin" >
         <action
             android:id="@+id/action_nav_checkin_to_checkinScannerFragment"
@@ -137,7 +137,7 @@
     </fragment>
     <fragment
         android:id="@+id/checkinScannerFragment"
-        android:name="de.tu_darmstadt.seemoo.LARS.ui.checkin.CheckinScannerFragment"
+        android:name="de.tu_darmstadt.seemoo.HardWhere.ui.checkin.CheckinScannerFragment"
         android:label="@string/frag_checkin_scanner_title" >
         <action
             android:id="@+id/action_checkinScannerFragment_to_nav_checkin"

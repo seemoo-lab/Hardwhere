@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">L.A.R.S</string>
+    <string name="app_name">HardWhere</string>
     <!-- Strings related to login -->
     <string name="prompt_api_endpoint">API Endpoint</string>
     <string name="prompt_api_token">API Token</string>
@@ -16,8 +16,8 @@
     <string name="login_failed">"Login failed, invalid token."</string>
     <string name="invalid_login_json">Invalid login json!</string>
     <string name="empty_login_json">No login data found!</string>
-    <string name="title_activity_main">LARS</string>
-    <string name="title_activity_login">LARS Login</string>
+    <string name="title_activity_main">HardWhere</string>
+    <string name="title_activity_login">HardWhere Login</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Loading User</string>
