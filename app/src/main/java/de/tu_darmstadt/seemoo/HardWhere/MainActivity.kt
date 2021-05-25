@@ -47,14 +47,16 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         Sentry.setTag("commit", BuildConfig.GitHash)
         Sentry.setTag("buildtype", BuildConfig.BUILD_TYPE)
-
-        checkLogin()
+        mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
+        if(checkLogin()) {
+            return
+        }
 
         setContentView(R.layout.activity_main)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-        mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
+
         savedInstanceState?.run {
             mainViewModel.userData.value = this.getParcelable(S_USERDATA)
             mainViewModel.loginData.value = this.getParcelable(S_LOGINDATA)
@@ -154,11 +156,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkLogin() {
+    private fun checkLogin(): Boolean {
         val prefs = getSharedPreferences(PREFS_APP, 0)
         val firstRun = prefs.getBoolean(PREFS_KEY_FIRST_RUN, true)
-        if (firstRun) {
+        return if (firstRun || mainViewModel.getLoginData(this) == null) {
             showLogin()
+            true
+        } else {
+            false
         }
     }
 
