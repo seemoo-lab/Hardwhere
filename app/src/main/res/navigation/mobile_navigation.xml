@@ -88,8 +88,7 @@
         android:label="@string/frag_search_title" >
         <action
             android:id="@+id/action_asset_search_fragment_to_lentingScanListFragment"
-            app:destination="@id/lentingScanListFragment"
-            app:enterAnim="@anim/fragment_fade_enter" />
+            app:destination="@id/lentingScanListFragment" />
     </fragment>
     <fragment
         android:id="@+id/lentingScanListFragment"
