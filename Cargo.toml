@@ -1,7 +1,7 @@
 [package]
-name = "LARS-backend"
+name = "HardWhere-backend"
 version = "0.1.0"
-authors = ["Aron Heinecke <aron.heinecke@t-online.de>"]
+authors = ["Aron Heinecke <aheinecke@seemoo.tu-darmstadt.de>"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
