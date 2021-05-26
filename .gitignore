@@ -22,3 +22,5 @@
 /out.txt
 /testlabel.pdf
 /lars.svg
+/secrets.py
+/__pycache__/
