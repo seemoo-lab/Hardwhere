@@ -15,6 +15,7 @@ pub async fn refresh_index(config: &Main, db: &Pool) -> Result<()>{
     trace!("Total: {}",total);
     let mut done = 0;
     let mut conn = db.get_conn().await?;
+    conn.exec_drop("DROP TABLE IF EXISTS `t_seen`", ()).await?;
     conn.exec_drop(SEEN_TEMP_TABLE, ()).await?;
     let limit = 200;
     let mut checkedout = 0;
