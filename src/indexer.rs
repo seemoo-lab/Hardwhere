@@ -43,7 +43,7 @@ pub async fn refresh_index(config: &Main, db: &Pool) -> Result<()>{
             }
         }
     }
-    conn.exec_drop("DELETE FROM `lent` l WHERE l.asset NOT IN (SELECT asset FROM `t_seen`)",()).await?;
+    conn.exec_drop("DELETE FROM `lent` WHERE asset NOT IN (SELECT asset FROM `t_seen`)",()).await?;
     conn.exec_drop("DROP TABLE `t_seen`",()).await?;
     let time = start.elapsed();
     info!("Indexed {} assets, {} checked out. Failed {}. {} ms",total,checkedout,failed,time.as_millis());
