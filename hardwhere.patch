@@ -1,9 +1,9 @@
-diff --git a/app/Http/Controllers/LARSController.php b/app/Http/Controllers/LARSController.php
+diff --git a/app/Http/Controllers/HardWhereController.php b/app/Http/Controllers/HardWhereController.php
 new file mode 100644
-index 000000000..a5dec2bd5
+index 000000000..157cd8f70
 --- /dev/null
-+++ b/app/Http/Controllers/LARSController.php
-@@ -0,0 +1,63 @@
++++ b/app/Http/Controllers/HardWhereController.php
+@@ -0,0 +1,68 @@
 +<?php
 +
 +namespace App\Http\Controllers;
@@ -17,10 +17,10 @@ index 000000000..a5dec2bd5
 + * This class controls all actions related to qr codes for assets
 + * the Snipe-IT Asset Management application.
 + *
-+ * @version v0.2
++ * @version v0.3
 + * @author Aron Heinecke
 + */
-+class LARSController extends Controller
++class HardWhereController extends Controller
 +{
 +    protected $qrCodeDimensions = array('height' => 3.5, 'width' => 3.5);
 +    protected $barCodeDimensions = array('height' => 2, 'width' => 22);
@@ -49,7 +49,7 @@ index 000000000..a5dec2bd5
 +        $token = $user->createToken('LARS-App')->accessToken;
 +        $url = \App::make('url')->to('/');
 +        
-+        return json_encode(["uid" => $id, "url" => $url, "token" => $token ]);
++        return json_encode(["url" => $url, "token" => $token ]);
 +    }
 +    
 +    /**
@@ -66,33 +66,52 @@ index 000000000..a5dec2bd5
 +        $barcode_obj = $barcode->getBarcodeObj('QRCODE', $data, 921,921, 'black', array(-5, -5, 0, -5));
 +        return response($barcode_obj->getSvgCode())->header('Content-type', 'image/svg+xml');
 +    }
++    
++    public function showLentAssets()
++    {
++        return redirect('/HardWhere/');
++    }
 +}
 diff --git a/resources/views/layouts/default.blade.php b/resources/views/layouts/default.blade.php
-index 28c2bddb9..36923ccf6 100644
+index 0ac2479f9..927a4337f 100644
 --- a/resources/views/layouts/default.blade.php
 +++ b/resources/views/layouts/default.blade.php
-@@ -353,6 +353,11 @@
+@@ -351,6 +351,16 @@
                               <i class="fa fa-user-secret fa-fw" aria-hidden="true"></i> Manage API Keys
                           </a>
                       </li>
 +                     <li>
-+                         <a href="{{ route('user.lars') }}">
-+                             <i class="fa fa-user-secret fa-fw"></i> LARS App Login
++                         <a href="{{ route('user.hardwhere.login') }}">
++                             <i class="fa fa-user-secret fa-fw"></i> HardWhere App Login
++                         </a>
++                     </li>
++                     <li>
++                         <a href="{{ route('user.hardwhere.lent') }}">
++                             <i class="fa fa-user-secret fa-fw"></i> HardWhere Lent
 +                         </a>
 +                     </li>
                       @endcan
                       <li class="divider"></li>
                       <li>
 diff --git a/routes/web.php b/routes/web.php
-index aa9631475..9cc6d3c3c 100644
+index 21600d9f1..7685a5c7e 100644
 --- a/routes/web.php
 +++ b/routes/web.php
-@@ -245,6 +245,8 @@ Route::group([ 'prefix' => 'account', 'middleware' => ['auth']], function () {
+@@ -244,6 +244,10 @@ Route::group([ 'prefix' => 'account', 'middleware' => ['auth']], function () {
      Route::post('password', [ 'uses' => 'ProfileController@passwordSave' ]);
  
      Route::get('api', [ 'as' => 'user.api', 'uses' => 'ProfileController@api' ]);
 +    
-+    Route::get('lars', ['as' => 'user.lars', 'uses' => 'LARSController@getQRCode']);
++       
++    Route::get('hardwhere/login', ['as' => 'user.hardwhere.login', 'uses' => 'HardWhereController@getQRCode']);
++    Route::get('hardwhere/lent', ['as' => 'user.hardwhere.lent', 'uses' => 'HardWhereController@showLentAssets']);
  
      # View Assets
      Route::get('view-assets', [ 'as' => 'view-assets', 'uses' => 'ViewAssetsController@getIndex' ]);
+@@ -474,4 +478,4 @@ Route::group(['middleware' => 'web'], function () {
+ 
+ Auth::routes();
+ 
+-Route::get('/health', [ 'as' => 'health', 'uses' => 'HealthController@get']);
+\ No newline at end of file
++Route::get('/health', [ 'as' => 'health', 'uses' => 'HealthController@get']);

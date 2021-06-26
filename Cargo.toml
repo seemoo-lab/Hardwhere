@@ -1,5 +1,5 @@
 [package]
-name = "HardWhere-backend"
+name = "hardwhere-backend"
 version = "0.1.0"
 authors = ["Aron Heinecke <aheinecke@seemoo.tu-darmstadt.de>"]
 edition = "2018"
