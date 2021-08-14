@@ -1,16 +1,16 @@
 [Unit]
-Description=LARS daemon
+Description=HardWhere daemon
 After=network-online.target
 Wants=network-online.target
 
 [Service]
 Type=simple
-ExecStart=/home/LARS/LARS-backend
-WorkingDirectory=/home/LARS/
+ExecStart=/home/HardWhere/HardWhere-backend
+WorkingDirectory=/home/HardWhere/
 Nice=0
 Restart=always
-User=LARS
-Group=LARS
+User=HardWhere
+Group=HardWhere
 
 [Install]
 WantedBy=multi-user.target

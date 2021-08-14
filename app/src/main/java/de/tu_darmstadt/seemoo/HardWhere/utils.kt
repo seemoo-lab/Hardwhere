@@ -155,7 +155,7 @@ class Utils {
         @JvmField
         val KEY_TOKEN = "token_api"
         @JvmField
-        val PREFS_APP = "de.tu_darmstadt.seemoo.LARS.prefs"
+        val PREFS_APP = "de.tu_darmstadt.seemoo.HardWhere.prefs"
         @JvmField
         val PREFS_KEY_FIRST_RUN = "first_run"
         @JvmField

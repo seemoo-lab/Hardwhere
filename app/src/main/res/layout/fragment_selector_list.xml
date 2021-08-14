@@ -7,7 +7,7 @@
     android:layout_height="match_parent">
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/list"
-        android:name="de.tu_darmstadt.seemoo.LARS.ui.editor.SelectorFragment"
+        android:name="de.tu_darmstadt.seemoo.HardWhere.ui.editor.SelectorFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"

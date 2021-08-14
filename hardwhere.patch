@@ -42,11 +42,11 @@ index 000000000..157cd8f70
 +        $id = Auth::id();
 +        $user = Auth::user();
 +        $user->tokens->each(function($token, $key) {
-+            if ($token->name == 'LARS-App') {
++            if ($token->name == 'HardWhere-App') {
 +                $token->delete();
 +            }
 +        });
-+        $token = $user->createToken('LARS-App')->accessToken;
++        $token = $user->createToken('HardWhere-App')->accessToken;
 +        $url = \App::make('url')->to('/');
 +        
 +        return json_encode(["url" => $url, "token" => $token ]);
