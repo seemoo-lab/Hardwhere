@@ -29,7 +29,7 @@ pub async fn refresh_index(config: &Main, db: &Pool) -> Result<()>{
         for asset in data.rows {
             conn.exec_drop("INSERT INTO `t_seen` (`asset`) VALUES(?)",(asset.id,)).await?;
             match asset.assigned_to {
-                Some(Assignee::User(_u)) => {
+                Some(MaybeAssignee::Known(Assignee::User(_u))) => {
                     match find_activity_checkout(asset.id, token.clone(), &client, &config.snipeit_url).await {
                         Ok(u) => {
                             conn.exec_drop("INSERT INTO `lent` (`asset`,`user`) VALUES(?,?) ON DUPLICATE KEY UPDATE `user`=VALUES(`user`)",(asset.id,u)).await?;
@@ -38,6 +38,8 @@ pub async fn refresh_index(config: &Main, db: &Pool) -> Result<()>{
                         Err(e) => {error!("Failed to verify checkout-admin for {}: {}",asset.id,e); failed+=1;},
                     }
                 },
+                Some(MaybeAssignee::UnknownAssignee(v)) => {error!("Unknown assignee type: {}",v)},
+                Some(MaybeAssignee::Known(Assignee::Location(v))) => {warn!("Ignoring location assignee: {:?}",v)}
                 None => {
                     conn.exec_drop("DELETE FROM `lent` WHERE asset = ?",(asset.id,)).await?;
                 }
@@ -58,8 +60,14 @@ async fn find_activity_checkout(item: AssetId, token: HeaderValue, client: &Clie
     reports.reverse();
     debug_assert!(reports[0].id > reports[reports.len() - 1].id);
     for report in reports {
-        if report.action_type == ActionType::Checkout {
-            return Ok(report.admin.id)
+        match report.action_type {
+            MaybeActionType::Known(ActionType::Checkout) => {
+                return Ok(report.admin.id);
+            },
+            MaybeActionType::UnknownActionType(v) => {
+                error!("Unknown action type: {:?}",v);
+            }
+            _ => (),
         }
     }
     Err(Error::NoCheckoutActivity(item))

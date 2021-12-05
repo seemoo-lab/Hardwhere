@@ -20,7 +20,7 @@ pub struct Activity {
     /// Person that made this change
     pub admin: ActivityAdmin,
     /// Change type
-    pub action_type: ActionType,
+    pub action_type: MaybeActionType,
     /// Item that got changed
     pub item: ActivityItem,
 }
@@ -45,6 +45,13 @@ pub enum ItemType {
     Asset,
     #[serde(rename = "user")]
     User
+}
+
+#[derive(Deserialize, Debug, Eq, PartialEq)]
+#[serde(untagged)]
+pub enum MaybeActionType {
+    Known(ActionType),
+    UnknownActionType(serde_json::value::Value),
 }
 
 #[derive(Deserialize, Debug, Eq, PartialEq)]
@@ -74,7 +81,7 @@ pub struct Asset {
     pub asset_tag: String,
     pub model: AssetModel,
     #[serde(default)]
-    pub assigned_to: Option<Assignee>,
+    pub assigned_to: Option<MaybeAssignee>,
     pub custom_fields: Option<serde_json::Value>
 }
 
@@ -84,11 +91,25 @@ pub struct AssetModel {
     pub name: String
 }
 
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(untagged)]
+pub enum MaybeAssignee {
+    Known(Assignee),
+    UnknownAssignee(serde_json::value::Value),
+}
+
 /// Asset assigned_to enum
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(untagged)]
 pub enum Assignee {
     User(AssigneeUser),
+    Location(AssigneeLocation),
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct AssigneeLocation {
+    id: UID,
+    name: String
 }
 
 #[derive(Serialize, Deserialize, Debug)]
