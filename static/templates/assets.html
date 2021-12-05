@@ -3,24 +3,40 @@
 
 <head>
     <title>Assets of {{user}}</title>
+    <link href="static/colors.css" rel="stylesheet">
+    <link href="static/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body>
-    <h1>Assets lent by you ({{user}})</h1>
-    <table>
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand"href="#">Assets lent by you ({{user}})</a>
+      </div>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="/HardWhere/logout"><span class="glyphicon glyphicon-log-out"></span>Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+        <!--button type="button" class="btn btn-prinary" href="/HardWhere/logout">Logout</button-->
+    <table class="table">
+      <thread>
         <tr>
             <th></th>
             <th>Asset</th>
             <th>Lent to</th>
           </tr>
-        {{#each assets}}
-          <tr>
-            <td><a href="{{../url_base}}/hardware/{{id}}">Link</a></td>
-            <td>{{asset_tag}}</td>
-            <td>{{assigned_to.username}}</td>
-          </tr>
-        {{/each}}
+        </thread>
+        <tbody>
+          {{#each assets}}
+            <tr>
+              <td><a href="{{../url_base}}/hardware/{{id}}">Link</a></td>
+              <td>{{asset_tag}}</td>
+              <td>{{assigned_to.username}}</td>
+            </tr>
+          {{/each}}
+      </tbody>
     </table>
-    <a href="/HardWhere/logout">Logout</a>
+    <!--a href="/HardWhere/logout">Logout</a-->
 </body>
 </html>
