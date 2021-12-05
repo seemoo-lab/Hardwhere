@@ -1,3 +1,4 @@
+use actix_files::Files;
 use actix_session::CookieSession;
 use actix_web::{App, HttpServer, client::{ClientBuilder}, http::header::{ACCEPT, CONTENT_TYPE}, middleware::{Logger}, rt::spawn, web};
 use handlebars::Handlebars;
@@ -60,9 +61,9 @@ async fn main() -> Result<()> {
         let wait_time = std::time::Duration::from_secs(60*20);
         let mut interval = actix_web::rt::time::interval(wait_time);
         loop {
-            if let Err(e) = indexer::refresh_index(&config_main_c, &db_c).await {
-                error!("Failed to index: {}",e);
-            }
+            // if let Err(e) = indexer::refresh_index(&config_main_c, &db_c).await {
+            //     error!("Failed to index: {}",e);
+            // }
             // first tick doesn't trigger wait
             if interval.tick().await.elapsed() < wait_time {
                 interval.tick().await;
@@ -87,12 +88,18 @@ async fn main() -> Result<()> {
                     .http_only(true))
             .data(db_c.clone())
             .data(ClientBuilder::new().header(ACCEPT,"application/json").header(CONTENT_TYPE,"application/json").finish())
+            // developer for local testing
+            .service(web::scope("/HardWhere")
+            
             .service(web::resource("/api/checkedout").route(web::get().to(api::lent_list)))
             .service(web::resource("/api/checkout").route(web::post().to(api::lent_asset)))
             .service(web::resource("/api/checkin").route(web::post().to(api::return_asset)))
             .service(web::resource("/").route(web::get().to(webview::view)))
             .service(web::resource("/login").route(web::post().to(webview::login)))
             .service(web::resource("/logout").route(web::get().to(webview::logout)))
+            .service(Files::new("/static", "static/").show_files_listing())
+            // developer for local testing
+            )
     })
         .bind(&bind)?
         .run()
