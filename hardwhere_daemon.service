@@ -1,6 +1,6 @@
 [Unit]
 Description=HardWhere daemon
-After=network-online.target
+After=network-online.target mariadb.service
 Wants=network-online.target
 
 [Service]

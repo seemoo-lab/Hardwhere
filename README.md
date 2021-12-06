@@ -1,6 +1,6 @@
 # HardWhere
 
-SEEMOO Accessories Retrieval System
+SEEMOO Accessories Retrieval System (HardWhere)
 
 App + additional Functions based on [snipe-it]
 
@@ -17,3 +17,13 @@ Get rustc and run
 `cargo build --release`
 
 [#snipe-it]: https://github.com/snipe/snipe-it
+
+# Example apache config for backend
+
+```apache2
+<VirtualHost *:443>
+[...]
+ProxyPass "/HardWhere" http://127.0.0.1:8000
+ProxyPassReverse "/HardWhere" http://127.0.0.1:8000
+ProxyPreserveHost Off
+```
