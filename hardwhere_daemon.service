@@ -1,16 +1,17 @@
 [Unit]
 Description=HardWhere daemon
-After=network-online.target mariadb.service
+After=network-online.target
 Wants=network-online.target
+Requires=mariadb.service
 
 [Service]
 Type=simple
-ExecStart=/home/HardWhere/HardWhere-backend
-WorkingDirectory=/home/HardWhere/
+ExecStart=/home/hardwhere/HardWhere-backend
+WorkingDirectory=/home/hardwhere/
 Nice=0
 Restart=always
-User=HardWhere
-Group=HardWhere
+User=hardwhere
+Group=hardwhere
 
 [Install]
 WantedBy=multi-user.target
