@@ -1,3 +1,5 @@
+use std::{collections::HashMap, sync::{Arc, Mutex}};
+
 use actix_files::Files;
 use actix_session::CookieSession;
 use actix_web::{App, HttpServer, client::{ClientBuilder}, http::header::{ACCEPT, CONTENT_TYPE}, middleware::{Logger}, rt::spawn, web};
@@ -6,6 +8,8 @@ use mysql_async::{Opts, OptsBuilder, Pool, prelude::*};
 
 mod prelude;
 use prelude::*;
+
+use crate::types::AutoLoginTokens;
 
 mod cfg;
 mod authentication;
@@ -71,6 +75,7 @@ async fn main() -> Result<()> {
         }
     });
 
+    let auto_login_tokens: AutoLoginTokens = Arc::new(Mutex::new(HashMap::new()));
 
     let db_c = db.clone();
     info!("Listening on {}",bind);
@@ -88,6 +93,7 @@ async fn main() -> Result<()> {
                     .lazy(true)
                     .http_only(true))
             .data(db_c.clone())
+            .data(auto_login_tokens.clone())
             .data(ClientBuilder::new().header(ACCEPT,"application/json").header(CONTENT_TYPE,"application/json").finish())
             // developer for local testing
             .service(web::scope("/HardWhere")
@@ -95,9 +101,11 @@ async fn main() -> Result<()> {
             .service(web::resource("/api/checkedout").route(web::get().to(api::lent_list)))
             .service(web::resource("/api/checkout").route(web::post().to(api::lent_asset)))
             .service(web::resource("/api/checkin").route(web::post().to(api::return_asset)))
+            .service(web::resource("/internal/autologin").route(web::post().to(webview::snipeit_autologin_prepare)))
             .service(web::resource("/").route(web::get().to(webview::view)))
             .service(web::resource("/login").route(web::post().to(webview::login)))
             .service(web::resource("/logout").route(web::get().to(webview::logout)))
+            .service(web::resource("/autologin/{auth_token}").route(web::get().to(webview::auto_login)))
             .service(Files::new("/static", "static/").show_files_listing())
             // developer for local testing
             )

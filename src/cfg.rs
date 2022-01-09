@@ -2,6 +2,7 @@ use crate::prelude::*;
 use serde::Deserialize;
 use serde::Serialize;
 use std::fs::read_to_string;
+use std::time::Duration;
 use toml;
 
 /// Config wrapper handling loading & validation
@@ -22,6 +23,7 @@ pub struct Main {
     pub admin_password: String,
     pub session_encryption_key: String,
     pub session_secure: bool,
+    pub autologin_token_ttl: u32,
 }
 
 #[derive(Serialize, Deserialize, Debug, Default)]

@@ -1,10 +1,46 @@
 use std::collections::HashMap;
+use std::sync::Arc;
+use std::sync::Mutex;
+use std::time::Duration;
+use std::time::Instant;
 
 use serde::Deserialize;
 use serde::Serialize;
 
 pub type UID = i32;
 pub type AssetId = i32;
+
+pub const API_KEY: &'static str = "api_key";
+
+pub struct AutoLogin {
+    api_token: String,
+    valid_till: Instant,
+}
+
+impl AutoLogin {
+    pub fn new(api_token: String, ttl: Duration) -> Self {
+        Self {
+            api_token,
+            valid_till: Instant::now()+ttl
+        }
+    }
+
+    pub fn api_token(self) -> Option<String> {
+        if Instant::now() < self.valid_till {
+            Some(self.api_token)
+        } else {
+            None
+        }
+    }
+}
+
+pub type AutoLoginTokens = Arc<Mutex<HashMap<String,AutoLogin>>>;
+
+#[derive(Debug,Deserialize)]
+pub struct AutoLoginPrepare {
+    pub api_token: String,
+    pub login_token: String,
+}
 
 #[derive(Deserialize, Debug)]
 pub struct ActivityList {
