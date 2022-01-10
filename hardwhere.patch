@@ -1,6 +1,6 @@
 diff --git a/app/Http/Controllers/HardWhereController.php b/app/Http/Controllers/HardWhereController.php
 new file mode 100644
-index 000000000..9d3d8ea9e
+index 000000000..b3845a2e3
 --- /dev/null
 +++ b/app/Http/Controllers/HardWhereController.php
 @@ -0,0 +1,93 @@
@@ -84,7 +84,7 @@ index 000000000..9d3d8ea9e
 +//             'api_token' => $token,
 +//             'login_token' => $login_token,
 +//         ]);
-+        $ch = curl_init('http://localhost:8000/HardWhere/internal/autologin'); 
++        $ch = curl_init('http://localhost:8000/internal/autologin'); 
 +        curl_setopt($ch, CURLOPT_POST, 1);
 +        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
 +            'api_token' => $token,
