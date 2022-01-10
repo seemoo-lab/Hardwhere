@@ -101,7 +101,7 @@ pub(crate) async fn auto_login(hb: web::Data<Handlebars<'_>>, client: Data<Clien
     let data = json!({
         "url_base": cfg.snipeit_url
     });
-    let body = hb.render("login_unsuccessful", &data)?;
+    let body = hb.render("invalid_autologin", &data)?;
     Ok(HttpResponse::NotFound().body(body))
 }
 
