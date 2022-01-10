@@ -15,7 +15,7 @@
       </div>
       <ul class="nav navbar-nav navbar-right">
         <li><a href="/HardWhere/logout"><span class="glyphicon glyphicon-log-out"></span>Logout</a></li>
-        <li><a href="/HardWhere/logout"><span class="glyphicon glyphicon-log-out"></span>Back to Snipeit</a></li>
+        <li><a href="/"><span class="glyphicon glyphicon-log-out"></span>Back to Snipeit</a></li>
       </ul>
     </div>
   </nav>
@@ -33,7 +33,7 @@
             <tr>
               <td><a href="{{../url_base}}/hardware/{{id}}">Link</a></td>
               <td>{{asset_tag}}</td>
-              <td>{{assigned_to.username}}</td>
+              <td><a href="{{../url_base}}/users/{{assigned_to.id}}">{{assigned_to.first_name}} {{assigned_to.last_name}}</a></td>
             </tr>
           {{/each}}
       </tbody>
