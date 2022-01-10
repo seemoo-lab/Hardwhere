@@ -79,7 +79,7 @@ pub(crate) async fn snipeit_autologin_prepare(req: web::Json<AutoLoginPrepare>, 
 
 pub(crate) async fn auto_login(hb: web::Data<Handlebars<'_>>, client: Data<Client>, path: web::Path<(String,)>, session: Session, cfg: web::Data<Main>, autologin_token: web::Data<AutoLoginTokens>) -> Result<HttpResponse> {
     info!("performing auto login");
-    session.purge();
+    session.clear();
     let (token,) = path.into_inner();
     // retrieve api token for autologin token
     let mut tokens = autologin_token.lock().expect("Can't lock mutex");
