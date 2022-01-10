@@ -96,7 +96,8 @@ async fn main() -> Result<()> {
             .data(auto_login_tokens.clone())
             .data(ClientBuilder::new().header(ACCEPT,"application/json").header(CONTENT_TYPE,"application/json").finish())
             // developer for local testing
-            .service(web::scope("/HardWhere")
+            
+            // .service(web::scope("/HardWhere")
             
             .service(web::resource("/api/checkedout").route(web::get().to(api::lent_list)))
             .service(web::resource("/api/checkout").route(web::post().to(api::lent_asset)))
@@ -107,8 +108,8 @@ async fn main() -> Result<()> {
             .service(web::resource("/logout").route(web::get().to(webview::logout)))
             .service(web::resource("/autologin/{auth_token}").route(web::get().to(webview::auto_login)))
             .service(Files::new("/static", "static/").show_files_listing())
-            // developer for local testing
-            )
+            
+            // )
     })
         .bind(&bind)?
         .run()

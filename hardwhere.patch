@@ -1,9 +1,9 @@
 diff --git a/app/Http/Controllers/HardWhereController.php b/app/Http/Controllers/HardWhereController.php
 new file mode 100644
-index 000000000..7a67d5a6d
+index 000000000..9d3d8ea9e
 --- /dev/null
 +++ b/app/Http/Controllers/HardWhereController.php
-@@ -0,0 +1,83 @@
+@@ -0,0 +1,93 @@
 +<?php
 +
 +namespace App\Http\Controllers;
@@ -80,11 +80,21 @@ index 000000000..7a67d5a6d
 +        });
 +        $token = $user->createToken('HardWhere-WebView')->accessToken;
 +        $login_token = Str::random(40);
-+        $response = Http::post('http://localhost:8000/HardWhere/internal/autologin', [
++//         $response = Http::post('http://localhost:8000/HardWhere/internal/autologin', [
++//             'api_token' => $token,
++//             'login_token' => $login_token,
++//         ]);
++        $ch = curl_init('http://localhost:8000/HardWhere/internal/autologin'); 
++        curl_setopt($ch, CURLOPT_POST, 1);
++        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
 +            'api_token' => $token,
 +            'login_token' => $login_token,
-+        ]);
-+        return redirect('/HardWhere/autologin/'+$login_token);
++        ]));
++        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
++        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
++        $result = curl_exec($ch);
++        curl_close($ch);
++        return redirect('/HardWhere/autologin/' . $login_token);
 +    }
 +}
 diff --git a/resources/views/layouts/default.blade.php b/resources/views/layouts/default.blade.php
