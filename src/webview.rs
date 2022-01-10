@@ -85,6 +85,7 @@ pub(crate) async fn auto_login(hb: web::Data<Handlebars<'_>>, client: Data<Clien
     let mut tokens = autologin_token.lock().expect("Can't lock mutex");
     if let Some(api_token) = tokens.remove(&token).and_then(|v|v.api_token()) {
         // verify it's still valid
+        let api_token = format!("Bearer {}",api_token);
         match snipeit::user(HeaderValue::from_str(&api_token)?, &client, &cfg.snipeit_url).await {
             Ok(_u) => {
                 session.set(API_KEY, api_token)?;
