@@ -7,6 +7,9 @@ use crate::{cfg::Main, prelude::*, snipeit, types::*};
 
 const SEEN_TEMP_TABLE: &str = "CREATE TEMPORARY TABLE `t_seen` ( `asset` int NOT NULL PRIMARY KEY );";
 
+const RETRIEVE_LIMIT: usize = 200;
+
+/// Refresh index of who-lent-to-whom of assets
 pub async fn refresh_index(config: &Main, db: &Pool) -> Result<()>{
     let client = ClientBuilder::new().header(ACCEPT,"application/json").header(CONTENT_TYPE,"application/json").finish();
     let token = HeaderValue::from_str(&format!("Bearer {}",config.snipeit_system_token)).unwrap();
@@ -17,15 +20,20 @@ pub async fn refresh_index(config: &Main, db: &Pool) -> Result<()>{
     let mut conn = db.get_conn().await?;
     conn.exec_drop("DROP TABLE IF EXISTS `t_seen`", ()).await?;
     conn.exec_drop(SEEN_TEMP_TABLE, ()).await?;
-    let limit = 200;
     let mut checkedout = 0;
     let mut failed = 0;
     let start = Instant::now();
     while done < total {
-        trace!("Requesting assets {}-{}",done,done+limit);
-        let data = snipeit::assets(done, limit, token.clone(), &client, &config.snipeit_url).await?;
+        trace!("Requesting assets {}-{}",done,done+RETRIEVE_LIMIT);
+        let data = snipeit::assets(done, RETRIEVE_LIMIT, token.clone(), &client, &config.snipeit_url).await?;
         trace!("Received {} items",data.rows.len());
-        done += data.rows.len() as i32;
+        done += data.rows.len();
+
+        if data.rows.len() == 0 {
+            error!("Got 0 rows, was at {}/{} entries, failsafe break",done,total);
+            break;
+        }
+
         for asset in data.rows {
             conn.exec_drop("INSERT INTO `t_seen` (`asset`) VALUES(?)",(asset.id,)).await?;
             match asset.assigned_to {
@@ -39,7 +47,7 @@ pub async fn refresh_index(config: &Main, db: &Pool) -> Result<()>{
                     }
                 },
                 Some(MaybeAssignee::UnknownAssignee(v)) => {error!("Unknown assignee type: {}",v)},
-                Some(MaybeAssignee::Known(Assignee::Location(v))) => {warn!("Ignoring location assignee: {:?}",v)}
+                Some(MaybeAssignee::Known(Assignee::Location(v))) => {warn!("Ignoring location assignee: {:?} of asset id {}",v,asset.id);}
                 None => {
                     conn.exec_drop("DELETE FROM `lent` WHERE asset = ?",(asset.id,)).await?;
                 }
@@ -53,6 +61,7 @@ pub async fn refresh_index(config: &Main, db: &Pool) -> Result<()>{
     Ok(())
 }
 
+/// Find latest checkout entry in asset history/activity
 async fn find_activity_checkout(item: AssetId, token: HeaderValue, client: &Client, snipeit_url: &str) -> Result<UID> {
     let mut reports = snipeit::activity(item, token, client, snipeit_url).await?;
 
@@ -71,4 +80,70 @@ async fn find_activity_checkout(item: AssetId, token: HeaderValue, client: &Clie
         }
     }
     Err(Error::NoCheckoutActivity(item))
+}
+
+/// Scan models for missing fieldsets and set the default specified in the config
+pub async fn check_default_fieldset(config: &Main) -> Result<()>{
+    let client = ClientBuilder::new().header(ACCEPT,"application/json").header(CONTENT_TYPE,"application/json").finish();
+    let token = HeaderValue::from_str(&format!("Bearer {}",config.snipeit_system_token)).unwrap();
+
+    let fieldset = fieldset_by_name(&config.default_fieldset,&token,&client,&config.snipeit_url).await?;
+
+    let total = snipeit::models(0, 1, token.clone(),&client,&config.snipeit_url).await?.total;
+    let mut done = 0;
+
+    let mut fixed = 0;
+
+    let patch_data = ModelPatch{
+        fieldset_id: Some(fieldset.id),
+        ..Default::default()
+    };
+
+    while done < total {
+        let data = snipeit::models(done, RETRIEVE_LIMIT, token.clone(),&client,&config.snipeit_url).await?;
+        done += data.rows.len();
+
+        if data.rows.len() == 0 {
+            error!("Got 0 rows, was at {}/{} entries, failsafe break",done,total);
+            break;
+        }
+
+        for model in data.rows {
+            if model.fieldset.is_none() {
+                info!("Patching {}",model.name);
+                match snipeit::patch_model(model.id,&patch_data,token.clone(),&client,&config.snipeit_url).await {
+                    Ok(_) => fixed += 1,
+                    Err(e) => error!("Failed to patch model {}: {}",model.id,e),
+                }
+            } else {
+                trace!("Has fieldset: {}",model.name);
+            }
+        }
+    }
+
+    debug!("Fixed up {}/{} model fieldsets",fixed,total);
+
+    Ok(())
+}
+
+/// Retrieve fieldset by name
+async fn fieldset_by_name(name: &str, token: &HeaderValue, client: &Client, snipeit_url: &str) -> Result<Fieldset> {
+    let total = snipeit::fieldsets(0,1,token.clone(),client,snipeit_url).await?.total as usize;
+    let mut retrieved = 0;
+
+    while retrieved < total {
+        let data = snipeit::fieldsets(retrieved,RETRIEVE_LIMIT,token.clone(),client,snipeit_url).await?;
+        retrieved += data.rows.len();
+
+        if data.rows.len() == 0 {
+            error!("Got 0 rows, was at {}/{} entries, failsafe break",retrieved,total);
+            break;
+        }
+
+        if let Some(fieldset) = data.rows.into_iter().find(|e|e.name == name) {
+            return Ok(fieldset);
+        }
+    }
+
+    Err(Error::FieldsetNotFound(name.to_string()))
 }

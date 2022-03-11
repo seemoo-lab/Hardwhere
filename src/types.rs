@@ -90,6 +90,7 @@ pub enum MaybeActionType {
     UnknownActionType(serde_json::value::Value),
 }
 
+// Snipeit API returns localized types for the audit history (v5.X)
 #[derive(Deserialize, Debug, Eq, PartialEq)]
 pub enum ActionType {
     #[serde(rename = "aktualisieren")]
@@ -105,8 +106,34 @@ pub enum ActionType {
 }
 
 #[derive(Deserialize, Debug)]
+pub struct AssetModelList {
+    pub total: usize,
+    pub rows: Vec<AssetModel>,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct AssetModel {
+    pub id: i32,
+    pub name: String,
+    pub fieldset: Option<Fieldset>,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct FieldsetList {
+    pub total: usize,
+    pub rows: Vec<Fieldset>
+}
+
+#[derive(Deserialize, Debug)]
+pub struct Fieldset {
+    pub id: i32,
+    pub name: String,
+    // other fields ignored
+}
+
+#[derive(Deserialize, Debug)]
 pub struct AssetList {
-    pub total: i32,
+    pub total: usize,
     pub rows: Vec<Asset>,
 }
 
@@ -115,14 +142,14 @@ pub struct Asset {
     pub id: AssetId,
     pub name: String,
     pub asset_tag: String,
-    pub model: AssetModel,
+    pub model: AssetModelLight,
     #[serde(default)]
     pub assigned_to: Option<MaybeAssignee>,
     pub custom_fields: Option<serde_json::Value>
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct AssetModel {
+pub struct AssetModelLight {
     pub id: i32,
     pub name: String
 }
@@ -246,4 +273,23 @@ pub struct CheckinRequest {
 #[derive(Deserialize)]
 pub struct LoginData {
     pub api_key: String
+}
+
+/// Send only patch data for models
+#[derive(Serialize,Default)]
+pub struct ModelPatch {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub fieldset_id: Option<i32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub manufacturer_id: Option<i32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub category_id: Option<i32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub depreciation_id: Option<i32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub notes: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub requestable: Option<bool>,
 }

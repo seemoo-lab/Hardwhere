@@ -39,7 +39,11 @@ pub enum Error {
     #[error("Invalid header value")]
     InvalidHeaderValue(#[from] InvalidHeaderValue),
     #[error("Failed to render template")]
-    RenderError(#[from] RenderError)
+    RenderError(#[from] RenderError),
+    #[error("Failed to find fieldset with name {0}")]
+    FieldsetNotFound(String),
+    #[error("Failed to deserialize value {0}")]
+    JsonDeserialize(#[from] serde_json::Error),
 }
 
 impl ResponseError for Error {
@@ -56,3 +60,4 @@ impl ResponseError for Error {
 }
 
 pub type Result<T> = std::result::Result<T,Error>;
+

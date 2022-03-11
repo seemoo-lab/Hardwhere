@@ -22,8 +22,49 @@ pub async fn activity(item: AssetId, token: HeaderValue, client: &Client, snipei
     Ok(data.rows)
 }
 
+/// Asset Models
+pub async fn models(offset: usize, limit: usize, token: HeaderValue, client: &Client, snipeit_url: &str) -> Result<AssetModelList> {
+    let mut res = client.get(format!("{}/api/v1/models?offset={}&limit={}",snipeit_url,offset,limit))
+        .header(AUTHORIZATION,token)
+        .send().await?;
+    verify_status(&res)?;
+    let data: AssetModelList = res.json().limit(1024*1024).await?;
+    Ok(data)
+}
+
+/// Set model fields as specified
+pub async fn patch_model(model: i32, data: &ModelPatch,token: HeaderValue, client: &Client, snipeit_url: &str) -> Result<()> {
+    let mut resp = client.patch(format!("{}/api/v1/models/{}",snipeit_url,model))
+        .header(AUTHORIZATION,token)
+        .send_json(data)
+        .await?;
+    if !resp.status().is_success() {
+        if let Ok(v) = resp.json::<SnipeitResult>().await {
+            return Err(Error::Snipeit(v));
+        } else {
+            return Err(Error::SnipeitBadRequest(format!("{:?}",resp)));
+        }
+    } else {
+        let data: serde_json::Value = resp.json().await?;
+        debug!("parsing response for model patching {:?}",data);
+        let res: SnipeitResult = serde_json::from_value(data)?;
+        res.check()?;
+        Ok(())
+    }
+}
+
+/// Custom field sets
+pub async fn fieldsets(offset: usize, limit: usize, token: HeaderValue, client: &Client, snipeit_url: &str) -> Result<FieldsetList> {
+    let mut res = client.get(format!("{}/api/v1/fieldsets?offset={}&limit={}",snipeit_url,offset,limit))
+        .header(AUTHORIZATION,token)
+        .send().await?;
+    verify_status(&res)?;
+    let data: FieldsetList = res.json().limit(1024*1024).await?;
+    Ok(data)
+}
+
 /// Get Assets unconditionally, start from offset to limit (if API limits allow this)
-pub async fn assets(offset: i32, limit: i32, token: HeaderValue, client: &Client, snipeit_url: &str) -> Result<AssetList> {
+pub async fn assets(offset: usize, limit: usize, token: HeaderValue, client: &Client, snipeit_url: &str) -> Result<AssetList> {
     let mut res = client.get(format!("{}/api/v1/hardware?offset={}&limit={}",snipeit_url,offset,limit))
         .header(AUTHORIZATION,token)
         .send().await?;

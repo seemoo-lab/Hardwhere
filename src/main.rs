@@ -52,12 +52,13 @@ async fn main() -> Result<()> {
     let session_key: &'static [u8] = key.leak();
     let config_main = web::Data::new(config.main);
     
-
     let mut handlebars = Handlebars::new();
     handlebars
     .register_templates_directory(".html", "./static/templates")
     .expect("Can't initialize templates!");
     let handlebars_ref = web::Data::new(handlebars);
+
+    indexer::check_default_fieldset(&config_main).await?;
 
     let db_c = db.clone();
     let config_main_c = config_main.clone();
