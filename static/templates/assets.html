@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8" />
-    <title>Assets of Domin</title>
+    <title>Assets of {{user}}</title>
     <link href="static/bootstrap.min.css" rel="stylesheet">
     <link href="static/colors.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
@@ -11,7 +11,7 @@
 </head>
 
 <body>
-  <nav class="navbar navbar-dark" style="background-color:#3c8dbc">
+  <nav class="navbar navbar-dark navbar-background">
     <div class="container-fluid">
       <div class="header-font navbar-font">
         <img class="navbar-brand-img" src="https://inventory.seemoo.tu-darmstadt.de/uploads/logo.png" alt="Inventory logo"> HardWhere
@@ -25,7 +25,7 @@
     </div>
   </nav>
   <div class="h2 p-2">
-    Assets lent by you ({{User}})
+    Assets lent by you ({{user}})
   </div>
   <table class="table table-striped">
     <thread>
@@ -50,4 +50,3 @@
     <!--a href="/HardWhere/logout">Logout</a-->
 </body>
 </html>
-
