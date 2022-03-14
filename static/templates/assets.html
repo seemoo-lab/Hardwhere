@@ -3,42 +3,51 @@
 
 <head>
     <meta charset="UTF-8" />
-    <title>Assets of {{user}}</title>
-    <link href="static/colors.css" rel="stylesheet">
+    <title>Assets of Domin</title>
     <link href="static/bootstrap.min.css" rel="stylesheet">
+    <link href="static/colors.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="static/css.css">
 </head>
 
 <body>
-  <nav class="navbar navbar-default">
+  <nav class="navbar navbar-dark" style="background-color:#3c8dbc">
     <div class="container-fluid">
-      <div class="h1">
-        Assets lent by you ({{user}})
+      <div class="header-font navbar-font">
+        <img class="navbar-brand-img" src="https://inventory.seemoo.tu-darmstadt.de/uploads/logo.png" alt="Inventory logo"> HardWhere
       </div>
-      <ul class="nav navbar-nav navbar-right">
-        <li><a href="/HardWhere/logout"><span class="glyphicon glyphicon-log-out"></span>Logout</a></li>
-        <li><a href="/"><span class="glyphicon glyphicon-log-out"></span>Back to Snipeit</a></li>
-      </ul>
+      <div class="btn-group">
+        <ul class="nav justify-content-end">
+          <li class="nav-item"><a class="nav-link navbar-font navbar-button" href="/"><i class="bi bi-house-fill"></i></a></li>
+          <li class="nav-item"><a class="nav-link navbar-font navbar-button" href="/HardWhere/logout"><i class="bi bi-box-arrow-left"></i>Logout</a></li>
+        </ul>
+      </div>
     </div>
   </nav>
-        <!--button type="button" class="btn btn-prinary" href="/HardWhere/logout">Logout</button-->
-    <table class="table">
-      <thread>
-        <tr>
-            <th></th>
-            <th>Asset</th>
-            <th>Lent to</th>
+  <div class="h2 p-2">
+    Assets lent by you ({{User}})
+  </div>
+  <table class="table table-striped">
+    <thread>
+      <tr>
+        <th>Details</th>
+        <th>Asset</th>
+        <th>Lent to</th>
+        <th>Return date</th>
+      </tr>
+    </thread>
+      <tbody>
+        {{#each assets}}
+          <tr>
+            <td><a href="{{../url_base}}/hardware/{{id}}" class="p-2"><i class="bi bi-link"></i></a></td>
+            <td>{{asset_tag}}</td>
+            <td><a href="{{../url_base}}/users/{{assigned_to.id}}"><i class="bi bi-person-fill"></i>{{assigned_to.first_name}} {{assigned_to.last_name}}</a></td>
+            <td>-</td>
           </tr>
-        </thread>
-        <tbody>
-          {{#each assets}}
-            <tr>
-              <td><a href="{{../url_base}}/hardware/{{id}}">Link</a></td>
-              <td>{{asset_tag}}</td>
-              <td><a href="{{../url_base}}/users/{{assigned_to.id}}">{{assigned_to.first_name}} {{assigned_to.last_name}}</a></td>
-            </tr>
-          {{/each}}
+        {{/each}}
       </tbody>
     </table>
     <!--a href="/HardWhere/logout">Logout</a-->
 </body>
 </html>
+
