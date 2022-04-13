@@ -1,3 +1,4 @@
+//! /HardWhere/ webview
 use std::time::Duration;
 
 use actix_session::Session;
@@ -8,10 +9,12 @@ use serde_json::json;
 use actix_web::http::header::LOCATION;
 
 use crate::{cfg::Main, prelude::*, snipeit, types::{LoginData, API_KEY, AutoLoginPrepare, AutoLogin}, api, AutoLoginTokens};
-
+/// Browser view
+/// Displays assets lent or the login page, depending on login status
 pub(crate) async fn view(db: Data<Pool>, hb: web::Data<Handlebars<'_>>, session: Session, client: Data<Client>, cfg: web::Data<Main>) -> Result<HttpResponse> {
     let body = if let Some(api_key) = session.get::<String>(API_KEY)? {
         let token = HeaderValue::from_str(&api_key)?;
+        // request user info from snipeit
         let user = match snipeit::user(token.clone(), &client, &cfg.snipeit_url).await {
             Ok(u) => u,
             Err(Error::SnipeitBadRequest(s)) => {
@@ -25,8 +28,9 @@ pub(crate) async fn view(db: Data<Pool>, hb: web::Data<Handlebars<'_>>, session:
             },
             Err(e) => return Err(e),
         };
+        // request assets
         let assets = api::user_assets(user.id, db, token.clone(), &client, &cfg.snipeit_url).await?;
-
+        // render page
         let data = json!({
             "user": user.first_name,
             "assets": assets,
@@ -34,6 +38,7 @@ pub(crate) async fn view(db: Data<Pool>, hb: web::Data<Handlebars<'_>>, session:
         });
         hb.render("assets", &data)?
     } else {
+        // Invalid user / login, show login page
         let data = json!({
             "login_page": cfg.snipeit_url
         });
@@ -42,6 +47,7 @@ pub(crate) async fn view(db: Data<Pool>, hb: web::Data<Handlebars<'_>>, session:
     Ok(HttpResponse::Ok().body(body))
 }
 
+/// Manual login handling
 pub(crate) async fn login(params: web::Form<LoginData>, hb: web::Data<Handlebars<'_>>, session: Session, client: Data<Client>, cfg: web::Data<Main>) -> Result<HttpResponse> {
     trace!("Login action");
     let params = params.into_inner();
@@ -77,6 +83,7 @@ pub(crate) async fn snipeit_autologin_prepare(req: web::Json<AutoLoginPrepare>, 
     Ok(HttpResponse::Ok().finish())
 }
 
+/// Auto login handler
 pub(crate) async fn auto_login(hb: web::Data<Handlebars<'_>>, client: Data<Client>, path: web::Path<(String,)>, session: Session, cfg: web::Data<Main>, autologin_token: web::Data<AutoLoginTokens>) -> Result<HttpResponse> {
     info!("performing auto login");
     session.clear();
@@ -106,6 +113,7 @@ pub(crate) async fn auto_login(hb: web::Data<Handlebars<'_>>, client: Data<Clien
     Ok(HttpResponse::NotFound().body(body))
 }
 
+/// Logout handler
 pub(crate) async fn logout(hb: web::Data<Handlebars<'_>>, session: Session) -> Result<HttpResponse> {
     session.purge();
     let body = hb.render("logout", &())?;

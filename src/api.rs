@@ -1,3 +1,4 @@
+//! HardWhere App API
 use actix_web::{HttpRequest, HttpResponse, client::Client, http::HeaderValue, web};
 use mysql_async::Pool;
 use mysql_async::prelude::*;
@@ -7,6 +8,7 @@ use crate::types::*;
 
 use crate::{cfg::Main, prelude::*};
 
+/// Returns list of currently lent assets (to others)
 pub async fn lent_list(db: Data<Pool>, client: Data<Client>, cfg: web::Data<Main>, req: HttpRequest) -> Result<HttpResponse> {
     let token = snipeit::token(&req)?;
     let user = snipeit::user(token.clone(),&client, &cfg.snipeit_url).await?;
@@ -17,6 +19,7 @@ pub async fn lent_list(db: Data<Pool>, client: Data<Client>, cfg: web::Data<Main
     Ok(HttpResponse::Ok().json(assets))
 }
 
+/// List of assets a user has lent
 pub async fn user_assets(user: UID, db: Data<Pool>, token: HeaderValue, client: &Client, snipeit_url: &str) -> Result<Vec<Asset>> {
     let mut conn = db.get_conn().await?;
     let lents: Vec<i32> = conn.exec_map("SELECT `asset` FROM `lent` WHERE `user` = ?", (user,), |asset|asset).await?;
@@ -31,7 +34,7 @@ pub async fn user_assets(user: UID, db: Data<Pool>, token: HeaderValue, client: 
     }
     Ok(assets)
 }
-
+/// Checkout asset to user
 pub async fn lent_asset(data: web::Json<CheckoutRequest>, db: Data<Pool>, client: Data<Client>, cfg: web::Data<Main>, req: HttpRequest) -> Result<HttpResponse> {
     let token = snipeit::token(&req)?;
     let user = snipeit::user(token.clone(),&client, &cfg.snipeit_url).await?;
@@ -41,7 +44,7 @@ pub async fn lent_asset(data: web::Json<CheckoutRequest>, db: Data<Pool>, client
     conn.exec_drop("INSERT INTO `lent` (`user`,`asset`) VALUES(?,?) ON DUPLICATE KEY UPDATE `user`=VALUES(`user`)", (user.id,data.asset)).await?;
     Ok(HttpResponse::Ok().json(response))
 }
-
+/// Checkin asset
 pub async fn return_asset(data: web::Json<CheckinRequest>, db: Data<Pool>, client: Data<Client>, cfg: web::Data<Main>, req: HttpRequest) -> Result<HttpResponse> {
     let token = snipeit::token(&req)?;
     let user = snipeit::user(token.clone(),&client, &cfg.snipeit_url).await?;

@@ -1,4 +1,4 @@
-
+//! Error types and default imports
 
 use actix_web::{HttpResponse, ResponseError, client::{JsonPayloadError, SendRequestError}, http::header::InvalidHeaderValue};
 use handlebars::RenderError;

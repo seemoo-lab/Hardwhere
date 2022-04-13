@@ -1,3 +1,4 @@
+//! Snipeit API functions
 use actix_web::{HttpRequest, client::{Client, ClientResponse}, http::{HeaderValue, header::AUTHORIZATION}};
 
 

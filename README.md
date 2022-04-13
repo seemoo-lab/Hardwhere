@@ -18,6 +18,14 @@ Get rustc and run
 
 [#snipe-it]: https://github.com/snipe/snipe-it
 
+## Log settings for the daemon
+
+The `RUST_LOG` environment vairable can be set. Examples:
+`RUST_LOG=hardwhere_backend=trace` or for the full show `RUST_LOG=trace`
+You can also specify it for multiple moduls `RUST_LOG=hardwhere_backend=debug,actix_web=trace`.
+
+Possible values are trace,debug,info,warn,error
+
 ## Example apache config for backend
 
 ```apache2
@@ -29,7 +37,7 @@ ProxyPreserveHost Off
 ```
 
 # Structure
-- `src/` contains the additional backend, referred to as HardWhere-Backend, used for
+- `src/` contains the additional backend, referred to as HardWhere-Backend or daemon, used for
   - indexing who lent to whom
   - providing return/lent APIs for the app, so the index in the backend is updated at the same time
   - regularly making sure the default fieldset is applied to all models that have none

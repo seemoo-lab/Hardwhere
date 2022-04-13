@@ -1,3 +1,4 @@
+//! Lent-to-by indexer and default fieldset checker
 use std::time::Instant;
 
 use actix_web::{client::{Client, ClientBuilder}, http::{HeaderValue, header::{ACCEPT, CONTENT_TYPE}}};
@@ -13,16 +14,20 @@ const RETRIEVE_LIMIT: usize = 200;
 pub async fn refresh_index(config: &Main, db: &Pool) -> Result<()>{
     let client = ClientBuilder::new().header(ACCEPT,"application/json").header(CONTENT_TYPE,"application/json").finish();
     let token = HeaderValue::from_str(&format!("Bearer {}",config.snipeit_system_token)).unwrap();
+
     trace!("Requesting total item..");
     let total = snipeit::assets(0, 1, token.clone(), &client, &config.snipeit_url).await?.total;
     trace!("Total: {}",total);
+
     let mut done = 0;
     let mut conn = db.get_conn().await?;
+    // setup temporary table
     conn.exec_drop("DROP TABLE IF EXISTS `t_seen`", ()).await?;
     conn.exec_drop(SEEN_TEMP_TABLE, ()).await?;
     let mut checkedout = 0;
     let mut failed = 0;
     let start = Instant::now();
+    // iterate over all assets and check checkout status + history
     while done < total {
         trace!("Requesting assets {}-{}",done,done+RETRIEVE_LIMIT);
         let data = snipeit::assets(done, RETRIEVE_LIMIT, token.clone(), &client, &config.snipeit_url).await?;
@@ -54,7 +59,9 @@ pub async fn refresh_index(config: &Main, db: &Pool) -> Result<()>{
             }
         }
     }
+    // drop assets not seen in temp table (deleted)
     conn.exec_drop("DELETE FROM `lent` WHERE asset NOT IN (SELECT asset FROM `t_seen`)",()).await?;
+    // cleanup temp table
     conn.exec_drop("DROP TABLE `t_seen`",()).await?;
     let time = start.elapsed();
     info!("Indexed {} assets, {} checked out. Failed {}. {} ms",total,checkedout,failed,time.as_millis());
@@ -98,7 +105,7 @@ pub async fn check_default_fieldset(config: &Main) -> Result<()>{
         fieldset_id: Some(fieldset.id),
         ..Default::default()
     };
-
+    // iterate over all models and search for missing custom fieldsets
     while done < total {
         let data = snipeit::models(done, RETRIEVE_LIMIT, token.clone(),&client,&config.snipeit_url).await?;
         done += data.rows.len();
@@ -126,11 +133,11 @@ pub async fn check_default_fieldset(config: &Main) -> Result<()>{
     Ok(())
 }
 
-/// Retrieve fieldset by name
+/// Retrieve fieldset ID by its name
 async fn fieldset_by_name(name: &str, token: &HeaderValue, client: &Client, snipeit_url: &str) -> Result<Fieldset> {
     let total = snipeit::fieldsets(0,1,token.clone(),client,snipeit_url).await?.total as usize;
     let mut retrieved = 0;
-
+    // iterate over all custom fieldsets untill we find the matching one
     while retrieved < total {
         let data = snipeit::fieldsets(retrieved,RETRIEVE_LIMIT,token.clone(),client,snipeit_url).await?;
         retrieved += data.rows.len();

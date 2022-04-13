@@ -12,7 +12,6 @@ use prelude::*;
 use crate::types::AutoLoginTokens;
 
 mod cfg;
-mod authentication;
 mod snipeit;
 mod api;
 mod types;
@@ -23,6 +22,7 @@ const DB_VERSION: &str = "0.1";
 
 #[actix_web::main]
 async fn main() -> Result<()> {
+    // setup logging
     let mut builder = env_logger::Builder::new();
     builder.filter_level(LevelFilter::Warn);
     #[cfg(debug_assertions)]
@@ -32,7 +32,9 @@ async fn main() -> Result<()> {
     builder.parse_env("RUST_LOG");
     builder.init();
 
+    // config
     let config = cfg::Cfg::load()?;
+    // setup DB connection
     let bind = format!("{}:{}",config.main.listen_ip,config.main.listen_port);
     let cfg_db = config.db;
     let db_opts: Opts = OptsBuilder::default()
@@ -43,6 +45,7 @@ async fn main() -> Result<()> {
         .into();
     let db = mysql_async::Pool::new(db_opts);
     setup_db(&db).await?;
+    // setup session decryption key
     let key = config.main.session_encryption_key.as_bytes();
     let mut key = Vec::from(key);
     if key.len() < 32 {
@@ -50,8 +53,9 @@ async fn main() -> Result<()> {
         warn!("0-padding session encryption key, not long enough.")
     }
     let session_key: &'static [u8] = key.leak();
+
     let config_main = web::Data::new(config.main);
-    
+    // template engine
     let mut handlebars = Handlebars::new();
     handlebars
     .register_templates_directory(".html", "./static/templates")
@@ -83,6 +87,7 @@ async fn main() -> Result<()> {
 
     let db_c = db.clone();
     info!("Listening on {}",bind);
+    // setup webserver
     HttpServer::new(move || {
         App::new()
             .app_data(config_main.clone())
@@ -123,6 +128,7 @@ async fn main() -> Result<()> {
     Ok(())
 }
 
+/// Setup database connection and tables
 async fn setup_db(pool: &Pool) -> Result<()> {
     let setup = include_str!("setup.sql");
     let mut conn = pool.get_conn().await?;
