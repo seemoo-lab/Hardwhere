@@ -1,0 +1,17 @@
+.navbar-brand-img {
+    max-height: 45px;
+}
+.navbar-font {
+    color: white;
+    text-decoration: none;
+}
+.header-font {
+    font-size: 20px;
+}
+.navbar-button:hover {
+    background-color: #337ab7;
+    color: white;
+}
+.navbar-background {
+    background-color: #3c8dbc;
+}
