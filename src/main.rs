@@ -58,21 +58,24 @@ async fn main() -> Result<()> {
     .expect("Can't initialize templates!");
     let handlebars_ref = web::Data::new(handlebars);
 
-    indexer::check_default_fieldset(&config_main).await?;
-
     let db_c = db.clone();
     let config_main_c = config_main.clone();
     spawn(async move {
-        let wait_time = std::time::Duration::from_secs(60*20);
+        let wait_time = std::time::Duration::from_secs(config_main_c.indexing_refresh_seconds);
         let mut interval = actix_web::rt::time::interval(wait_time);
+        // first tick doesn't trigger wait
+        interval.tick().await;
         loop {
             if let Err(e) = indexer::refresh_index(&config_main_c, &db_c).await {
                 error!("Failed to index: {}",e);
             }
-            // first tick doesn't trigger wait
-            if interval.tick().await.elapsed() < wait_time {
-                interval.tick().await;
+
+            if let Err(e) = indexer::check_default_fieldset(&config_main_c).await {
+                error!("Failed to check default fieldsets: {}",e);
             }
+
+            // wait for next tick
+            interval.tick().await;
         }
     });
 

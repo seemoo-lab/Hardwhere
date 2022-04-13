@@ -25,6 +25,7 @@ pub struct Main {
     pub session_secure: bool,
     pub autologin_token_ttl: u32,
     pub default_fieldset: String,
+    pub indexing_refresh_seconds: u64,
 }
 
 #[derive(Serialize, Deserialize, Debug, Default)]

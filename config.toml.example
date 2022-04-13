@@ -20,6 +20,8 @@ autologin_token_ttl = 60
 
 # fieldset to be added to every group
 default_fieldset = "Default"
+# time in seconds untill next indexing refresh
+indexing_refresh_seconds = 1200
 
 [db]
 ip = "127.0.0.1"
