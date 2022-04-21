@@ -7,26 +7,20 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-#sqlx = { version = "0.5", features = [ "runtime-actix-native-tls" ] }
-
 # has to be a version matching actix-webs tokio runtime version
-mysql_async = "0.25.1"
-actix-web = {version = "3", features = ["openssl"]}
-actix-files = "0.4"
+mysql_async = "0.29"
+actix-web = {version = "4", features = ["openssl"]}
+actix-files = "0.6"
 # use the same as actix-web
 serde_json = "1.0.64"
-handlebars = { version = "3", features = ["dir_source"] }
-actix-session = "0.4"
-# all based on actix-service
-#actix-service = "1"
-#futures = "0.3.1"
-#pin-project = "0.4"
+handlebars = { version = "4.2", features = ["dir_source"] }
+actix-session = "0.5"
 
+# web client
+awc = "3"
 
 serde = {version = "1", features = ["derive"] }
 toml = "0.5"
-
-#ttl_cache = "0.5"
 
 log = "0.4"
 env_logger = "0.9"

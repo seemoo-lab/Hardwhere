@@ -1,6 +1,7 @@
 //! Error types and default imports
 
-use actix_web::{HttpResponse, ResponseError, client::{JsonPayloadError, SendRequestError}, http::header::InvalidHeaderValue};
+use actix_web::{http::header::InvalidHeaderValue, HttpResponse, ResponseError};
+use awc::error::{JsonPayloadError, SendRequestError};
 use handlebars::RenderError;
 pub use log::*;
 use thiserror::Error;
@@ -18,8 +19,6 @@ pub enum Error {
     Config(#[from] toml::de::Error),
     #[error("Request invalid, missing valid authorization")]
     MissingAuthorization,
-    #[error("Invalid login token")]
-    InvalidAuthorization,
     #[error("Failed to send snipeit API cmd {0}")]
     ClientError(#[from] SendRequestError),
     #[error("Invalid snipeit request: response {0:?}")]
@@ -28,12 +27,6 @@ pub enum Error {
     Snipeit(SnipeitResult),
     #[error("Can't parse response from snipeit {0}")]
     SnipeitJsonResponse(#[from] JsonPayloadError),
-    #[error("Invalid payload, expected {expected:?} for {key} got {found:?}")]
-    SnipeitPayloadError{
-        key: &'static str,
-        expected: serde_json::Value,
-        found: Option<serde_json::Value>,
-    },
     #[error("No correct checkout activity found in the logs for {0}")]
     NoCheckoutActivity(AssetId),
     #[error("Invalid header value")]
@@ -48,16 +41,13 @@ pub enum Error {
 
 impl ResponseError for Error {
     fn error_response(&self) -> HttpResponse {
-        error!("Error {}",self);
+        error!("Error {}", self);
         match self {
             Error::MissingAuthorization => HttpResponse::BadRequest().finish(),
-            Error::InvalidAuthorization => HttpResponse::Unauthorized().finish(),
             Error::Snipeit(v) => HttpResponse::BadRequest().json(v),
             _ => HttpResponse::InternalServerError().finish(),
         }
-        
     }
 }
 
-pub type Result<T> = std::result::Result<T,Error>;
-
+pub type Result<T> = std::result::Result<T, Error>;

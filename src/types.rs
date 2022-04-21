@@ -1,6 +1,5 @@
 //! Type definitions
 use std::collections::HashMap;
-use std::sync::Arc;
 use std::sync::Mutex;
 use std::time::Duration;
 use std::time::Instant;
@@ -22,7 +21,7 @@ impl AutoLogin {
     pub fn new(api_token: String, ttl: Duration) -> Self {
         Self {
             api_token,
-            valid_till: Instant::now()+ttl
+            valid_till: Instant::now() + ttl,
         }
     }
 
@@ -35,9 +34,9 @@ impl AutoLogin {
     }
 }
 
-pub type AutoLoginTokens = Arc<Mutex<HashMap<String,AutoLogin>>>;
+pub type AutoLoginTokens = actix_web::web::Data<Mutex<HashMap<String, AutoLogin>>>;
 
-#[derive(Debug,Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct AutoLoginPrepare {
     pub api_token: String,
     pub login_token: String,
@@ -81,7 +80,7 @@ pub enum ItemType {
     #[serde(rename = "asset")]
     Asset,
     #[serde(rename = "user")]
-    User
+    User,
 }
 
 #[derive(Deserialize, Debug, Eq, PartialEq)]
@@ -122,7 +121,7 @@ pub struct AssetModel {
 #[derive(Deserialize, Debug)]
 pub struct FieldsetList {
     pub total: usize,
-    pub rows: Vec<Fieldset>
+    pub rows: Vec<Fieldset>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -146,13 +145,13 @@ pub struct Asset {
     pub model: AssetModelLight,
     #[serde(default)]
     pub assigned_to: Option<MaybeAssignee>,
-    pub custom_fields: Option<serde_json::Value>
+    pub custom_fields: Option<serde_json::Value>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct AssetModelLight {
     pub id: i32,
-    pub name: String
+    pub name: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -173,7 +172,7 @@ pub enum Assignee {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct AssigneeLocation {
     id: UID,
-    name: String
+    name: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -224,7 +223,7 @@ pub struct SnipeitResult {
     pub status: SUCCESS_STATUS,
     pub messages: String,
     #[serde(default)]
-    pub payload: Option<HashMap<String,serde_json::Value>>,
+    pub payload: Option<HashMap<String, serde_json::Value>>,
 }
 
 impl SnipeitResult {
@@ -236,28 +235,20 @@ impl SnipeitResult {
             SUCCESS_STATUS::error => Err(crate::prelude::Error::Snipeit(self)),
         }
     }
-
-    pub fn success() -> Self {       
-        Self {
-            status: SUCCESS_STATUS::success,
-            messages: "".to_string(),
-            payload: None,
-        }
-    }
 }
 
 #[derive(Deserialize, Debug)]
 #[serde(untagged)]
 pub enum SnipeItMessage {
-    Many(Vec<HashMap<String,Vec<String>>>),
-    Single(String)
+    Many(Vec<HashMap<String, Vec<String>>>),
+    Single(String),
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 #[allow(non_camel_case_types)]
 pub enum SUCCESS_STATUS {
     success,
-    error
+    error,
 }
 
 #[derive(Deserialize, Debug)]
@@ -268,16 +259,16 @@ pub struct CheckoutRequest {
 
 #[derive(Deserialize, Debug)]
 pub struct CheckinRequest {
-    pub asset: AssetId
+    pub asset: AssetId,
 }
 
 #[derive(Deserialize)]
 pub struct LoginData {
-    pub api_key: String
+    pub api_key: String,
 }
 
 /// Send only patch data for models
-#[derive(Serialize,Default)]
+#[derive(Serialize, Default)]
 pub struct ModelPatch {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub fieldset_id: Option<i32>,

@@ -1,21 +1,27 @@
-use std::{collections::HashMap, sync::{Arc, Mutex}};
+use std::{collections::HashMap, sync::Mutex};
 
 use actix_files::Files;
 use actix_session::CookieSession;
-use actix_web::{App, HttpServer, client::{ClientBuilder}, http::header::{ACCEPT, CONTENT_TYPE}, middleware::{Logger}, rt::spawn, web};
+use actix_web::{
+    http::header::{ACCEPT, CONTENT_TYPE},
+    middleware::Logger,
+    rt::spawn,
+    web, App, HttpServer,
+};
+use awc::ClientBuilder;
 use handlebars::Handlebars;
-use mysql_async::{Opts, OptsBuilder, Pool, prelude::*};
+use mysql_async::{prelude::*, Opts, OptsBuilder, Pool};
 
 mod prelude;
 use prelude::*;
 
 use crate::types::AutoLoginTokens;
 
-mod cfg;
-mod snipeit;
 mod api;
-mod types;
+mod cfg;
 mod indexer;
+mod snipeit;
+mod types;
 mod webview;
 
 const DB_VERSION: &str = "0.1";
@@ -35,7 +41,7 @@ async fn main() -> Result<()> {
     // config
     let config = cfg::Cfg::load()?;
     // setup DB connection
-    let bind = format!("{}:{}",config.main.listen_ip,config.main.listen_port);
+    let bind = format!("{}:{}", config.main.listen_ip, config.main.listen_port);
     let cfg_db = config.db;
     let db_opts: Opts = OptsBuilder::default()
         .ip_or_hostname(cfg_db.ip)
@@ -49,7 +55,7 @@ async fn main() -> Result<()> {
     let key = config.main.session_encryption_key.as_bytes();
     let mut key = Vec::from(key);
     if key.len() < 32 {
-        key.resize(32,0);
+        key.resize(32, 0);
         warn!("0-padding session encryption key, not long enough.")
     }
     let session_key: &'static [u8] = key.leak();
@@ -58,8 +64,8 @@ async fn main() -> Result<()> {
     // template engine
     let mut handlebars = Handlebars::new();
     handlebars
-    .register_templates_directory(".html", "./static/templates")
-    .expect("Can't initialize templates!");
+        .register_templates_directory(".html", "./static/templates")
+        .expect("Can't initialize templates!");
     let handlebars_ref = web::Data::new(handlebars);
 
     let db_c = db.clone();
@@ -71,11 +77,11 @@ async fn main() -> Result<()> {
         interval.tick().await;
         loop {
             if let Err(e) = indexer::refresh_index(&config_main_c, &db_c).await {
-                error!("Failed to index: {}",e);
+                error!("Failed to index: {}", e);
             }
 
             if let Err(e) = indexer::check_default_fieldset(&config_main_c).await {
-                error!("Failed to check default fieldsets: {}",e);
+                error!("Failed to check default fieldsets: {}", e);
             }
 
             // wait for next tick
@@ -83,12 +89,20 @@ async fn main() -> Result<()> {
         }
     });
 
-    let auto_login_tokens: AutoLoginTokens = Arc::new(Mutex::new(HashMap::new()));
+    let auto_login_tokens: AutoLoginTokens = web::Data::new(Mutex::new(HashMap::new()));
 
     let db_c = db.clone();
-    info!("Listening on {}",bind);
+    info!("Listening on {}", bind);
     // setup webserver
     HttpServer::new(move || {
+        // client constructed inside, one per worker thread
+        let web_client = web::Data::new(
+            ClientBuilder::new()
+                .add_default_header((ACCEPT, "application/json"))
+                .add_default_header((CONTENT_TYPE, "application/json"))
+                .finish(),
+        );
+
         App::new()
             .app_data(config_main.clone())
             .app_data(handlebars_ref.clone())
@@ -100,29 +114,34 @@ async fn main() -> Result<()> {
                     .secure(config_main.session_secure)
                     .same_site(actix_web::cookie::SameSite::Strict)
                     .lazy(true)
-                    .http_only(true))
-            .data(db_c.clone())
-            .data(auto_login_tokens.clone())
-            .data(ClientBuilder::new().header(ACCEPT,"application/json").header(CONTENT_TYPE,"application/json").finish())
+                    .http_only(true),
+            )
+            .app_data(db_c.clone())
+            .app_data(auto_login_tokens.clone())
+            .app_data(web_client)
             // developer for local testing
-            
-            // .service(web::scope("/HardWhere")
-            
-            .service(web::resource("/api/checkedout").route(web::get().to(api::lent_list)))
-            .service(web::resource("/api/checkout").route(web::post().to(api::lent_asset)))
-            .service(web::resource("/api/checkin").route(web::post().to(api::return_asset)))
-            .service(web::resource("/internal/autologin").route(web::post().to(webview::snipeit_autologin_prepare)))
-            .service(web::resource("/").route(web::get().to(webview::view)))
-            .service(web::resource("/login").route(web::post().to(webview::login)))
-            .service(web::resource("/logout").route(web::get().to(webview::logout)))
-            .service(web::resource("/autologin/{auth_token}").route(web::get().to(webview::auto_login)))
-            .service(Files::new("/static", "static/").show_files_listing())
-            
-            // )
+            .service(
+                web::scope("/HardWhere")
+                    .service(web::resource("/api/checkedout").route(web::get().to(api::lent_list)))
+                    .service(web::resource("/api/checkout").route(web::post().to(api::lent_asset)))
+                    .service(web::resource("/api/checkin").route(web::post().to(api::return_asset)))
+                    .service(
+                        web::resource("/internal/autologin")
+                            .route(web::post().to(webview::snipeit_autologin_prepare)),
+                    )
+                    .service(web::resource("/").route(web::get().to(webview::view)))
+                    .service(web::resource("/login").route(web::post().to(webview::login)))
+                    .service(web::resource("/logout").route(web::get().to(webview::logout)))
+                    .service(
+                        web::resource("/autologin/{auth_token}")
+                            .route(web::get().to(webview::auto_login)),
+                    )
+                    .service(Files::new("/static", "static/").show_files_listing()),
+            )
     })
-        .bind(&bind)?
-        .run()
-        .await?;
+    .bind(&bind)?
+    .run()
+    .await?;
     // db cleanup
     db.disconnect().await?;
     Ok(())
@@ -132,13 +151,13 @@ async fn main() -> Result<()> {
 async fn setup_db(pool: &Pool) -> Result<()> {
     let setup = include_str!("setup.sql");
     let mut conn = pool.get_conn().await?;
-    let tables: Vec<String> = conn.query_map("SHOW TABLES", |v|v).await?;
+    let tables: Vec<String> = conn.query_map("SHOW TABLES", |v| v).await?;
     let version: Option<String> = match tables.contains(&String::from("version")) {
         true => conn.query_first("SELECT `version` FROM `version`").await?,
-        false => None
+        false => None,
     };
     if let Some(v) = version {
-        debug!("DB found, version {}",v);
+        debug!("DB found, version {}", v);
         // TODO for upgrades
     } else {
         info!("setting up DB");
@@ -149,7 +168,8 @@ async fn setup_db(pool: &Pool) -> Result<()> {
             }
         }
         trace!("Setting DB version");
-        conn.exec_drop("INSERT INTO `version` (`version`) VALUES(?)",(DB_VERSION,)).await?;
+        conn.exec_drop("INSERT INTO `version` (`version`) VALUES(?)", (DB_VERSION,))
+            .await?;
     }
     Ok(())
 }

@@ -2,7 +2,6 @@ use crate::prelude::*;
 use serde::Deserialize;
 use serde::Serialize;
 use std::fs::read_to_string;
-use std::time::Duration;
 use toml;
 
 /// Config wrapper handling loading & validation
