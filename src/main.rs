@@ -119,7 +119,6 @@ async fn main() -> Result<()> {
             .app_data(web::Data::new(db_c.clone()))
             .app_data(auto_login_tokens.clone())
             .app_data(web_client)
-            // developer for local testing
             .service(
                 web::scope("/HardWhere")
                     .service(web::resource("/api/checkedout").route(web::get().to(api::lent_list)))

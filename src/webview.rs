@@ -104,7 +104,7 @@ pub(crate) async fn login(
 pub(crate) async fn snipeit_autologin_prepare(
     req: web::Json<AutoLoginPrepare>,
     cfg: web::Data<Main>,
-    autologin_token: web::Data<AutoLoginTokens>,
+    autologin_token: AutoLoginTokens,
 ) -> Result<HttpResponse> {
     info!("Received autologin prepare request");
     let req = req.into_inner();
@@ -126,7 +126,7 @@ pub(crate) async fn auto_login(
     path: web::Path<(String,)>,
     session: Session,
     cfg: web::Data<Main>,
-    autologin_token: web::Data<AutoLoginTokens>,
+    autologin_token: AutoLoginTokens,
 ) -> Result<HttpResponse> {
     info!("performing auto login");
     session.clear();
