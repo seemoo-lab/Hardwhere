@@ -106,7 +106,6 @@ async fn main() -> Result<()> {
         App::new()
             .app_data(config_main.clone())
             .app_data(handlebars_ref.clone())
-            .wrap(Logger::default())
             .wrap(
                 CookieSession::private(&session_key)
                     .name("actix_session")
@@ -116,6 +115,7 @@ async fn main() -> Result<()> {
                     .lazy(true)
                     .http_only(true),
             )
+            .wrap(Logger::default())
             .app_data(db_c.clone())
             .app_data(auto_login_tokens.clone())
             .app_data(web_client)
