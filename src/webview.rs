@@ -24,7 +24,7 @@ use crate::{
 /// Displays assets lent or the login page, depending on login status
 pub(crate) async fn view(
     db: Data<Pool>,
-    hb: web::Data<Handlebars<'_>>,
+    hb: Data<Handlebars<'_>>,
     session: Session,
     client: Data<Client>,
     cfg: web::Data<Main>,

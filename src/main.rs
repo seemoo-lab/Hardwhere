@@ -116,7 +116,7 @@ async fn main() -> Result<()> {
                     .http_only(true),
             )
             .wrap(Logger::default())
-            .app_data(db_c.clone())
+            .app_data(web::Data::new(db_c.clone()))
             .app_data(auto_login_tokens.clone())
             .app_data(web_client)
             // developer for local testing
