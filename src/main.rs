@@ -32,9 +32,15 @@ async fn main() -> Result<()> {
     let mut builder = env_logger::Builder::new();
     builder.filter_level(LevelFilter::Warn);
     #[cfg(debug_assertions)]
+    {
     builder.filter_module(env!("CARGO_CRATE_NAME"), LevelFilter::Trace);
+    builder.filter_module("actix_web", LevelFilter::Debug);
+    }
     #[cfg(not(debug_assertions))]
+    {
     builder.filter_module(env!("CARGO_CRATE_NAME"), LevelFilter::Info);
+    builder.filter_module("actix_web", LevelFilter::Warn);
+    }
     builder.parse_env("RUST_LOG");
     builder.init();
 
