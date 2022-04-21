@@ -33,9 +33,11 @@ The daemon is expected to be present on <domain>/HardWhere for the app.
 ```apache2
 <VirtualHost *:443>
 [...]
-ProxyPass "/HardWhere" http://127.0.0.1:8000
-ProxyPassReverse "/HardWhere" http://127.0.0.1:8000
-ProxyPreserveHost Off
+  <Location /HardWhere>
+      ProxyPass http://127.0.0.1:8000/HardWhere
+      ProxyPassReverse http://127.0.0.1:8000/HardWhere
+      ProxyPreserveHost On
+  </Location>
 ```
 
 # Structure
