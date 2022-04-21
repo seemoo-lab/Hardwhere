@@ -2,7 +2,7 @@
 
 SEEMOO Accessories Retrieval System (HardWhere)
 
-App + additional Functions based on [snipe-it]
+App + who-lent-to-whom functions based on [snipe-it]
 
 This repo contains the mobile app, the required snipe-it patches and the "lent-by" backend that works in tandem with [snipe-it]
 
@@ -28,6 +28,8 @@ Possible values are trace,debug,info,warn,error
 
 ## Example apache config for backend
 
+Running the daemon together on the same machine with snipeit.
+The daemon is expected to be present on <domain>/HardWhere for the app.
 ```apache2
 <VirtualHost *:443>
 [...]
@@ -51,3 +53,5 @@ ProxyPreserveHost Off
 You can open this folder as an android App in android studio and in VS Code for the HardWhere-Backend. It is recommended to use VS Code with the rust-analyzer plugin for it.
 
 You can build the app via gradle or in android studio. HardWhere-Backend can be build using `cargo build --release`, `--release` being optional.
+
+For the integration with snipeit you'll have to upgrade hardwhere.patch for new snipeit versions.
