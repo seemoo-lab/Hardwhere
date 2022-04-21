@@ -3,8 +3,8 @@ use std::{collections::HashMap, sync::Mutex};
 use actix_files::Files;
 use actix_session::CookieSession;
 use actix_web::{
-    http::header::{ACCEPT, CONTENT_TYPE},
-    middleware::Logger,
+    http::{header::{ACCEPT, CONTENT_TYPE}, StatusCode},
+    middleware::{Logger, ErrorHandlers},
     rt::spawn,
     web, App, HttpServer,
 };
@@ -15,7 +15,7 @@ use mysql_async::{prelude::*, Opts, OptsBuilder, Pool};
 mod prelude;
 use prelude::*;
 
-use crate::types::AutoLoginTokens;
+use crate::{types::AutoLoginTokens, webview::error_handler};
 
 mod api;
 mod cfg;
@@ -121,6 +121,7 @@ async fn main() -> Result<()> {
                     .lazy(true)
                     .http_only(true),
             )
+            //.wrap(ErrorHandlers::new().handler(StatusCode::INTERNAL_SERVER_ERROR, error_handler))
             .wrap(Logger::default())
             .app_data(web::Data::new(db_c.clone()))
             .app_data(auto_login_tokens.clone())
@@ -134,6 +135,7 @@ async fn main() -> Result<()> {
                         web::resource("/internal/autologin")
                             .route(web::post().to(webview::snipeit_autologin_prepare)),
                     )
+                    .service(web::resource("").route(web::get().to(webview::view)))
                     .service(web::resource("/").route(web::get().to(webview::view)))
                     .service(web::resource("/login").route(web::post().to(webview::login)))
                     .service(web::resource("/logout").route(web::get().to(webview::logout)))
@@ -141,7 +143,7 @@ async fn main() -> Result<()> {
                         web::resource("/autologin/{auth_token}")
                             .route(web::get().to(webview::auto_login)),
                     )
-                    .service(Files::new("/static", "static/").show_files_listing()),
+                    .service(Files::new("/static", "static/").show_files_listing())
             )
     })
     .bind(&bind)?

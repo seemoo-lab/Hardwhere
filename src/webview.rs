@@ -2,7 +2,9 @@
 use std::time::Duration;
 
 use actix_session::Session;
+use actix_web::dev;
 use actix_web::http::header::LOCATION;
+use actix_web::middleware::ErrorHandlerResponse;
 use actix_web::{
     web::{self, Data},
     HttpResponse,
@@ -175,3 +177,8 @@ pub(crate) async fn logout(
         .append_header((LOCATION, "/HardWhere/"))
         .body(body))
 }
+
+// pub(crate) fn error_handler<B>(mut res: dev::ServiceResponse<B>) -> Result<ErrorHandlerResponse<B>> {
+//     res.response_mut().set_body(format!("Error: {}",res.status()));
+//     Ok(ErrorHandlerResponse::Response(res.map_into_left_body()))
+// }
