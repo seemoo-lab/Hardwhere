@@ -372,6 +372,7 @@ dependencies = [
  "itoa",
  "log",
  "mime",
+ "openssl",
  "percent-encoding",
  "pin-project-lite",
  "rand",

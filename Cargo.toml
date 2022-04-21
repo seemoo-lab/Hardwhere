@@ -17,7 +17,7 @@ handlebars = { version = "4.2", features = ["dir_source"] }
 actix-session = "0.5"
 
 # web client
-awc = "3"
+awc = { version = "3", features = ["openssl"] }
 
 serde = {version = "1", features = ["derive"] }
 toml = "0.5"

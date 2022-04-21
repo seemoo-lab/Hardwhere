@@ -44,7 +44,7 @@ ProxyPreserveHost Off
   - providing return/lent APIs for the app, so the index in the backend is updated at the same time
   - regularly making sure the default fieldset is applied to all models that have none
   - providing a webview on https://<domain>/HardWhere/ for inspecting lent assets without using the app
-- `static/` is part of the HardWhere-Backend, containing templates, CSS icons and other stuff for the webview
+- `static/` is part of the HardWhere-Backend, containing templates, CSS icons and other stuff for the webview, it's required to be relative to the daemon application
 - `hardwhere.patch` contains code applied to snipeit to provide app login via QR code and auto-login from the snipeit menu into the HardWhere-Backend webview
 - `app/` contains the sourcecode for the android app
 - `res/` app resources
