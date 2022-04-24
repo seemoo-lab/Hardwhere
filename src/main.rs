@@ -15,7 +15,7 @@ use mysql_async::{prelude::*, Opts, OptsBuilder, Pool};
 mod prelude;
 use prelude::*;
 
-use crate::{types::AutoLoginTokens, webview::error_handler};
+use crate::types::AutoLoginTokens;
 
 mod api;
 mod cfg;
