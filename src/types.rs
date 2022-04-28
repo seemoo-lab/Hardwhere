@@ -148,6 +148,14 @@ pub struct Asset {
     #[serde(default)]
     pub assigned_to: Option<MaybeAssignee>,
     pub custom_fields: Option<serde_json::Value>,
+    pub expected_checkin: Option<DateField>,
+}
+
+/// Date representation by snipeit
+#[derive(Serialize, Deserialize, Debug)]
+pub struct DateField {
+    date: String,
+    formatted: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]

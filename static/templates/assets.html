@@ -42,7 +42,7 @@
             <td><a href="{{../url_base}}/hardware/{{id}}" class="p-2"><i class="bi bi-link"></i></a></td>
             <td>{{asset_tag}}</td>
             <td><a href="{{../url_base}}/users/{{assigned_to.id}}"><i class="bi bi-person-fill"></i>{{assigned_to.first_name}} {{assigned_to.last_name}}</a></td>
-            <td>-</td>
+            <td>{{expected_checkin.date}}</td>
           </tr>
         {{/each}}
       </tbody>
