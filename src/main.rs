@@ -3,8 +3,11 @@ use std::{collections::HashMap, sync::Mutex};
 use actix_files::Files;
 use actix_session::CookieSession;
 use actix_web::{
-    http::{header::{ACCEPT, CONTENT_TYPE}, StatusCode},
-    middleware::{Logger, ErrorHandlers},
+    http::{
+        header::{ACCEPT, CONTENT_TYPE},
+        StatusCode,
+    },
+    middleware::{ErrorHandlers, Logger},
     rt::spawn,
     web, App, HttpServer,
 };
@@ -33,13 +36,13 @@ async fn main() -> Result<()> {
     builder.filter_level(LevelFilter::Warn);
     #[cfg(debug_assertions)]
     {
-    builder.filter_module(env!("CARGO_CRATE_NAME"), LevelFilter::Trace);
-    builder.filter_module("actix_web", LevelFilter::Debug);
+        builder.filter_module(env!("CARGO_CRATE_NAME"), LevelFilter::Trace);
+        builder.filter_module("actix_web", LevelFilter::Debug);
     }
     #[cfg(not(debug_assertions))]
     {
-    builder.filter_module(env!("CARGO_CRATE_NAME"), LevelFilter::Info);
-    builder.filter_module("actix_web", LevelFilter::Warn);
+        builder.filter_module(env!("CARGO_CRATE_NAME"), LevelFilter::Info);
+        builder.filter_module("actix_web", LevelFilter::Warn);
     }
     builder.parse_env("RUST_LOG");
     builder.init();
@@ -143,7 +146,7 @@ async fn main() -> Result<()> {
                         web::resource("/autologin/{auth_token}")
                             .route(web::get().to(webview::auto_login)),
                     )
-                    .service(Files::new("/static", "static/").show_files_listing())
+                    .service(Files::new("/static", "static/").show_files_listing()),
             )
     })
     .bind(&bind)?

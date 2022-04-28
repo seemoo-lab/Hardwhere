@@ -20,7 +20,7 @@ pub async fn refresh_index(config: &Main, db: &Pool) -> Result<()> {
         .finish();
     let token = HeaderValue::from_str(&format!("Bearer {}", config.snipeit_system_token)).unwrap();
 
-    trace!("Requesting total item..");
+    trace!("Requesting total items..");
     let total = snipeit::assets(0, 1, token.clone(), &client, &config.snipeit_url)
         .await?
         .total;
