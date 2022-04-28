@@ -11,6 +11,8 @@ pub type UID = i32;
 pub type AssetId = i32;
 
 pub const API_KEY: &'static str = "api_key";
+/// Cookie session TTL, encoded into encrypted data
+pub const SESSION_TTL_KEY: &'static str = "session_ttl";
 
 pub struct AutoLogin {
     api_token: String,

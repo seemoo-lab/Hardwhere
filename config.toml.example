@@ -17,6 +17,8 @@ admin_password = ""
 session_encryption_key = "42"
 # set to true to allow only HTTPS access with session cookies
 session_secure = false
+# time the session for the webview is valid
+session_ttl_secs = 1200
 # time the auto-login token is valid, seconds
 autologin_token_ttl = 60
 

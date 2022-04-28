@@ -1,6 +1,6 @@
 //! /HardWhere/ webview
-use std::time::Duration;
-
+use std::time::{Duration, UNIX_EPOCH, SystemTime};
+use std::str::FromStr;
 use actix_session::Session;
 use actix_web::dev;
 use actix_web::http::header::LOCATION;
@@ -14,6 +14,7 @@ use handlebars::Handlebars;
 use mysql_async::Pool;
 use serde_json::json;
 
+use crate::types::SESSION_TTL_KEY;
 use crate::{
     api,
     cfg::Main,
@@ -31,7 +32,7 @@ pub(crate) async fn view(
     client: Data<Client>,
     cfg: web::Data<Main>,
 ) -> Result<HttpResponse> {
-    let body = if let Some(api_key) = session.get::<String>(API_KEY)? {
+    let body = if let Some(api_key) = get_api_key(&session,&cfg)? {
         let token = HeaderValue::from_str(&api_key)?;
         // request user info from snipeit
         let user = match snipeit::user(token.clone(), &client, &cfg.snipeit_url).await {
@@ -56,9 +57,13 @@ pub(crate) async fn view(
             "assets": assets,
             "url_base": cfg.snipeit_url
         });
+        // renew token
+        set_api_key(&session,&api_key,&cfg)?;
+        // render view
         hb.render("assets", &data)?
     } else {
         // Invalid user / login, show login page
+        session.purge();
         let data = json!({
             "login_page": cfg.snipeit_url
         });
@@ -95,7 +100,7 @@ pub(crate) async fn login(
         "user": user.first_name
     });
     let body = hb.render("login_successful", &data)?;
-    session.insert(API_KEY, api_token)?;
+    set_api_key(&session,&api_token,&cfg)?;
 
     Ok(HttpResponse::Found()
         .append_header((LOCATION, "/HardWhere/"))
@@ -146,7 +151,7 @@ pub(crate) async fn auto_login(
         .await
         {
             Ok(_u) => {
-                session.insert(API_KEY, api_token)?;
+                set_api_key(&session,&api_token,&cfg)?;
                 return Ok(HttpResponse::TemporaryRedirect()
                     .append_header((LOCATION, "/HardWhere/"))
                     .body("Login successfull"));
@@ -176,6 +181,59 @@ pub(crate) async fn logout(
     Ok(HttpResponse::Found()
         .append_header((LOCATION, "/HardWhere/"))
         .body(body))
+}
+
+// retrieve session api token if still valid
+// fn decode_session_cookie(data: String) -> Option<String> {
+//     if let Some((ttl,token)) = data.split_once(' ') {
+//         let now = time_now_secs();
+//         match u64::from_str(ttl) {
+//             Ok(v) => if v < now {Some(token.to_owned())} else {None},
+//             Err(_) => {
+//                 info!("Ignoring session cookie, missing timestamp");
+//                 None
+//             },
+//         }
+//     } else {
+//         info!("Ignoring invalid session cookie");
+//         return None;
+//     }
+// }
+
+/// retrieve session api token if still valid
+fn get_api_key(ses: &Session, cfg: &Main) -> Result<Option<String>> {
+    let key = match ses.get::<String>(API_KEY)?{
+        Some(v) => v,
+        None => {debug!("Missing API_KEY in session"); return Ok(None) },
+    };
+    let ttl = match ses.get::<u64>(SESSION_TTL_KEY)? {
+        Some(v) => v,
+        None => {debug!("Missing SESSION_TTL_KEY in session"); return Ok(None) },
+    };
+
+    // We encode the point in time the session was created.
+    // We could also just encode the maximum point in time this session is valid,
+    // but this way we can enforce a changed TTL for existing sessions.
+    if ttl + cfg.session_ttl_secs > time_now_secs() {
+        Ok(Some(key))
+    } else {
+        debug!("Session timed out");
+        Ok(None)
+    }
+}
+
+/// Encode session cookie data (api token with TTL)
+fn set_api_key(ses: &Session, api_key: &str, cfg: &Main) -> Result<()> {
+    ses.insert(API_KEY, api_key)?;
+    ses.insert(SESSION_TTL_KEY, time_now_secs())?;
+
+    Ok(())
+}
+
+// Retrieve current time
+fn time_now_secs() -> u64 {
+    // should only panic "if earlier is later than self", at which point there is nothing to do
+    SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs()
 }
 
 // pub(crate) fn error_handler<B>(mut res: dev::ServiceResponse<B>) -> Result<ErrorHandlerResponse<B>> {

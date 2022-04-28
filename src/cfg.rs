@@ -22,6 +22,7 @@ pub struct Main {
     pub admin_password: String,
     pub session_encryption_key: String,
     pub session_secure: bool,
+    pub session_ttl_secs: u64,
     pub autologin_token_ttl: u32,
     pub default_fieldset: String,
     pub indexing_refresh_seconds: u64,
