@@ -11,7 +11,7 @@ import de.tu_darmstadt.seemoo.HardWhere.data.model.ResultAsset
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import io.sentry.core.Sentry
+import org.acra.ACRA
 
 /**
  * View Model for unifying scanlist view models containing main list, update, change finish
@@ -99,7 +99,7 @@ abstract class ScanListViewModel: ProgressViewModel() {
                 decLoading()
                 Log.w(this@ScanListViewModel::class.java.name, "Error: $it")
                 _error.postValue(Pair(R.string.error_fetch_update,it))
-                Sentry.captureException(it)
+                ACRA.errorReporter.handleException(it)
             }
     }
 }

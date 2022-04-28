@@ -30,8 +30,7 @@ import de.tu_darmstadt.seemoo.HardWhere.data.APIInterface
 import de.tu_darmstadt.seemoo.HardWhere.data.model.Selectable.User
 import de.tu_darmstadt.seemoo.HardWhere.data.model.UserData
 import de.tu_darmstadt.seemoo.HardWhere.ui.login.LoginActivity
-import io.sentry.core.Breadcrumb
-import io.sentry.core.Sentry
+import org.acra.ACRA
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -45,8 +44,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Sentry.setTag("commit", BuildConfig.GitHash)
-        Sentry.setTag("buildtype", BuildConfig.BUILD_TYPE)
+        //Sentry.setTag("commit", BuildConfig.GitHash)
+        //Sentry.setTag("buildtype", BuildConfig.BUILD_TYPE)
         mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
         if(checkLogin()) {
             return
@@ -66,10 +65,7 @@ class MainActivity : AppCompatActivity() {
         val navView: NavigationView = findViewById(R.id.nav_view)
         val navController = findNavController(R.id.nav_host_fragment)
         navController.addOnDestinationChangedListener { _controller,destination,_bundle ->
-            val breadcrumb = Breadcrumb("Fragment Navigation")
-            breadcrumb.setData("fragment","$destination")
-            breadcrumb.category = "ui.lifecycle"
-            Sentry.addBreadcrumb(breadcrumb)
+            ACRA.errorReporter.putCustomData("navigation fragment","$destination")
         }
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
@@ -87,7 +83,7 @@ class MainActivity : AppCompatActivity() {
                 true
             } else if (it.itemId == R.id.nav_dev) {
                 Log.d(this@MainActivity::class.java.name, "debug test")
-                Sentry.captureException(Throwable("Debug Test throwable"))
+                ACRA.errorReporter.handleException(Throwable("Debug Test throwable"))
                 Utils.displayToastUp(this,"Send debug crash report",Toast.LENGTH_SHORT)
                 true
             } else {

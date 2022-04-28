@@ -9,8 +9,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import de.tu_darmstadt.seemoo.HardWhere.BuildConfig
 import de.tu_darmstadt.seemoo.HardWhere.R
-import io.sentry.core.Sentry
 import kotlinx.coroutines.launch
+import org.acra.ACRA
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.util.stream.Collectors
@@ -49,7 +49,7 @@ class AboutViewModel : ViewModel() {
                 _libList.postValue(sorted)
             } catch (e: Exception) {
                 Log.wtf("Unable to load about resources",e)
-                Sentry.captureException(e)
+                ACRA.errorReporter.handleException(e)
             }
         }
     }
@@ -61,7 +61,7 @@ class AboutViewModel : ViewModel() {
                 _currentLicenseText.postValue(buffer.readText())
             } catch (e: Exception) {
                 Log.wtf("Unable to load license",e)
-                Sentry.captureException(e)
+                ACRA.errorReporter.handleException(e)
             }
         }
     }

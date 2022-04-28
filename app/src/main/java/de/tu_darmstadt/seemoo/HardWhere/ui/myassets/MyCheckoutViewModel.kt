@@ -10,7 +10,7 @@ import io.reactivex.schedulers.Schedulers
 import de.tu_darmstadt.seemoo.HardWhere.data.model.Result
 import de.tu_darmstadt.seemoo.HardWhere.data.model.ResultAsset
 import de.tu_darmstadt.seemoo.HardWhere.ui.lib.ScanListViewModel
-import io.sentry.core.Sentry
+import org.acra.ACRA
 
 class MyCheckoutViewModel: ScanListViewModel() {
     /**
@@ -48,7 +48,7 @@ class MyCheckoutViewModel: ScanListViewModel() {
             }) {
                 Log.w(this@MyCheckoutViewModel::class.java.name, "Error: $it")
                 _error.postValue(Pair(R.string.error_checkout_assets,it))
-                Sentry.captureException(it)
+                ACRA.errorReporter.handleException(it)
                 decLoading()
             }
     }

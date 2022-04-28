@@ -25,7 +25,7 @@ import de.tu_darmstadt.seemoo.HardWhere.ui.lib.RecyclerItemTouchHelper
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import io.sentry.core.Sentry
+import org.acra.ACRA
 
 
 /**
@@ -199,7 +199,7 @@ class AssetListFragment : APIFragment(), AssetRecyclerViewAdapter.OnListInteract
                     getString(R.string.error_fetch_update,it.message),
                     Toast.LENGTH_LONG
                 )
-                Sentry.captureException(it)
+                ACRA.errorReporter.handleException(it)
             }
     }
 

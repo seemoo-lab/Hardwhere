@@ -12,6 +12,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:name=".HardWhere"
         android:theme="@style/AppTheme">
         <meta-data android:name="io.sentry.dsn" android:value="https://71b2a1e48f3c445eb48b5eeca6cde17a@sentry.maass.xyz/14" />
         <activity

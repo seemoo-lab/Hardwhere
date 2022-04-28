@@ -12,7 +12,7 @@ import kotlin.collections.ArrayList
 import de.tu_darmstadt.seemoo.HardWhere.data.model.Result
 import de.tu_darmstadt.seemoo.HardWhere.data.model.ResultAsset
 import de.tu_darmstadt.seemoo.HardWhere.ui.lib.ScanListViewModel
-import io.sentry.core.Sentry
+import org.acra.ACRA
 
 class CheckinViewModel: ScanListViewModel() {
     val assetsToReturn: MutableLiveData<ArrayList<Asset>> = MutableLiveData(ArrayList())
@@ -52,7 +52,7 @@ class CheckinViewModel: ScanListViewModel() {
             }) {
                 Log.w(this@CheckinViewModel::class.java.name, "Error: $it")
                 _error.postValue(Pair(R.string.error_checkin_assets,it))
-                Sentry.captureException(it)
+                ACRA.errorReporter.handleException(it)
                 decLoading()
             }
     }

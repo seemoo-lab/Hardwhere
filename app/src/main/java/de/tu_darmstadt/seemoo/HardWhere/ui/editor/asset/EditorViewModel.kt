@@ -10,7 +10,7 @@ import de.tu_darmstadt.seemoo.HardWhere.data.model.Asset
 import de.tu_darmstadt.seemoo.HardWhere.data.model.Result
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
-import io.sentry.core.Sentry
+import org.acra.ACRA
 
 
 class EditorViewModel : ViewModel() {
@@ -137,7 +137,7 @@ class EditorViewModel : ViewModel() {
                         false
                     )
                 )
-                Sentry.captureException(it)
+                ACRA.errorReporter.handleException(it)
             }
     }
 

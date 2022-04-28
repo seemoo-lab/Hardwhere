@@ -19,7 +19,7 @@ import de.tu_darmstadt.seemoo.HardWhere.Utils.Companion.DEFAULT_LOAD_AMOUNT
 import de.tu_darmstadt.seemoo.HardWhere.data.model.SearchResults
 import de.tu_darmstadt.seemoo.HardWhere.data.model.Selectable
 import de.tu_darmstadt.seemoo.HardWhere.ui.APIFragment
-import io.sentry.core.Sentry
+import org.acra.ACRA
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -203,7 +203,7 @@ class SelectorFragment : APIFragment(),
             if(!call!!.isCanceled) {
                 Log.w(this::class.java.name, "$t")
                 Utils.displayToastUp(context,R.string.error_fetch_selectable,Toast.LENGTH_SHORT)
-                t?.apply { Sentry.captureException(this) }
+                t?.apply { ACRA.errorReporter.handleException(this) }
             } else {
                 Log.w(this::class.java.name,"Canceled request")
             }

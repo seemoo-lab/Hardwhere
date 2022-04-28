@@ -9,7 +9,7 @@ import de.tu_darmstadt.seemoo.HardWhere.ui.lib.ProgressViewModel
 import de.tu_darmstadt.seemoo.HardWhere.Utils
 import de.tu_darmstadt.seemoo.HardWhere.data.model.Asset
 import de.tu_darmstadt.seemoo.HardWhere.data.model.SearchResults
-import io.sentry.core.Sentry
+import org.acra.ACRA
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -51,7 +51,7 @@ class AssetListViewModel: ProgressViewModel() {
             override fun onFailure(call: Call<SearchResults<Asset>>, t: Throwable) {
                 _error.value = Pair(R.string.error_fetch_checkedout,t)
                 decLoading()
-                Sentry.captureException(t)
+                ACRA.errorReporter.handleException(t)
             }
 
         })

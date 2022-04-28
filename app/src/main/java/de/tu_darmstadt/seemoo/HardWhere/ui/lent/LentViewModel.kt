@@ -6,7 +6,7 @@ import de.tu_darmstadt.seemoo.HardWhere.Utils
 import de.tu_darmstadt.seemoo.HardWhere.data.APIInterface
 import de.tu_darmstadt.seemoo.HardWhere.data.model.Asset
 import de.tu_darmstadt.seemoo.HardWhere.data.model.Selectable
-import io.sentry.core.Sentry
+import org.acra.ACRA
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -102,7 +102,7 @@ class LentViewModel : ViewModel() {
             override fun onFailure(call: Call<ArrayList<Asset>>, t: Throwable) {
                 _error.value = "Failed to load checked out assets!"
                 _loading.value = false
-                Sentry.captureException(t)
+                ACRA.errorReporter.handleException(t)
             }
 
         })

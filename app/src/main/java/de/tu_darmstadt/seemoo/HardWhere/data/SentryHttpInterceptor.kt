@@ -1,9 +1,6 @@
 package de.tu_darmstadt.seemoo.HardWhere.data
 
 import android.util.Log
-import io.sentry.core.Breadcrumb
-import io.sentry.core.Sentry
-import io.sentry.core.SentryLevel
 import okhttp3.Headers
 import okhttp3.Interceptor
 import okhttp3.Response
@@ -11,6 +8,7 @@ import okhttp3.internal.http.StatusLine.Companion.HTTP_CONTINUE
 import okhttp3.internal.toLongOrDefault
 import okio.Buffer
 import okio.GzipSource
+import org.acra.ACRA
 import java.io.EOFException
 import java.io.IOException
 import java.net.HttpURLConnection.HTTP_NOT_MODIFIED
@@ -58,10 +56,7 @@ class SentryHttpInterceptor: Interceptor {
             requestStartMessage += " (${this.contentLength()}-byte body)"
         }
 
-        val breadcrumb = Breadcrumb()
-        breadcrumb.category = "http"
-        breadcrumb.message = requestStartMessage
-        breadcrumb.level = SentryLevel.INFO
+        ACRA.errorReporter.putCustomData("${System.currentTimeMillis()} http", requestStartMessage)
 
         val headersSend = request.headers
 
@@ -70,12 +65,14 @@ class SentryHttpInterceptor: Interceptor {
             // already present, force them to be included (if available) so their values are known.
             requestBody.contentType()?.let {
                 if (headersSend["Content-Type"] == null) {
-                    breadcrumb.setData("send-Content-Type","$it")
+                    ACRA.errorReporter.putCustomData("send-Content-Type", "$it")
                 }
             }
             if (requestBody.contentLength() != -1L) {
                 if (headersSend["Content-Length"] == null) {
-                    breadcrumb.setData("send-Content-Length",requestBody.contentLength())
+                    ACRA.errorReporter.putCustomData("send-Content-Length",
+                        requestBody.contentLength().toString()
+                    )
                 }
             }
         }
@@ -93,9 +90,9 @@ class SentryHttpInterceptor: Interceptor {
             val contentType = requestBody.contentType()
             val charset: Charset = contentType?.charset(UTF_8) ?: UTF_8
             if (buffer.isProbablyUtf8()) {
-                breadcrumb.setData("send-body",buffer.readString(charset))
+                ACRA.errorReporter.putCustomData("send-body", buffer.readString(charset))
             } else {
-                breadcrumb.setData("send-body","byte body omitted")
+                ACRA.errorReporter.putCustomData("send-body", "byte body omitted")
             }
         }
 
@@ -104,8 +101,7 @@ class SentryHttpInterceptor: Interceptor {
         try {
             response = chain.proceed(request)
         } catch (e: Exception) {
-            breadcrumb.setData("failed","$e")
-            Sentry.addBreadcrumb(breadcrumb)
+            ACRA.errorReporter.putCustomData("${System.currentTimeMillis()} http","$e")
             throw e
         }
 
@@ -115,11 +111,10 @@ class SentryHttpInterceptor: Interceptor {
         val contentLength = responseBody.contentLength()
         val bodySize = if (contentLength != -1L) "$contentLength-byte" else "unknown-length"
 
-        breadcrumb.setData("resp-code",response.code)
-        breadcrumb.setData("resp-message",response.message)
-//        breadcrumb.setData("response-url","$response.request.url")
-        breadcrumb.setData("resp-size",bodySize)
-        breadcrumb.setData("tookMs",tookMs)
+        ACRA.errorReporter.putCustomData("resp-code", response.code.toString())
+        ACRA.errorReporter.putCustomData("resp-message",response.message)
+        ACRA.errorReporter.putCustomData("resp-size",bodySize)
+        ACRA.errorReporter.putCustomData("tookMs", tookMs.toString())
 
         val headersRecv = response.headers
 //        for (i in 0 until headersRecv.size) {
@@ -127,7 +122,7 @@ class SentryHttpInterceptor: Interceptor {
 //        }
         // log API rate limits
         headersRecv.get("X-RateLimit-Remaining")?.run {
-            breadcrumb.setData("X-RateLimit-Remaining",this)
+            ACRA.errorReporter.putCustomData("X-RateLimit-Remaining",this)
         }
 
         if (!response.promisesBody() || bodyHasUnknownEncoding(response.headers)) {
@@ -155,16 +150,15 @@ class SentryHttpInterceptor: Interceptor {
             }
 
             if (contentLength != 0L) {
-                breadcrumb.setData("resp-body",buffer.clone().readString(charset).take(220))
+                ACRA.errorReporter.putCustomData("resp-body",buffer.clone().readString(charset).take(220))
             }
 
             if (gzippedLength != null){
-                breadcrumb.setData("resp-body-l","(${buffer.size}-byte, $gzippedLength-gzipped-byte body)")
+                ACRA.errorReporter.putCustomData("resp-body-l","(${buffer.size}-byte, $gzippedLength-gzipped-byte body)")
             } else {
-                breadcrumb.setData("resp-body-l","(${buffer.size}-byte body)")
+                ACRA.errorReporter.putCustomData("resp-body-l","(${buffer.size}-byte body)")
             }
         }
-        Sentry.addBreadcrumb(breadcrumb)
         return response
     }
 
@@ -194,14 +188,14 @@ class SentryHttpInterceptor: Interceptor {
     /**
      * Adapted from from okhttp3.logging.HttpLoggingInterceptor
      */
-    private fun logHeader(isSend: Boolean, headers: Headers, i: Int, breadcrumb: Breadcrumb) {
+    private fun logHeader(isSend: Boolean, headers: Headers, i: Int) {
         val value = if (headers.name(i) in headersToRedact) "██" else headers.value(i)
         val headerName = if(isSend) {
             "send-${headers.name(i)}"
         } else {
             "recv-${headers.name(i)}"
         }
-        breadcrumb.setData(headerName,value)
+        ACRA.errorReporter.putCustomData(headerName,value)
     }
     /**
      * Copied from okhttp3.logging.HttpLoggingInterceptor
