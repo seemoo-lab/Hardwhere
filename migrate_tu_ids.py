@@ -86,8 +86,9 @@ def update_fields(entries):
                         current_value = item["custom_fields"][field]["value"]
                         if current_value is not None and current_value.strip() != "" and tu_id != current_value:
                             print("Diverging: {} from {}".format(tu_id,current_value))
-                        else:
-                            set_tu_id(item["id"],field_name,tu_id)
+                        #defused
+                        #else:
+                            #set_tu_id(item["id"],field_name,tu_id)
 
 #update_fields(entries)
 
@@ -101,7 +102,8 @@ def remove_id_from_notes(entries):
                         notes_cleared = item["notes"].replace(current_value,"").strip()
                         if notes_cleared == "":
                             notes_cleared = None
-                        set_notes(item["id"],notes_cleared)
+                        # defused
+                        #set_notes(item["id"],notes_cleared)
                         print(notes_cleared)
                         break
 
