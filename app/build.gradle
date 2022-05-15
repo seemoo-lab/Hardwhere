@@ -55,6 +55,7 @@ android {
             }
         }
     }
+    namespace 'de.tu_darmstadt.seemoo.HardWhere'
 }
 
 sentry {
