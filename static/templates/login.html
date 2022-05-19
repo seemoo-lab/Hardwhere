@@ -23,10 +23,15 @@
           </div>
         </div>
       </nav>
-    <h2>It seems like your API Token is invalid or your session timed out, please go to <a href="{{login_page}}/account/api">your API settings</a> to login to this service.</h2>
+    <h2> It seems like your API Token is invalid or your session timed out, please go to <a href="{{login_page}}/account/api">your API settings</a> to login to this service.</h2>
+    <h3> Or re-login to HardWhere-Webview via:</h3>
+    <p> Step 1: Return to Inventory with the Back button to the top-right</p>
+    <img src="static/images/h01.png" height="150" alt="Back to Inventory">
+    <p> Step 2: Select the Dropdown on your Username and select HardWhere Webview to re-login</p>
+    <img src="static/images/h02.png" height="200" alt="Re-login HardWhere-Webview">
 
     <p>{{error_msg}}</p>
-    <p>Or enter your API login token here.</p>
+    <p> Or enter your API login token here.</p>
     <form method="post" action="/HardWhere/login">
         <input type="password" placeholder="API Key" name="api_key" />
         <input type="submit" value="Login">
