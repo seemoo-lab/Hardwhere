@@ -18,8 +18,8 @@
       </div>
       <div class="btn-group">
         <ul class="nav justify-content-end">
-          <li class="nav-item"><a class="nav-link navbar-font navbar-button" href="/"><i class="bi bi-house-fill"></i></a></li>
-          <li class="nav-item"><a class="nav-link navbar-font navbar-button" href="/HardWhere/logout"><i class="bi bi-box-arrow-left"></i>Logout</a></li>
+          <li class="nav-item"><a class="nav-link navbar-font navbar-button" href="/"><i class="bi bi-box-arrow-left"></i> Back to Inventory</a></li>
+          
         </ul>
       </div>
     </div>
@@ -30,7 +30,7 @@
   <table class="table table-striped">
     <thread>
       <tr>
-        <th>Details</th>
+        
         <th>Asset</th>
         <th>Lent to</th>
         <th>Return date</th>
@@ -39,8 +39,8 @@
       <tbody>
         {{#each assets}}
           <tr>
-            <td><a href="{{../url_base}}/hardware/{{id}}" class="p-2"><i class="bi bi-link"></i></a></td>
-            <td>{{asset_tag}}</td>
+            
+            <td><a href="{{../url_base}}/hardware/{{id}}">{{asset_tag}}</a></td>
             <td><a href="{{../url_base}}/users/{{assigned_to.id}}"><i class="bi bi-person-fill"></i>{{assigned_to.first_name}} {{assigned_to.last_name}}</a></td>
             <td>{{expected_checkin.date}}</td>
           </tr>
