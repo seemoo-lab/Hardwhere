@@ -20,9 +20,9 @@ class FilterListBTFragment: BottomSheetDialogFragment() {
     ): View? { // Inflate the layout for this fragment
         viewModel = ViewModelProvider(requireActivity())[MyAssetsViewModel::class.java]
         asset = if(savedInstanceState!= null) {
-            savedInstanceState.getParcelable(PARAM_ASSET)
+            savedInstanceState.getParcelable(PARAM_ASSET)!!
         } else {
-            requireArguments().getParcelable(PARAM_ASSET)
+            requireArguments().getParcelable(PARAM_ASSET)!!
         }
         val view = inflater.inflate(R.layout.fragment_asset_filter_exact, container, false)
         val layout: LinearLayout = view.findViewById(R.id.asset_filter_exact_layout)

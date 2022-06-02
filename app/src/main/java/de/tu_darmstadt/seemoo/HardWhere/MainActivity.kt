@@ -144,12 +144,12 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {
+    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
         super.onSaveInstanceState(outState, outPersistentState)
-        outState?.run {
-            putParcelable(S_LOGINDATA, mainViewModel.loginData.value)
-            putParcelable(S_USERDATA, mainViewModel.userData.value)
-        }
+
+        outState.putParcelable(S_LOGINDATA, mainViewModel.loginData.value)
+        outState.putParcelable(S_USERDATA, mainViewModel.userData.value)
+
     }
 
     private fun checkLogin(): Boolean {

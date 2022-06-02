@@ -22,10 +22,10 @@ class LentClickActionBTFragment: BottomSheetDialogFragment() {
         super.onCreate(savedInstanceState)
         if(savedInstanceState == null) {
             requireArguments().run {
-                asset = this.getParcelable(PARAM_ASSET)
+                asset = this.getParcelable(PARAM_ASSET)!!
             }
         } else {
-            asset = savedInstanceState.getParcelable(PARAM_ASSET)
+            asset = savedInstanceState.getParcelable(PARAM_ASSET)!!
         }
     }
 
