@@ -18,6 +18,7 @@ def getGitHash = { ->
 }
 
 android {
+    namespace 'de.tu_darmstadt.seemoo.HardWhere'
     compileSdkVersion 28
     buildFeatures {
         viewBinding = true
@@ -55,7 +56,6 @@ android {
             }
         }
     }
-    namespace 'de.tu_darmstadt.seemoo.HardWhere'
 }
 
 sentry {
