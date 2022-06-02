@@ -9,7 +9,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class Asset(
-    var model: Model?, var category: Category?,
+    var model: Selectable.Model?, var category: Category?,
     /**
      * <b>Non editable<b>, inherited from model
      */
@@ -23,9 +23,23 @@ data class Asset(
     @Transient
     var selected: Boolean = false,
     val assigned_to: AssignUser?,
-    /** Custom fields **/
+    /** Custom fields, key is the user visible name **/
     var custom_fields: HashMap<String,CustomField>?
 ) : Parcelable {
+    private var _cf_by_dbname: HashMap<String,CustomField>? = null
+    /**
+     * Custom fields with access by their internal DB name
+     */
+    fun customFieldsById(): HashMap<String,CustomField> {
+        if(_cf_by_dbname == null) {
+            val v = HashMap<String,CustomField>()
+            custom_fields?.forEach {
+                v[it.value.field] = it.value
+            }
+            _cf_by_dbname = v
+        }
+        return _cf_by_dbname!!
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

@@ -11,6 +11,7 @@ import de.tu_darmstadt.seemoo.HardWhere.R
 import de.tu_darmstadt.seemoo.HardWhere.Utils
 import de.tu_darmstadt.seemoo.HardWhere.data.model.Asset
 import de.tu_darmstadt.seemoo.HardWhere.data.model.CustomField
+import de.tu_darmstadt.seemoo.HardWhere.data.model.FieldSet
 import de.tu_darmstadt.seemoo.HardWhere.data.model.Selectable
 import de.tu_darmstadt.seemoo.HardWhere.ui.APIFragment
 import de.tu_darmstadt.seemoo.HardWhere.ui.editor.AssetAttributeView
@@ -27,7 +28,7 @@ class EditorFragment : APIFragment() {
     private lateinit var tagET: AssetAttributeView
     private lateinit var nameET: AssetAttributeView
     private lateinit var containerCustomAttribs: LinearLayout
-    private lateinit var infoMultipleModelTV: TextView
+    private lateinit var infoFieldSet: TextView
 
     /**
      * Custom fields element storage to prevent re-creation on every change call
@@ -105,7 +106,7 @@ class EditorFragment : APIFragment() {
         commentET = view.findViewById(R.id.commentEditor)
         nameET = view.findViewById(R.id.assetName)
         tagET = view.findViewById(R.id.assetTag)
-        infoMultipleModelTV = view.findViewById(R.id.info_multiple_models)
+        infoFieldSet = view.findViewById(R.id.info_fieldset)
 
 
         val loading: ProgressBar = view.findViewById(R.id.loading)
@@ -132,6 +133,7 @@ class EditorFragment : APIFragment() {
         {
             val asset = editorViewModel.asset.value!!
             asset.rtd_location = editorViewModel.assetOrigin.value!!.rtd_location
+            // force update
             editorViewModel.assetMutable.value = asset
         }
         setupSelectable(
@@ -141,7 +143,9 @@ class EditorFragment : APIFragment() {
             { editorViewModel.asset.value!!.model }
         ) { val asset = editorViewModel.asset.value!!
             asset.model = editorViewModel.assetOrigin.value!!.model
-            editorViewModel.assetMutable.value = asset }
+            // force update
+            editorViewModel.assetMutable.value = asset
+        }
 
         // disable category, can't be edited on asset, model attribute
         category.isFocusableInTouchMode = false
@@ -190,9 +194,17 @@ class EditorFragment : APIFragment() {
                 commentET.setDefaultText(this.notes)
                 tagET.setDefaultText(this.asset_tag)
                 this@EditorFragment.nameET.setDefaultText(this.name)
-                this.custom_fields?.run { updateCustomFields(this, update = true,updateDefault = true) }
+                //this.custom_fields?.run { updateCustomFields(this, update = true,updateDefault = true) }
             }
         })
+
+        /*editorViewModel.fieldSet.observe(viewLifecycleOwner, Observer {
+            it?.run {
+                this.data?.run {
+                    updateCustomFields(this, update = true,updateDefault = true)
+                }
+            }
+        })*/
 
         editorViewModel.asset.observe(viewLifecycleOwner, Observer {
             it?.run {
@@ -202,17 +214,41 @@ class EditorFragment : APIFragment() {
                 commentET.setText(this.notes)
                 tagET.setText(this.asset_tag)
                 this@EditorFragment.nameET.setText(this.name)
-                this.custom_fields?.run { updateCustomFields(this, update = true, updateDefault = false) }
+                //this.custom_fields?.run { updateCustomFields(this, update = true, updateDefault = false) }
             }
         })
 
-        editorViewModel.customtomAttributeFields.observe(viewLifecycleOwner, {
-            it?.run {
-                if(editorViewModel.asset.value!!.custom_fields != null)
-                    updateCustomFields(editorViewModel.asset.value!!.custom_fields!!, false, false)
-
+        editorViewModel.fieldSet.observe(viewLifecycleOwner) {
+            if (it.state == EditorViewModel.CustomAttributeState.FAILED) {
+                Toast.makeText(requireContext(), "Failed: ${it.error}", Toast.LENGTH_LONG)
+                    .show()
             }
-        })
+            var displayTextId = 0
+            when (it.state) {
+                EditorViewModel.CustomAttributeState.LOADING -> displayTextId = R.string.loading_fieldset
+                EditorViewModel.CustomAttributeState.MISMATCH -> displayTextId = R.string.info_multiple_models_editing
+                EditorViewModel.CustomAttributeState.FAILED -> displayTextId = R.string.error_fieldset
+                EditorViewModel.CustomAttributeState.UNINITIALIZED -> displayTextId = R.string.loading_fieldset
+                EditorViewModel.CustomAttributeState.NONE -> {}
+                EditorViewModel.CustomAttributeState.LOADED -> {
+                    val asset = editorViewModel.asset.value!!
+                    val defaultAsset = editorViewModel.assetOrigin.value!!
+                    updateCustomFieldTypes(it.data!!,asset,defaultAsset)
+                }
+            }
+            infoFieldSet.visibility = if (displayTextId == 0) {
+                containerCustomAttribs.visibility = View.VISIBLE
+                View.GONE
+            } else {
+                containerCustomAttribs.visibility = View.GONE
+                View.VISIBLE
+            }
+//            it?.run {
+//                if (editorViewModel.asset.value!!.custom_fields != null)
+//                    updateCustomFields(editorViewModel.asset.value!!.custom_fields!!, false, false)
+//
+//            }
+        }
 
         editorViewModel.loading.observe(viewLifecycleOwner, Observer {
             loading.visibility = if (it == null) View.GONE else View.VISIBLE
@@ -228,16 +264,24 @@ class EditorFragment : APIFragment() {
                 }
             }
         })
+
+        editorViewModel.errorChannel.observe(viewLifecycleOwner, Observer {
+            if (it != null) {
+                Toast.makeText(requireContext(), "Error: ${it.error}", Toast.LENGTH_LONG)
+                    .show()
+            }
+        })
     }
 
     /**
      * Update custom fields with specified fields. Sets current value of default depending on [updateDefault]
      */
-    private fun updateCustomFields(fields: HashMap<String, CustomField>, update: Boolean, updateDefault: Boolean) {
+    private fun updateCustomFields(cf: HashMap<String,CustomField>, update: Boolean, updateDefault: Boolean) {
         Log.d(this::class.java.name, "updateCustomFields called $update $updateDefault")
-        val inflater = layoutInflater
-        editorViewModel.customtomAttributeFields.value?.run {
-            fields.keys.removeIf{k -> !this.contains(k)}
+        // use db field as name for all entries
+        val fields = HashMap<String,CustomField>()
+        cf.forEach {
+            fields[it.value.field] = it.value
         }
 
         customFields = customFields.filterTo(HashMap()) {
@@ -252,30 +296,74 @@ class EditorFragment : APIFragment() {
                 false
             }
         }
-        for (attrib in fields) {
+        /*for (attrib in fields) {
             if (!customFields.containsKey(attrib.key)) {
-                val view = AssetAttributeView(requireContext())
-                containerCustomAttribs.addView(view)
-                view.tag = attrib.value.field
-                view.setText(attrib.value.value)
-                view.setLabel(attrib.key)
-                view.setDefaultText(attrib.value.value)
-                setupTextfield(view,{t -> run{
-                    if (editorViewModel.asset.value?.custom_fields == null) {
-                        editorViewModel.asset.value?.custom_fields = HashMap()
-                    }
-                    editorViewModel.asset.value?.custom_fields?.put(attrib.key,attrib.value.copy(value = t))
-                }
-                }) {
-                        a,o ->
-                    o.custom_fields!!.get(attrib.key)!!.let { a.custom_fields!!.put(attrib.key, it) }
-                }
-                customFields.put(attrib.key,view)
+                setupCustomField(attrib.value.value!!,attrib.key,attrib.value.field)
+            }
+        }*/
+        val singleModel = editorViewModel.isSingleModel()
+    }
+
+    /**
+     * Setup custom field
+     */
+    private fun setupCustomFieldBase(default: String, field: CustomField, label: String): AssetAttributeView {
+        val view = AssetAttributeView(requireContext())
+        containerCustomAttribs.addView(view)
+        view.tag = field.field
+        view.setText(field.value)
+        view.setLabel(label)
+        view.setDefaultText(field.value)
+        customFields[field.field] = view
+        return view
+    }
+
+    private fun setupCustomFieldText(view: AssetAttributeView, field: CustomField, label: String) {
+        setupTextfield(view,{t -> run{
+            if (editorViewModel.asset.value?.custom_fields == null) {
+                editorViewModel.asset.value?.custom_fields = HashMap()
+            }
+            editorViewModel.asset.value?.custom_fields?.put(label,field.copy(value = t))
+        }
+        }) {
+                a,o ->
+            o.custom_fields!!.get(label)!!.let { a.custom_fields!!.put(field.field, it) }
+        }
+    }
+
+    private fun setupCustomFieldSelection(view: AssetAttributeView, field: CustomField, label: String) {
+        setupTextfield(view,{t -> run{
+            if (editorViewModel.asset.value?.custom_fields == null) {
+                editorViewModel.asset.value?.custom_fields = HashMap()
+            }
+            editorViewModel.asset.value?.custom_fields?.put(label,field.copy(value = t))
+        }
+        }) {
+                a,o ->
+            o.custom_fields!!.get(label)!!.let { a.custom_fields!!.put(field.field, it) }
+        }
+    }
+
+    /**
+     * Update types & available values for custom fields
+     */
+    private fun updateCustomFieldTypes(fieldSet: FieldSet, asset: Asset, default: Asset) {
+        for (fieldDef in fieldSet.fields!!.rows) {
+            var view = customFields[fieldDef.value.db_column_name]
+            val field = asset.customFieldsById()[fieldDef.value.db_column_name]!!
+            if(view == null) {
+                val defaultValue = default.customFieldsById()[fieldDef.value.db_column_name]!!.value!!
+                view = setupCustomFieldBase(defaultValue,field,fieldDef.value.name)
+            }
+            val defaultValues = fieldDef.value.field_values_array
+            if(defaultValues != null && fieldDef.value.type == "checkbox") {
+                // selection setup
+
+            } else {
+                // text setup
+                setupCustomFieldText(view,field,fieldDef.value.name)
             }
         }
-        val singleModel = editorViewModel.isSingleModel()
-        Log.d(this::class.java.name, "Single Model: $singleModel")
-        infoMultipleModelTV.visibility = if(singleModel) View.GONE else View.VISIBLE
     }
 
     /**

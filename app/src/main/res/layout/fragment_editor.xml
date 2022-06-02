@@ -29,32 +29,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:label="@string/hint_asset_name" />
-        <!--        <com.google.android.material.textfield.TextInputLayout-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="match_parent">-->
-
-        <!--            <com.google.android.material.textfield.TextInputEditText-->
-        <!--                android:id="@+id/assetName"-->
-        <!--                android:layout_width="match_parent"-->
-        <!--                android:layout_height="wrap_content"-->
-        <!--                android:hint="@string/hint_asset_name" />-->
-        <!--        </com.google.android.material.textfield.TextInputLayout>-->
 
         <de.tu_darmstadt.seemoo.HardWhere.ui.editor.AssetAttributeView
             android:id="@+id/assetTag"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:label="@string/hint_asset_tag" />
-        <!--        <com.google.android.material.textfield.TextInputLayout-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="match_parent">-->
-
-        <!--            <com.google.android.material.textfield.TextInputEditText-->
-        <!--                android:id="@+id/assetTag"-->
-        <!--                android:layout_width="match_parent"-->
-        <!--                android:layout_height="wrap_content"-->
-        <!--                android:hint="@string/hint_asset_tag" />-->
-        <!--        </com.google.android.material.textfield.TextInputLayout>-->
 
         <de.tu_darmstadt.seemoo.HardWhere.ui.editor.AssetAttributeView
             android:id="@+id/locationPicker"
@@ -62,18 +42,6 @@
             android:layout_height="wrap_content"
             android:focusable="false"
             app:label="@string/hint_default_location" />
-        <!--        <com.google.android.material.textfield.TextInputLayout-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="match_parent">-->
-
-        <!--            <com.google.android.material.textfield.TextInputEditText-->
-        <!--                android:id="@+id/locationPicker"-->
-        <!--                android:layout_width="match_parent"-->
-        <!--                android:layout_height="wrap_content"-->
-        <!--                android:focusable="false"-->
-        <!--                android:hint="@string/hint_location"-->
-        <!--                android:inputType="textNoSuggestions" />-->
-        <!--        </com.google.android.material.textfield.TextInputLayout>-->
 
         <de.tu_darmstadt.seemoo.HardWhere.ui.editor.AssetAttributeView
             android:id="@+id/modelPicker"
@@ -95,22 +63,6 @@
                 android:inputType="textNoSuggestions" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!--        <com.google.android.material.textfield.TextInputLayout-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="match_parent">-->
-
-        <!--            <com.google.android.material.textfield.TextInputEditText-->
-        <!--                android:id="@+id/commentEditor"-->
-        <!--                android:layout_width="match_parent"-->
-        <!--                android:layout_height="wrap_content"-->
-        <!--                android:gravity="top|start"-->
-        <!--                android:hint="@string/hint_note"-->
-        <!--                android:importantForAutofill="no"-->
-        <!--                android:inputType="textMultiLine"-->
-        <!--                android:lines="4"-->
-        <!--                android:minLines="6"-->
-        <!--                android:scrollbars="vertical" />-->
-        <!--        </com.google.android.material.textfield.TextInputLayout>-->
         <de.tu_darmstadt.seemoo.HardWhere.ui.editor.AssetAttributeView
             android:id="@+id/commentEditor"
             android:layout_width="match_parent"
@@ -133,7 +85,7 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/info_multiple_models"
+            android:id="@+id/info_fieldset"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/info_multiple_models_editing"

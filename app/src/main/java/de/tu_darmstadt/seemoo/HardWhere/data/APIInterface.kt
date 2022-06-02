@@ -3,10 +3,7 @@ package de.tu_darmstadt.seemoo.HardWhere.data
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
-import de.tu_darmstadt.seemoo.HardWhere.data.model.Asset
-import de.tu_darmstadt.seemoo.HardWhere.data.model.ResultAsset
-import de.tu_darmstadt.seemoo.HardWhere.data.model.SearchResults
-import de.tu_darmstadt.seemoo.HardWhere.data.model.Selectable
+import de.tu_darmstadt.seemoo.HardWhere.data.model.*
 import io.reactivex.Observable
 import retrofit2.Call
 import retrofit2.http.*
@@ -48,6 +45,12 @@ interface APIInterface {
 
     @GET("api/v1/users/me")
     fun getSelfUser(): Call<Selectable.User>
+
+    @GET("api/v1/models/{id}")
+    fun getModel(@Path("id") id: Int): Call<Model>
+
+    @GET("api/v1/fieldsets/{id}")
+    fun getFieldset(@Path("id") id: Int): Call<FieldSet>
 
     /**
      * @param data JsonElement of data to update, use makePath the Asset

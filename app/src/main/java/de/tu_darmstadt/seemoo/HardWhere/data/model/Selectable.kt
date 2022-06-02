@@ -6,7 +6,7 @@ import com.google.gson.JsonElement
 import kotlinx.parcelize.Parcelize
 
 /**
- * Interface for models that have a name & id, used for selection dialogs
+ * Interface for data models that have a name & id, used for selection dialogs
  */
 interface Selectable : Parcelable {
     val name: String
@@ -129,6 +129,23 @@ interface Selectable : Parcelable {
 
     @Parcelize
     data class Category(override val id: Int, override val name: String) : Selectable {
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+            if (javaClass != other?.javaClass) {
+                return false
+            }
+            other as Selectable
+            if (id != other.id) {
+                return false
+            }
+            return true
+        }
+    }
+
+    @Parcelize
+    data class FieldsetShort(override val id: Int, override val name: String) : Selectable {
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true

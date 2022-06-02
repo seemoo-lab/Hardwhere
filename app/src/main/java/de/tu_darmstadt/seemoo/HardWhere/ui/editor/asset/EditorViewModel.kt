@@ -1,16 +1,23 @@
 package de.tu_darmstadt.seemoo.HardWhere.ui.editor.asset
 
+import android.telecom.Call
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
+import de.tu_darmstadt.seemoo.HardWhere.Utils.Companion.logResponseVerbose
 import de.tu_darmstadt.seemoo.HardWhere.data.APIInterface
 import de.tu_darmstadt.seemoo.HardWhere.data.model.Asset
+import de.tu_darmstadt.seemoo.HardWhere.data.model.FieldSet
+import de.tu_darmstadt.seemoo.HardWhere.data.model.Model
 import de.tu_darmstadt.seemoo.HardWhere.data.model.Result
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import org.acra.ACRA
+import retrofit2.Callback
+import retrofit2.Response
+import java.lang.reflect.Field
 
 
 class EditorViewModel : ViewModel() {
@@ -29,16 +36,42 @@ class EditorViewModel : ViewModel() {
      * Assets passed on multi-edit to update
      */
     val multiEditAssets: MutableLiveData<ArrayList<Asset>> = MutableLiveData()
+
+    /**
+     * Loading indicator for editor
+     */
     val loading: MutableLiveData<Loading?> = MutableLiveData(null)
+
+    /**
+     * Error channel _not_ used for editing calls, instead for loading
+     */
+    val errorChannel: MutableLiveData<Loading?> = MutableLiveData(null)
     /**
      *  Non-Null signals editing finished to other fragments
      *  Observators are required to call reset() on non-null value
      */
     val editingFinished: MutableLiveData<Any?> = MutableLiveData(null)
 
-    val customtomAttributeFields: LiveData<HashSet<String>> = Transformations.map(multiEditAssets) { assets ->
-        customAttributes(assets)
+    class CustomAttributeData(val state: CustomAttributeState, val error: Throwable? = null, val data: FieldSet? = null)
+    enum class CustomAttributeState {
+        LOADING,
+
+        /**
+         * Multiple assets have different models
+         */
+        MISMATCH,
+        LOADED,
+        FAILED,
+        UNINITIALIZED,
+
+        /**
+         * No model
+         */
+        NONE,
     }
+
+    val _fieldset: MutableLiveData<CustomAttributeData> = MutableLiveData(CustomAttributeData(CustomAttributeState.UNINITIALIZED))
+    val fieldSet: LiveData<CustomAttributeData> = _fieldset
 
     /**
      * Sets the asset to use in editor and as original value
@@ -69,22 +102,71 @@ class EditorViewModel : ViewModel() {
     }
 
     /**
-     * Returns a list of custom attributes that all match
+     * Fetch custom fieldset for assets. Abort if not all assets have the same model.
      */
-    private fun customAttributes(assets: ArrayList<Asset>): HashSet<String> {
-        if (assets.size > 0) {
-            var keys: HashSet<String>? = null
-            // TODO: check if non-set custom attribs are always set of have to be retrieved by model
-            for (asset in assets) {
-                if (keys == null)
-                    keys = asset.custom_fields?.keys?.toHashSet()
-                else
-                    asset.custom_fields?.run { keys.removeIf{t -> !this.containsKey(t)} }
+    fun fetchModel(client: APIInterface) {
+        val assets: ArrayList<Asset> = multiEditAssets.value!!
+        _fieldset.value = CustomAttributeData(CustomAttributeState.LOADING)
 
-            }
-            return keys?: HashSet()
+        val requestAsset = if(assets.size > 0) {
+            assets[0]
+        } else {
+            asset.value!!
         }
-        return HashSet()
+
+        if (assets.size > 0) {
+            if (assets.find { a -> a.model!!.id != assets[0].model!!.id } != null) {
+                _fieldset.value = CustomAttributeData(CustomAttributeState.MISMATCH)
+                return
+            }
+        }
+        // retrieve model
+        client.getModel(requestAsset.model!!.id).enqueue(object: Callback<Model> {
+            override fun onResponse(call: retrofit2.Call<Model>, response: Response<Model>) {
+                response.body()?.run {
+                    if (this.fieldset != null) {
+                        // retrieve fieldset of model
+                        client.getFieldset(this.fieldset.id).enqueue(object: Callback<FieldSet>{
+                            override fun onResponse(
+                                call: retrofit2.Call<FieldSet>,
+                                response: Response<FieldSet>
+                            ) {
+                                response.body()?.run {
+                                    _fieldset.value = CustomAttributeData(CustomAttributeState.LOADED, null,this)
+                                } ?: logResponseVerbose(this@EditorViewModel::class.java, response).also {
+                                    _fieldset.value = CustomAttributeData(CustomAttributeState.FAILED, RuntimeException(response.message()))
+                                    ACRA.errorReporter.handleException(RuntimeException(response.message()))
+                                }
+                            }
+
+                            override fun onFailure(call: retrofit2.Call<FieldSet>, t: Throwable) {
+                                _fieldset.value = CustomAttributeData(CustomAttributeState.FAILED, RuntimeException(response.message()))
+                                ACRA.errorReporter.handleException(RuntimeException(response.message()))
+                            }
+
+                        })
+                    } else {
+                        _fieldset.value = CustomAttributeData(CustomAttributeState.NONE)
+                    }
+                } ?: logResponseVerbose(this@EditorViewModel::class.java, response).also {
+                    _fieldset.value = CustomAttributeData(CustomAttributeState.FAILED, RuntimeException(response.message()))
+                    ACRA.errorReporter.handleException(RuntimeException(response.message()))
+                }
+            }
+
+            override fun onFailure(call: retrofit2.Call<Model>, t: Throwable) {
+                Log.w(this@EditorViewModel::class.java.name, "Error: $t")
+                loading.postValue(
+                    Loading(
+                        t,
+                        false
+                    )
+                )
+                _fieldset.value = CustomAttributeData(CustomAttributeState.FAILED, t)
+                ACRA.errorReporter.handleException(t)
+            }
+
+        })
     }
 
     fun updateAssets(client: APIInterface) {

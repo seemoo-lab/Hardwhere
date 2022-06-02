@@ -44,7 +44,7 @@
     <string name="menu_dev">Test</string>
 
     <string name="PLACEHOLDER">PLACEHOLDER</string>
-    <string name="failure_userinfo">Unable to retrieve user data!</string>
+    <string name="failure_userinfo">Unable to retrieve user data! Missing permissions?!</string>
     <string name="search">Search</string>
     <string name="hint_note">Note</string>
     <string name="title_finish_edit">Update</string>
@@ -108,4 +108,6 @@
     <string name="crash_dialog_positive">Send crash report</string>
     <string name="crash_dialog_title">Crash Report</string>
     <string name="crash_dialog_text">The app crashed, please send a crash report if possible.</string>
+    <string name="loading_fieldset">Loading custom fields</string>
+    <string name="error_fieldset">Failed to load custom fields!</string>
 </resources>

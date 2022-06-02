@@ -6,7 +6,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class CustomField(
     /**
-     * Internal unique ID
+     * Internal unique DB column
      */
     var field: String,
     var value:String?,
