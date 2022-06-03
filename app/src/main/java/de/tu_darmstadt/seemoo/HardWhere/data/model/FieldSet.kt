@@ -20,15 +20,12 @@ data class FieldSet (
          * null when type is text etc
           */
         val field_values_array: List<String>?,
-        val required: Boolean
+        val required: Int
     ): Parcelable
 
     @Parcelize
     data class Fields (
         val total: Int,
-        /**
-         * int-key doesn't have any relevance
-         */
-        val rows: HashMap<Int,CustomFieldDefinition>
+        val rows: List<CustomFieldDefinition>
     ): Parcelable
 }

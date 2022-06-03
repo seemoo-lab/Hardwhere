@@ -44,7 +44,7 @@ class EditorFragment : APIFragment() {
                     PARAM_ASSETS
                 )
                 with(editorViewModel.multiEditAssets.value!!) {
-                    Log.d(this::class.java.name,"First run, setting values..")
+                    Log.d(this::class.java.name,"EditorFragment first run, setting values")
                     if (size == 1) {
                         editorViewModel.setEditorAsset(this[0])
                     } else {
@@ -108,7 +108,6 @@ class EditorFragment : APIFragment() {
         tagET = view.findViewById(R.id.assetTag)
         infoFieldSet = view.findViewById(R.id.info_fieldset)
 
-
         val loading: ProgressBar = view.findViewById(R.id.loading)
 
         // always store state change
@@ -167,6 +166,10 @@ class EditorFragment : APIFragment() {
             }
         }
 
+        editorViewModel.multiEditAssets.observe(viewLifecycleOwner, Observer {
+            editorViewModel.fetchModel(getAPI())
+        })
+
         selectorViewModel = ViewModelProvider(requireActivity())[SelectorViewModel::class.java]
         selectorViewModel.selected.observe(viewLifecycleOwner, Observer {
             it?.run {
@@ -194,7 +197,7 @@ class EditorFragment : APIFragment() {
                 commentET.setDefaultText(this.notes)
                 tagET.setDefaultText(this.asset_tag)
                 this@EditorFragment.nameET.setDefaultText(this.name)
-                //this.custom_fields?.run { updateCustomFields(this, update = true,updateDefault = true) }
+                this.custom_fields?.run { updateCustomFields(this, update = true,updateDefault = true) }
             }
         })
 
@@ -214,7 +217,7 @@ class EditorFragment : APIFragment() {
                 commentET.setText(this.notes)
                 tagET.setText(this.asset_tag)
                 this@EditorFragment.nameET.setText(this.name)
-                //this.custom_fields?.run { updateCustomFields(this, update = true, updateDefault = false) }
+                this.custom_fields?.run { updateCustomFields(this, update = true, updateDefault = false) }
             }
         })
 
@@ -311,9 +314,9 @@ class EditorFragment : APIFragment() {
         val view = AssetAttributeView(requireContext())
         containerCustomAttribs.addView(view)
         view.tag = field.field
+        view.setDefaultText(field.value)
         view.setText(field.value)
         view.setLabel(label)
-        view.setDefaultText(field.value)
         customFields[field.field] = view
         return view
     }
@@ -349,19 +352,19 @@ class EditorFragment : APIFragment() {
      */
     private fun updateCustomFieldTypes(fieldSet: FieldSet, asset: Asset, default: Asset) {
         for (fieldDef in fieldSet.fields!!.rows) {
-            var view = customFields[fieldDef.value.db_column_name]
-            val field = asset.customFieldsById()[fieldDef.value.db_column_name]!!
+            var view = customFields[fieldDef.db_column_name]
+            val field = asset.customFieldsById()[fieldDef.db_column_name]!!
             if(view == null) {
-                val defaultValue = default.customFieldsById()[fieldDef.value.db_column_name]!!.value!!
-                view = setupCustomFieldBase(defaultValue,field,fieldDef.value.name)
+                val defaultValue = default.customFieldsById()[fieldDef.db_column_name]!!.value!!
+                view = setupCustomFieldBase(defaultValue,field,fieldDef.name)
             }
-            val defaultValues = fieldDef.value.field_values_array
-            if(defaultValues != null && fieldDef.value.type == "checkbox") {
+            val defaultValues = fieldDef.field_values_array
+            if(defaultValues != null && fieldDef.type == "checkbox") {
                 // selection setup
-
+                setupCustomFieldSelection(view,field,fieldDef.name)
             } else {
                 // text setup
-                setupCustomFieldText(view,field,fieldDef.value.name)
+                setupCustomFieldText(view,field,fieldDef.name)
             }
         }
     }

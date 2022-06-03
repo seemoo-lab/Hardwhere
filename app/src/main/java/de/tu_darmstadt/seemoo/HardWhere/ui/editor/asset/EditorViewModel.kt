@@ -105,14 +105,20 @@ class EditorViewModel : ViewModel() {
      * Fetch custom fieldset for assets. Abort if not all assets have the same model.
      */
     fun fetchModel(client: APIInterface) {
+        Log.d(this::class.java.name,"fetchModel")
         val assets: ArrayList<Asset> = multiEditAssets.value!!
         _fieldset.value = CustomAttributeData(CustomAttributeState.LOADING)
 
         val requestAsset = if(assets.size > 0) {
             assets[0]
         } else {
-            asset.value!!
+            asset.value
         }
+        if (requestAsset?.model == null) {
+            Log.d(this::class.java.name,"no asset with model found, aborting model fetching")
+            return
+        }
+        Log.d(this::class.java.name,"asset: $requestAsset")
 
         if (assets.size > 0) {
             if (assets.find { a -> a.model!!.id != assets[0].model!!.id } != null) {
@@ -140,12 +146,13 @@ class EditorViewModel : ViewModel() {
                             }
 
                             override fun onFailure(call: retrofit2.Call<FieldSet>, t: Throwable) {
+                                Log.wtf(this@EditorViewModel::class.java.name, "Failed to fetch fieldset",t)
                                 _fieldset.value = CustomAttributeData(CustomAttributeState.FAILED, RuntimeException(response.message()))
                                 ACRA.errorReporter.handleException(RuntimeException(response.message()))
                             }
-
                         })
                     } else {
+                        Log.d(this@EditorViewModel::class.java.name, "No fieldset for this model")
                         _fieldset.value = CustomAttributeData(CustomAttributeState.NONE)
                     }
                 } ?: logResponseVerbose(this@EditorViewModel::class.java, response).also {
@@ -155,7 +162,7 @@ class EditorViewModel : ViewModel() {
             }
 
             override fun onFailure(call: retrofit2.Call<Model>, t: Throwable) {
-                Log.w(this@EditorViewModel::class.java.name, "Error: $t")
+                Log.wtf(this@EditorViewModel::class.java.name, "Failed to fetch model",t)
                 loading.postValue(
                     Loading(
                         t,
