@@ -1,0 +1,3 @@
+Snipeit-It asset management mobile app.
+
+Supports the additon of who-lent-to-whom, which requires running a custom backend provided by the same repository as this app.

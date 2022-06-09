@@ -1,0 +1,1 @@
+Asset management app for snipe-it, requires a custom setup
