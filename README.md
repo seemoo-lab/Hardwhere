@@ -8,6 +8,8 @@ This repo contains the mobile app, the required snipe-it patches and the "lent-b
 
 The backend daemon ist expected to handle all of the example.com/HardWhere/* requests and exposes its own API and webview at this path.
 
+Currently compatible with snipeit v5.4.3
+
 ## Building the daemon
 install requirements:
 `apt install libssl-dev pkg-config`
