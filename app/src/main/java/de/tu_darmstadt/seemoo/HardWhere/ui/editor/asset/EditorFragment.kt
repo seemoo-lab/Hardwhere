@@ -217,7 +217,12 @@ class EditorFragment : APIFragment() {
                 commentET.setDefaultText(this.notes)
                 tagET.setDefaultText(this.asset_tag)
                 this@EditorFragment.nameET.setDefaultText(this.name)
-                this.custom_fields?.run { updateCustomFields(this, update = true,updateDefault = true) }
+                this.custom_fields?.run {
+                    updateCustomFields(
+                        this,
+                        updateDefault = true
+                    )
+                }
             }
         })
 
@@ -229,7 +234,12 @@ class EditorFragment : APIFragment() {
                 commentET.setText(this.notes)
                 tagET.setText(this.asset_tag)
                 this@EditorFragment.nameET.setText(this.name)
-                this.custom_fields?.run { updateCustomFields(this, update = true, updateDefault = false) }
+                this.custom_fields?.run {
+                    updateCustomFields(
+                        this,
+                        updateDefault = false
+                    )
+                }
             }
         })
 
@@ -311,11 +321,12 @@ class EditorFragment : APIFragment() {
     /**
      * Setup custom field
      */
-    private fun setupCustomFieldBase(field: CustomField, label: String): AssetAttributeView {
+    private fun setupCustomFieldBase(field: CustomField, default: CustomField, label: String): AssetAttributeView {
+        Log.d(this@EditorFragment::class.java.name,"setupCustomFieldBase $label")
         val view = AssetAttributeView(requireContext())
         containerCustomAttribs.addView(view)
         view.tag = field.field
-        view.setDefaultText(field.value)
+        view.setDefaultText(default.value)
         view.setText(field.value)
         view.setLabel(label)
         customFields[field.field] = view
@@ -342,8 +353,9 @@ class EditorFragment : APIFragment() {
         for (fieldDef in fieldSet.fields!!.rows) {
             var view = customFields[fieldDef.db_column_name]
             val field = asset.customFieldsById()[fieldDef.db_column_name]!!
-            if(view == null) {
-                view = setupCustomFieldBase(field,fieldDef.name)
+            val defaultField = default.customFieldsById()[fieldDef.db_column_name]!!
+            if (view == null) {
+                view = setupCustomFieldBase(field, defaultField, fieldDef.name)
             }
             val fieldValues = fieldDef.field_values_array
             if(fieldValues != null && (fieldDef.type == "checkbox" || fieldDef.type == "radio")) {
