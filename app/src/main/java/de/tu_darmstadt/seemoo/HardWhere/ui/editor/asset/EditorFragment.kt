@@ -35,7 +35,7 @@ class EditorFragment : APIFragment() {
     /**
      * Custom fields element storage to prevent re-creation on every change call
      */
-    private var customFields: HashMap<String,AssetAttributeView> = HashMap()
+    private var customFields: HashMap<String, AssetAttributeView> = HashMap()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,7 +46,7 @@ class EditorFragment : APIFragment() {
                     PARAM_ASSETS
                 )
                 with(editorViewModel.multiEditAssets.value!!) {
-                    Log.d(this::class.java.name,"EditorFragment first run, setting values")
+                    Log.d(this::class.java.name, "EditorFragment first run, setting values")
                     if (size == 1) {
                         editorViewModel.setEditorAsset(this[0])
                     } else {
@@ -66,7 +66,7 @@ class EditorFragment : APIFragment() {
         editorViewModel.asset.value!!.run {
             this.name = nameET.getText().toString()
             this.notes = commentET.getText().toString()
-            Log.d(this::class.java.name,"Storing: $this")
+            Log.d(this::class.java.name, "Storing: $this")
         }
     }
 
@@ -115,14 +115,14 @@ class EditorFragment : APIFragment() {
         // always store state change
         // workaround for android bug: if navigated away, no onSaveInstanceState is called
         // this happens due to a misbehavior in the navigation component
-        setupTextfield(commentET,{t -> editorViewModel.asset.value?.notes = t}) {
-            a,o -> a.notes = o.notes
+        setupTextfield(commentET, { t -> editorViewModel.asset.value?.notes = t }) { a, o ->
+            a.notes = o.notes
         }
-        setupTextfield(tagET,{t -> editorViewModel.asset.value?.asset_tag = t}) {
-                a,o -> a.asset_tag = o.asset_tag
+        setupTextfield(tagET, { t -> editorViewModel.asset.value?.asset_tag = t }) { a, o ->
+            a.asset_tag = o.asset_tag
         }
-        setupTextfield(nameET,{t -> editorViewModel.asset.value?.name = t}) {
-                a,o -> a.name = o.name
+        setupTextfield(nameET, { t -> editorViewModel.asset.value?.name = t }) { a, o ->
+            a.name = o.name
         }
 
         setupSelectable(
@@ -142,7 +142,8 @@ class EditorFragment : APIFragment() {
             Selectable.SelectableType.Model,
             R.id.modelPicker,
             { editorViewModel.asset.value!!.model }
-        ) { val asset = editorViewModel.asset.value!!
+        ) {
+            val asset = editorViewModel.asset.value!!
             asset.model = editorViewModel.assetOrigin.value!!.model
             // force update
             editorViewModel.assetMutable.value = asset
@@ -164,7 +165,11 @@ class EditorFragment : APIFragment() {
         tagET.isEnabled = !multiEdit
         if (multiEdit) {
             tagET.setOnClickListener {
-                Utils.displayToastUp(requireContext(),R.string.toast_no_tag_multiedit,Toast.LENGTH_SHORT)
+                Utils.displayToastUp(
+                    requireContext(),
+                    R.string.toast_no_tag_multiedit,
+                    Toast.LENGTH_SHORT
+                )
             }
         }
 
@@ -191,16 +196,20 @@ class EditorFragment : APIFragment() {
             }
         })
 
-        customSelectionViewModel = ViewModelProvider(requireActivity())[CustomSelectionViewModel::class.java]
+        customSelectionViewModel =
+            ViewModelProvider(requireActivity())[CustomSelectionViewModel::class.java]
         customSelectionViewModel.selection.observe(viewLifecycleOwner, Observer {
             it?.run {
                 val currentVal = editorViewModel.asset.value!!
                 val id = customSelectionViewModel.identifier
                 val field = currentVal.customFieldsById()[id]
-                if ( field != null) {
+                if (field != null) {
                     field.value = this
                 } else {
-                    Log.w(this@EditorFragment::class.java.name,"Unknown custom field selection identifier $id")
+                    Log.w(
+                        this@EditorFragment::class.java.name,
+                        "Unknown custom field selection identifier $id"
+                    )
                 }
                 // force update event
                 editorViewModel.assetMutable.value = currentVal
@@ -250,15 +259,19 @@ class EditorFragment : APIFragment() {
             }
             var displayTextId = 0
             when (it.state) {
-                EditorViewModel.CustomAttributeState.LOADING -> displayTextId = R.string.loading_fieldset
-                EditorViewModel.CustomAttributeState.MISMATCH -> displayTextId = R.string.info_multiple_models_editing
-                EditorViewModel.CustomAttributeState.FAILED -> displayTextId = R.string.error_fieldset
-                EditorViewModel.CustomAttributeState.UNINITIALIZED -> displayTextId = R.string.loading_fieldset
+                EditorViewModel.CustomAttributeState.LOADING -> displayTextId =
+                    R.string.loading_fieldset
+                EditorViewModel.CustomAttributeState.MISMATCH -> displayTextId =
+                    R.string.info_multiple_models_editing
+                EditorViewModel.CustomAttributeState.FAILED -> displayTextId =
+                    R.string.error_fieldset
+                EditorViewModel.CustomAttributeState.UNINITIALIZED -> displayTextId =
+                    R.string.loading_fieldset
                 EditorViewModel.CustomAttributeState.NONE -> {}
                 EditorViewModel.CustomAttributeState.LOADED -> {
                     val asset = editorViewModel.asset.value!!
                     val defaultAsset = editorViewModel.assetOrigin.value!!
-                    updateCustomFieldTypes(it.data!!,asset,defaultAsset)
+                    updateCustomFieldTypes(it.data!!, asset, defaultAsset)
                 }
             }
             infoFieldSet.visibility = if (displayTextId == 0) {
@@ -296,19 +309,22 @@ class EditorFragment : APIFragment() {
     /**
      * Update custom fields with specified fields. Sets current value of default depending on [updateDefault]
      */
-    private fun updateCustomFields(cf: HashMap<String,CustomField>, update: Boolean, updateDefault: Boolean) {
-        Log.d(this::class.java.name, "updateCustomFields called $update $updateDefault")
+    private fun updateCustomFields(
+        cf: HashMap<String, CustomField>,
+        updateDefault: Boolean
+    ) {
+        Log.d(this@EditorFragment::class.java.name, "updateCustomFields updateDefault:$updateDefault")
         // use db field as name for all entries
-        val fields = HashMap<String,CustomField>()
+        val fields = HashMap<String, CustomField>()
         cf.forEach {
             fields[it.value.field] = it.value
         }
 
-        customFields = customFields.filterTo(HashMap()) {
-            (key, view) -> fields[key]?.run {
-                if(updateDefault)
+        customFields = customFields.filterTo(HashMap()) { (key, view) ->
+            fields[key]?.run {
+                if (updateDefault)
                     view.setDefaultText(this.value)
-                else if(update)
+                else
                     view.setText(this.value)
                 true
             } ?: run {
@@ -334,14 +350,14 @@ class EditorFragment : APIFragment() {
     }
 
     private fun setupCustomFieldText(view: AssetAttributeView, field: CustomField, label: String) {
-        setupTextfield(view,{t -> run{
-            if (editorViewModel.asset.value?.custom_fields == null) {
-                editorViewModel.asset.value?.custom_fields = HashMap()
+        setupTextfield(view, { t ->
+            run {
+                if (editorViewModel.asset.value?.custom_fields == null) {
+                    editorViewModel.asset.value?.custom_fields = HashMap()
+                }
+                editorViewModel.asset.value?.custom_fields?.put(label, field.copy(value = t))
             }
-            editorViewModel.asset.value?.custom_fields?.put(label,field.copy(value = t))
-        }
-        }) {
-                a,o ->
+        }) { a, o ->
             o.custom_fields!!.get(label)!!.let { a.custom_fields!!.put(field.field, it) }
         }
     }
@@ -350,6 +366,7 @@ class EditorFragment : APIFragment() {
      * Update types & available values for custom fields
      */
     private fun updateCustomFieldTypes(fieldSet: FieldSet, asset: Asset, default: Asset) {
+        Log.d(this@EditorFragment::class.java.name,"updateCustomFieldTypes")
         for (fieldDef in fieldSet.fields!!.rows) {
             var view = customFields[fieldDef.db_column_name]
             val field = asset.customFieldsById()[fieldDef.db_column_name]!!
@@ -358,12 +375,18 @@ class EditorFragment : APIFragment() {
                 view = setupCustomFieldBase(field, defaultField, fieldDef.name)
             }
             val fieldValues = fieldDef.field_values_array
-            if(fieldValues != null && (fieldDef.type == "checkbox" || fieldDef.type == "radio")) {
+            // TODO: allow for multiple checkbox values
+            if (fieldValues != null && (fieldDef.type == "checkbox" || fieldDef.type == "radio")) {
                 // selection setup
-                setupCustomFieldCheckbox(view,field.field,fieldValues.toTypedArray(),fieldDef.name)
+                setupCustomFieldCheckbox(
+                    view,
+                    field.field,
+                    fieldValues.toTypedArray(),
+                    fieldDef.name
+                )
             } else {
                 // text setup
-                setupCustomFieldText(view,field,fieldDef.name)
+                setupCustomFieldText(view, field, fieldDef.name)
             }
         }
     }
@@ -417,16 +440,17 @@ class EditorFragment : APIFragment() {
         et: AssetAttributeView, identifier: String, items: Array<String>,
         name: String
     ) {
-        // requied, otherwise the keyboard will take focus
+        // required, otherwise the keyboard will take focus
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             et.focusable = View.NOT_FOCUSABLE
         } else {
             et.setFocusable(false)
         }
 
-        val title = getString(R.string.custom_field_selection_title,name)
+        val title = getString(R.string.custom_field_selection_title, name)
         et.setEditorOnclickListener(View.OnClickListener {
-            val fragId = CustomSelectionDialog.newInstance(items,title,requireActivity(),identifier)
+            val fragId =
+                CustomSelectionDialog.newInstance(items, title, requireActivity(), identifier)
             findNavController().navigate(fragId)
         })
         et.setOnCheckedChangeListener { checked ->
@@ -437,7 +461,7 @@ class EditorFragment : APIFragment() {
                 if (cf != null && ocf != null) {
                     cf.value = ocf.value
                 } else {
-                    Log.w(this@EditorFragment::class.java.name,"Can't reset customfield $cf $ocf");
+                    Log.w(this@EditorFragment::class.java.name, "Can't reset customfield $cf $ocf");
                 }
                 // force update
                 editorViewModel.assetMutable.value = asset

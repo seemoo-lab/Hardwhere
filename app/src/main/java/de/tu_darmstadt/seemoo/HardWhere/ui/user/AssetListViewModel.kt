@@ -30,7 +30,7 @@ class AssetListViewModel: ProgressViewModel() {
         client.getCheckedoutAssets(user.id).enqueue(object : Callback<SearchResults<Asset>> {
             override fun onResponse(call: Call<SearchResults<Asset>>, response: Response<SearchResults<Asset>>) {
                 var log = true
-                response?.run {
+                response.run {
                     if (this.isSuccessful && this.body() != null) {
                         val assets = this.body()!!.rows // TODO: iterate to load all of them if required!
                         assetList.value = assets

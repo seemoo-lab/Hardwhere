@@ -11,12 +11,13 @@ import de.tu_darmstadt.seemoo.HardWhere.R
 /**
  * Dialog for selecting custom values (checkbox fields)
  */
-class CustomSelectionDialog: DialogFragment() {
+class CustomSelectionDialog : DialogFragment() {
     lateinit var customSelectionViewModel: CustomSelectionViewModel
     override fun onCreateDialog(
         savedInstanceState: Bundle?
     ): Dialog {
-        customSelectionViewModel = ViewModelProvider(requireActivity())[CustomSelectionViewModel::class.java]
+        customSelectionViewModel =
+            ViewModelProvider(requireActivity())[CustomSelectionViewModel::class.java]
         val items = customSelectionViewModel.items
         return MaterialAlertDialogBuilder(requireContext())
             .setTitle(customSelectionViewModel.title)
@@ -28,8 +29,14 @@ class CustomSelectionDialog: DialogFragment() {
     }
 
     companion object {
-        fun newInstance(items: Array<String>, title: String, activity: ViewModelStoreOwner, identifier: String): Int {
-            val customSelectionViewModel = ViewModelProvider(activity)[CustomSelectionViewModel::class.java]
+        fun newInstance(
+            items: Array<String>,
+            title: String,
+            activity: ViewModelStoreOwner,
+            identifier: String
+        ): Int {
+            val customSelectionViewModel =
+                ViewModelProvider(activity)[CustomSelectionViewModel::class.java]
             customSelectionViewModel.items = items
             customSelectionViewModel.title = title
             customSelectionViewModel.identifier = identifier

@@ -38,11 +38,11 @@ class AboutViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val buffer = BufferedReader(InputStreamReader(context.resources.openRawResource(R.raw.licenses)))
-                var list: List<AboutFragment.About> = buffer.lines().map { line ->
+                val list: List<AboutFragment.About> = buffer.lines().map { line ->
                     val split = line.split(',')
                     AboutFragment.About(split[0], resolveLicense(split[1]))
                 }.collect(Collectors.toList())
-                var sorted = list.sortedBy {
+                val sorted = list.sortedBy {
                     it.name
                 }
                 Log.d(this@AboutViewModel::class.java.name,"Loaded $list")

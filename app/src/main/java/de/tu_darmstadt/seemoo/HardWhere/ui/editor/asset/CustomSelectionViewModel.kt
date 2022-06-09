@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import de.tu_darmstadt.seemoo.HardWhere.data.model.Selectable
 
-class CustomSelectionViewModel: ViewModel() {
+class CustomSelectionViewModel : ViewModel() {
     var title: String = "<missing title>"
     var items: Array<String> = arrayOf()
     var identifier: String = "<missing identifier>"

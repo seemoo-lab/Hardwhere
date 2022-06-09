@@ -46,13 +46,13 @@ class AboutFragment : Fragment(), AboutViewAdapter.OnListInteractionListener {
             addItemDecoration(DividerItemDecoration(this.context, DividerItemDecoration.VERTICAL))
         }
 
-        aboutViewModel.libList.observe(viewLifecycleOwner, {
+        aboutViewModel.libList.observe(viewLifecycleOwner) {
             it?.run {
                 viewAdapter.replaceElements(this)
             }
-        })
+        }
 
-        aboutViewModel.currentLicenseText.observe(viewLifecycleOwner, {
+        aboutViewModel.currentLicenseText.observe(viewLifecycleOwner) {
             it?.run {
                 val alertDialogBuilder: AlertDialog.Builder = AlertDialog.Builder(requireContext())
                 alertDialogBuilder.setMessage(this)
@@ -68,7 +68,7 @@ class AboutFragment : Fragment(), AboutViewAdapter.OnListInteractionListener {
                 alertDialog.show()
                 aboutViewModel.resetLicenseText()
             }
-        })
+        }
         aboutViewModel.loadData(requireContext())
     }
 
