@@ -106,7 +106,7 @@ class AssetAttributeView(context: Context, attrs: AttributeSet? = null, defStyle
     /**
      * Irreversible hack to allow disabling stuff for into BT without style attributes
      */
-    public fun disable() {
+    fun disable() {
         binding.assetAttributeViewText.isEnabled = false
         binding.assetAttributeViewSwitch.visibility = GONE
     }
@@ -147,7 +147,7 @@ class AssetAttributeView(context: Context, attrs: AttributeSet? = null, defStyle
         return super.isEnabled()
     }
 
-    override fun onSaveInstanceState(): Parcelable? {
+    override fun onSaveInstanceState(): Parcelable {
         // TODO: honor save-state attribute, we probably don't need to store anything here
         // due to our workaround with the navigation component
         val bundle = Bundle()
@@ -183,6 +183,12 @@ class AssetAttributeView(context: Context, attrs: AttributeSet? = null, defStyle
      */
     fun setEditorOnclickListener(listener: View.OnClickListener) {
         onEditorClickListener = listener
+        // disable focusable stuff as onclickListeners are set for custom dialogs
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            binding.assetAttributeViewText.focusable = focusable
+        } else {
+            binding.assetAttributeViewText.setFocusable(false)
+        }
         binding.assetAttributeViewText.setOnClickListener(listener)
     }
     fun isUpdate() = binding.assetAttributeViewSwitch.isChecked && this.isEnabled
@@ -212,6 +218,7 @@ class AssetAttributeView(context: Context, attrs: AttributeSet? = null, defStyle
 
     /**
      * Set display text, if null "" will be used an null as origin value.
+     * Performs update for default-value check.
      */
     fun setText(text: String?) {
         Log.d(this::class.java.name,"Setting text $text")
@@ -219,7 +226,8 @@ class AssetAttributeView(context: Context, attrs: AttributeSet? = null, defStyle
     }
 
     /**
-     * Sets original/default text, used as comparator value for deciding if anything changed
+     * Sets original/default text, used as comparator value for deciding if anything changed.
+     * Should be called after setText
      */
     fun setDefaultText(text: String?) {
         Log.d(this::class.java.name,"Setting default $text")

@@ -110,4 +110,5 @@
     <string name="crash_dialog_text">The app crashed, please send a crash report if possible.</string>
     <string name="loading_fieldset">Loading custom fields</string>
     <string name="error_fieldset">Failed to load custom fields!</string>
+    <string name="custom_field_selection_title">Select Value for %1$s</string>
 </resources>

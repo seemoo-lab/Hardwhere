@@ -1,5 +1,6 @@
 package de.tu_darmstadt.seemoo.HardWhere.ui.editor.asset
 
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -24,6 +25,7 @@ import de.tu_darmstadt.seemoo.HardWhere.ui.editor.SelectorViewModel
 class EditorFragment : APIFragment() {
     lateinit var editorViewModel: EditorViewModel
     lateinit var selectorViewModel: SelectorViewModel
+    lateinit var customSelectionViewModel: CustomSelectionViewModel
     private lateinit var commentET: AssetAttributeView
     private lateinit var tagET: AssetAttributeView
     private lateinit var nameET: AssetAttributeView
@@ -183,8 +185,26 @@ class EditorFragment : APIFragment() {
                         "Unknown inputID for selector update"
                     )
                 }
+                // force update event
                 editorViewModel.assetMutable.value = currentVal
                 selectorViewModel.resetSelected()
+            }
+        })
+
+        customSelectionViewModel = ViewModelProvider(requireActivity())[CustomSelectionViewModel::class.java]
+        customSelectionViewModel.selection.observe(viewLifecycleOwner, Observer {
+            it?.run {
+                val currentVal = editorViewModel.asset.value!!
+                val id = customSelectionViewModel.identifier
+                val field = currentVal.customFieldsById()[id]
+                if ( field != null) {
+                    field.value = this
+                } else {
+                    Log.w(this@EditorFragment::class.java.name,"Unknown custom field selection identifier $id")
+                }
+                // force update event
+                editorViewModel.assetMutable.value = currentVal
+                customSelectionViewModel.resetSelection()
             }
         })
 
@@ -200,14 +220,6 @@ class EditorFragment : APIFragment() {
                 this.custom_fields?.run { updateCustomFields(this, update = true,updateDefault = true) }
             }
         })
-
-        /*editorViewModel.fieldSet.observe(viewLifecycleOwner, Observer {
-            it?.run {
-                this.data?.run {
-                    updateCustomFields(this, update = true,updateDefault = true)
-                }
-            }
-        })*/
 
         editorViewModel.asset.observe(viewLifecycleOwner, Observer {
             it?.run {
@@ -246,11 +258,6 @@ class EditorFragment : APIFragment() {
                 containerCustomAttribs.visibility = View.GONE
                 View.VISIBLE
             }
-//            it?.run {
-//                if (editorViewModel.asset.value!!.custom_fields != null)
-//                    updateCustomFields(editorViewModel.asset.value!!.custom_fields!!, false, false)
-//
-//            }
         }
 
         editorViewModel.loading.observe(viewLifecycleOwner, Observer {
@@ -299,18 +306,12 @@ class EditorFragment : APIFragment() {
                 false
             }
         }
-        /*for (attrib in fields) {
-            if (!customFields.containsKey(attrib.key)) {
-                setupCustomField(attrib.value.value!!,attrib.key,attrib.value.field)
-            }
-        }*/
-        val singleModel = editorViewModel.isSingleModel()
     }
 
     /**
      * Setup custom field
      */
-    private fun setupCustomFieldBase(default: String, field: CustomField, label: String): AssetAttributeView {
+    private fun setupCustomFieldBase(field: CustomField, label: String): AssetAttributeView {
         val view = AssetAttributeView(requireContext())
         containerCustomAttribs.addView(view)
         view.tag = field.field
@@ -334,19 +335,6 @@ class EditorFragment : APIFragment() {
         }
     }
 
-    private fun setupCustomFieldSelection(view: AssetAttributeView, field: CustomField, label: String) {
-        setupTextfield(view,{t -> run{
-            if (editorViewModel.asset.value?.custom_fields == null) {
-                editorViewModel.asset.value?.custom_fields = HashMap()
-            }
-            editorViewModel.asset.value?.custom_fields?.put(label,field.copy(value = t))
-        }
-        }) {
-                a,o ->
-            o.custom_fields!!.get(label)!!.let { a.custom_fields!!.put(field.field, it) }
-        }
-    }
-
     /**
      * Update types & available values for custom fields
      */
@@ -355,13 +343,12 @@ class EditorFragment : APIFragment() {
             var view = customFields[fieldDef.db_column_name]
             val field = asset.customFieldsById()[fieldDef.db_column_name]!!
             if(view == null) {
-                val defaultValue = default.customFieldsById()[fieldDef.db_column_name]!!.value!!
-                view = setupCustomFieldBase(defaultValue,field,fieldDef.name)
+                view = setupCustomFieldBase(field,fieldDef.name)
             }
-            val defaultValues = fieldDef.field_values_array
-            if(defaultValues != null && fieldDef.type == "checkbox") {
+            val fieldValues = fieldDef.field_values_array
+            if(fieldValues != null && (fieldDef.type == "checkbox" || fieldDef.type == "radio")) {
                 // selection setup
-                setupCustomFieldSelection(view,field,fieldDef.name)
+                setupCustomFieldCheckbox(view,field.field,fieldValues.toTypedArray(),fieldDef.name)
             } else {
                 // text setup
                 setupCustomFieldText(view,field,fieldDef.name)
@@ -392,7 +379,7 @@ class EditorFragment : APIFragment() {
      */
     private fun <T : Selectable> setupSelectable(
         et: AssetAttributeView, type: Selectable.SelectableType,
-        returnCode: Int, v: () -> T? , reset: () -> Unit
+        returnCode: Int, v: () -> T?, reset: () -> Unit
     ) {
         et.setEditorOnclickListener(View.OnClickListener {
             val (id, args) = SelectorFragment.newInstancePair(
@@ -402,10 +389,47 @@ class EditorFragment : APIFragment() {
             )
             findNavController().navigate(id, args)
         })
-        et.setOnCheckedChangeListener { checked -> if (!checked) {
-            reset()
-            Log.d(this::class.java.name,"Resetting")
+        et.setOnCheckedChangeListener { checked ->
+            if (!checked) {
+                reset()
+                Log.d(this::class.java.name, "Resetting")
+            }
         }
+    }
+
+    /**
+     * Setup custom field with selection / checkbox value.
+     * reset lambda is to reset on change-uncheck
+     */
+    private fun setupCustomFieldCheckbox(
+        et: AssetAttributeView, identifier: String, items: Array<String>,
+        name: String
+    ) {
+        // requied, otherwise the keyboard will take focus
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            et.focusable = View.NOT_FOCUSABLE
+        } else {
+            et.setFocusable(false)
+        }
+
+        val title = getString(R.string.custom_field_selection_title,name)
+        et.setEditorOnclickListener(View.OnClickListener {
+            val fragId = CustomSelectionDialog.newInstance(items,title,requireActivity(),identifier)
+            findNavController().navigate(fragId)
+        })
+        et.setOnCheckedChangeListener { checked ->
+            if (!checked) {
+                val asset = editorViewModel.asset.value!!
+                val cf = asset.customFieldsById()[identifier]
+                val ocf = editorViewModel.assetOrigin.value!!.customFieldsById()[identifier]
+                if (cf != null && ocf != null) {
+                    cf.value = ocf.value
+                } else {
+                    Log.w(this@EditorFragment::class.java.name,"Can't reset customfield $cf $ocf");
+                }
+                // force update
+                editorViewModel.assetMutable.value = asset
+            }
         }
     }
 

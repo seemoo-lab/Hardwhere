@@ -57,6 +57,9 @@
         <action
             android:id="@+id/action_editorFragment_to_nav_scan"
             app:destination="@id/nav_scan" />
+        <action
+            android:id="@+id/action_editorFragment_to_customSelectionDialog"
+            app:destination="@id/customSelectionDialog" />
     </fragment>
     <fragment
         android:id="@+id/selector_fragment"
@@ -142,5 +145,13 @@
             android:id="@+id/action_checkinScannerFragment_to_nav_checkin"
             app:destination="@id/nav_checkin" />
     </fragment>
+    <dialog
+        android:id="@+id/customSelectionDialog"
+        android:name="de.tu_darmstadt.seemoo.HardWhere.ui.editor.asset.CustomSelectionDialog"
+        android:label="CustomSelectionDialog" >
+        <action
+            android:id="@+id/action_customSelectionDialog_to_editorFragment"
+            app:destination="@id/editorFragment" />
+    </dialog>
 
 </navigation>

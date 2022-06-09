@@ -6,6 +6,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import de.tu_darmstadt.seemoo.HardWhere.R
 
 /**
  * Dialog for selecting custom values (checkbox fields)
@@ -27,11 +28,14 @@ class CustomSelectionDialog: DialogFragment() {
     }
 
     companion object {
-        fun newInstance(items: Array<String>, title: String, activity: ViewModelStoreOwner): CustomSelectionDialog {
+        fun newInstance(items: Array<String>, title: String, activity: ViewModelStoreOwner, identifier: String): Int {
             val customSelectionViewModel = ViewModelProvider(activity)[CustomSelectionViewModel::class.java]
             customSelectionViewModel.items = items
             customSelectionViewModel.title = title
-            return CustomSelectionDialog()
+            customSelectionViewModel.identifier = identifier
+            // reset selection
+            customSelectionViewModel.resetSelection()
+            return R.id.customSelectionDialog
         }
     }
 }
