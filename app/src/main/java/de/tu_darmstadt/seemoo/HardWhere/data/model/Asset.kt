@@ -26,6 +26,20 @@ data class Asset(
     /** Custom fields, key is the user visible name **/
     var custom_fields: HashMap<String,CustomField>?
 ) : Parcelable {
+    // required such that originAsset and asset can't override each other
+    fun deepCopy(): Asset {
+        val asset = this.copy()
+        asset._cf_by_dbname = null
+        asset.custom_fields = HashMap()
+        val fields = custom_fields
+        if (fields != null) {
+            for (item in fields.iterator()) {
+                asset.custom_fields!!.put(item.key,item.value.copy())
+            }
+        }
+        return asset
+    }
+
     private var _cf_by_dbname: HashMap<String,CustomField>? = null
     /**
      * Custom fields with access by their internal DB name

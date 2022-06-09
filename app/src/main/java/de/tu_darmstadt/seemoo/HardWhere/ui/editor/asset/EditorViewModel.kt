@@ -1,10 +1,8 @@
 package de.tu_darmstadt.seemoo.HardWhere.ui.editor.asset
 
-import android.telecom.Call
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import de.tu_darmstadt.seemoo.HardWhere.Utils.Companion.logResponseVerbose
 import de.tu_darmstadt.seemoo.HardWhere.data.APIInterface
@@ -17,7 +15,6 @@ import io.reactivex.schedulers.Schedulers
 import org.acra.ACRA
 import retrofit2.Callback
 import retrofit2.Response
-import java.lang.reflect.Field
 
 
 class EditorViewModel : ViewModel() {
@@ -79,7 +76,7 @@ class EditorViewModel : ViewModel() {
     fun setEditorAsset(asset: Asset) {
         Log.d(this::class.java.name,"Setting editor asset & default")
         assetMutable.value = asset
-        assetOriginMutable.value = assetMutable.value!!.copy()
+        assetOriginMutable.value = assetMutable.value!!.deepCopy()
     }
 
     /**
