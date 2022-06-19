@@ -69,7 +69,6 @@ class AboutViewModel : ViewModel() {
     private fun resolveLicense(input: String): Int {
         return when(input.trim()) {
             "apache2" -> R.raw.apache2
-            "sentry" -> R.raw.sentry
             "flaticon" -> R.raw.flaticon
             else -> throw Exception("Unknown license resource $input")
         }
