@@ -24,7 +24,7 @@ android {
         viewBinding = true
     }
     defaultConfig {
-        applicationId "de.tu_darmstadt.seemoo.hardwhere"
+        applicationId "de.tu_darmstadt.seemoo.HardWhere"
         minSdkVersion 25
         targetSdkVersion 32
         versionCode 1
