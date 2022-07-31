@@ -51,6 +51,8 @@ class LoginViewModel : ViewModel() {
             _loginForm.value = LoginFormState(tokenError = R.string.invalid_token)
         } else if (!isEndpointValid(endpoint)) {
             _loginForm.value = LoginFormState(endpointError = R.string.invalid_api_endpoint)
+        } else if (!endpoint.startsWith("https://")) {
+            _loginForm.value = LoginFormState(endpointError = R.string.invalid_api_endpoint_https)
         } else {
             _loginForm.value = LoginFormState(isDataValid = true)
         }
@@ -58,7 +60,7 @@ class LoginViewModel : ViewModel() {
 
     // A apiToken validation check
     private fun isTokenValid(apiToken: String): Boolean {
-        return apiToken.isNotBlank()
+        return apiToken.isNotBlank() && (apiToken.length > 30)
     }
 
     // A endpoint validation check

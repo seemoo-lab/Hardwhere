@@ -111,4 +111,5 @@
     <string name="loading_fieldset">Loading custom fields</string>
     <string name="error_fieldset">Failed to load custom fields!</string>
     <string name="custom_field_selection_title">Select Value for %1$s</string>
+    <string name="invalid_api_endpoint_https">Endpoint has to start with https://</string>
 </resources>
