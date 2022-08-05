@@ -10,6 +10,10 @@ The backend daemon ist expected to handle all of the example.com/HardWhere/* req
 
 Currently compatible with snipeit v5.4.3
 
+[<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
+     alt="Get it on F-Droid"
+     height="80">](https://f-droid.org/packages/de.tu_darmstadt.seemoo.HardWhere/)
+
 ## Building the daemon
 install requirements:
 `apt install libssl-dev pkg-config`
